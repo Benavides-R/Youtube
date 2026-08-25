@@ -130,6 +130,7 @@ async function generarGuion() {
         { role: "user", content: userPrompt },
       ],
       temperature: 0.9, // más creatividad, cada video debe sentirse distinto
+      max_completion_tokens: 4096,
       response_format: { type: "json_object" },
     }),
   });
@@ -165,7 +166,17 @@ async function generarGuion() {
 // ------------------------------------------------------------
 (async () => {
   try {
-    const resultado = await generarGuion();
+    let resultado;
+    try {
+      resultado = await generarGuion();
+    } catch (err) {
+      if (err.message.includes("max completion tokens") || err.message.includes("json_validate_failed")) {
+        console.log("⚠️  Groq se quedó sin espacio, reintentando una vez más...");
+        resultado = await generarGuion();
+      } else {
+        throw err;
+      }
+    }
 
     const outputDir = path.join(__dirname, "..", "output");
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
