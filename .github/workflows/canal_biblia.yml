@@ -1,0 +1,87 @@
+name: Canal Sabiduría Bíblica - Video Automático
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "0 9 * * *"  # 4am hora Colombia
+    - cron: "0 21 * * *" # 4pm hora Colombia
+  workflow_dispatch:
+
+jobs:
+  generar_y_subir_video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Esperar un tiempo random
+        run: |
+          MINUTOS=$((RANDOM % 180))
+          echo "Esperando $MINUTOS minutos antes de empezar..."
+          sleep "${MINUTOS}m"
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar FFmpeg y fuentes
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Instalar dependencias de Node
+        run: npm install
+
+      - name: Instalar dependencias de Python
+        run: pip install -r requirements.txt
+
+      - name: Preparar credenciales de YouTube (canal bíblico)
+        run: |
+          mkdir -p config
+          echo '${{ secrets.YT_CREDENTIALS_JSON_BIBLIA }}' > config/credentials.json
+          echo '${{ secrets.YT_TOKEN_JSON_BIBLIA }}' > config/token.json
+
+      - name: Generar guion
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generar_guion.js config/canal_biblia.json
+
+      - name: Guardar historial de temas
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add historial/
+          git commit -m "Actualizar historial de temas" || echo "Sin cambios que guardar"
+          git push
+
+      - name: Generar imágenes
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/generar_imagenes.js
+
+      - name: Generar audio y subtítulos
+        run: python scripts/generar_audio.py
+
+      - name: Generar miniatura
+        run: node scripts/generar_miniatura.js
+
+      - name: Ensamblar video
+        run: node scripts/ensamblar_video.js
+
+      - name: Subir a YouTube
+        run: node scripts/subir_youtube.js
+
+      - name: Notificar por Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/notificar_telegram.js
