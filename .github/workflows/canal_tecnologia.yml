@@ -13,13 +13,14 @@ on:
 jobs:
   generar_y_subir_video:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 210
 
     steps:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
 
-      - name: Esperar un tiempo random (para que no suba siempre a la misma hora)
+      - name: Esperar un tiempo random (solo en corridas automáticas, no al probar manual)
+        if: github.event_name == 'schedule'
         run: |
           MINUTOS=$((RANDOM % 180))
           echo "Esperando $MINUTOS minutos antes de empezar..."
