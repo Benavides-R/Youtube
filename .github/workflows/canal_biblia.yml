@@ -56,12 +56,14 @@ jobs:
         run: node scripts/generar_guion.js config/canal_biblia.json
 
       - name: Guardar historial de temas
+        continue-on-error: true
         run: |
           git config user.name "youtube-auto-bot"
           git config user.email "actions@github.com"
           git add historial/
           git commit -m "Actualizar historial de temas" || echo "Sin cambios que guardar"
-          git push
+          git pull --rebase origin main || true
+          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
 
       - name: Generar imágenes
         env:
