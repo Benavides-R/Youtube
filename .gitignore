@@ -1,0 +1,5 @@
+node_modules/
+output/
+config/credentials.json
+config/token.json
+*.log
