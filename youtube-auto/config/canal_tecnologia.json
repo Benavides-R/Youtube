@@ -1,0 +1,30 @@
+{
+  "nombre_canal": "Cristian David Benavides - Android Apps y Trucos",
+  "voz": "es-CO-GonzaloNeural",
+  "duracion_objetivo_seg": 420,
+  "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y sorprendentes, acento colombiano neutro, energía entusiasta pero no exagerada. IMPORTANTE: nunca uses formato de tutorial paso a paso (nada de 'primero haz esto, luego esto'), siempre formato de dato/revelación/curiosidad, ya que el video no muestra capturas de pantalla reales",
+  "temas": [
+    "datos que no sabías sobre tu celular Android",
+    "por qué Android hace esto sin que te des cuenta",
+    "funciones ocultas de Android que casi nadie conoce",
+    "el origen y la historia de Android, datos curiosos",
+    "apps que existen pero casi nadie las conoce",
+    "errores y fallos famosos en la historia de Android",
+    "diferencias curiosas entre marcas de celulares Android",
+    "cómo tu celular te espía sin que lo sepas (privacidad)",
+    "curiosidades sobre las apps que usas todos los días",
+    "mitos sobre Android que todo el mundo cree y son falsos",
+    "lo que pasa dentro de tu celular cuando lo usas",
+    "comparativas curiosas: qué marca hace qué mejor y por qué",
+    "la guerra secreta entre Android y iPhone: datos curiosos",
+    "cómo se fabrica un celular, datos que no imaginabas",
+    "apps que fueron gigantes y desaparecieron, qué pasó",
+    "inteligencia artificial en tu celular: lo que hace sin que lo notes",
+    "curiosidades sobre las cámaras de los celulares modernos",
+    "por qué tu batería se daña con el tiempo, la ciencia detrás",
+    "hackers y celulares: casos curiosos de seguridad",
+    "el futuro de los celulares: qué viene y sorprende",
+    "datos curiosos sobre las redes 5G y el internet móvil",
+    "por qué algunas apps piden permisos que no necesitan"
+  ]
+}
