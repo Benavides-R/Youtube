@@ -37,7 +37,7 @@ GUION_PATH = os.path.join(BASE_DIR, "output", "guion.json")
 AUDIO_PATH = os.path.join(BASE_DIR, "output", "audio.mp3")
 SRT_PATH = os.path.join(BASE_DIR, "output", "subtitulos.srt")
 
-RATE = "+0%"
+RATE = "-12%"
 PITCH = "+0Hz"
 PALABRAS_POR_LINEA = 7
 

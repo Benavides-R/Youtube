@@ -29,7 +29,11 @@ const TEMP_DIR = path.join(BASE_DIR, "output", "_temp");
 const ANCHO = 1920;
 const ALTO = 1080;
 const FPS = 30;
-const VOLUMEN_MUSICA_DB = "-22dB";
+const VOLUMEN_MUSICA_DB = "-28dB";
+
+// Desactivado por decisión del usuario: el timing aproximado (sin datos
+// exactos de la voz) a veces se desincroniza. Para reactivarlo, cambia a true.
+const SUBTITULOS_ACTIVADOS = false;
 
 // Cuánto se superponen 2 imágenes durante la transición
 const DURACION_TRANSICION = 0.6;
@@ -57,7 +61,7 @@ try {
 }
 
 const hayMusica = fs.existsSync(MUSICA_DIR) && fs.readdirSync(MUSICA_DIR).some((f) => f.endsWith(".mp3"));
-const haySubtitulos = fs.existsSync(SRT_PATH);
+const haySubtitulos = SUBTITULOS_ACTIVADOS && fs.existsSync(SRT_PATH);
 
 console.log(`🎵 Música de fondo: ${hayMusica ? "sí" : "no (opcional)"}`);
 console.log(`📝 Subtítulos: ${haySubtitulos ? "sí" : "no"}`);

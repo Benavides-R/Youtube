@@ -45,8 +45,9 @@ const fontPathRaw =
 // Escapamos el ":" del drive letter en Windows para el filtro de ffmpeg
 const fontPath = fontPathRaw.replace(/:/g, "\\:");
 
-// Preparamos el título: mayúsculas, máx 45 caracteres, partido en 2 líneas
-let titulo = guionData.titulo.toUpperCase().slice(0, 45);
+// Texto corto para miniatura (generado específico por la IA), con respaldo
+// al título completo si un guion viejo no lo trae
+let titulo = (guionData.texto_miniatura || guionData.titulo).toUpperCase().slice(0, 35);
 const palabras = titulo.split(" ");
 const mitad = Math.ceil(palabras.length / 2);
 const linea1 = palabras.slice(0, mitad).join(" ");

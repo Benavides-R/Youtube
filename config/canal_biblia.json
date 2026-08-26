@@ -2,20 +2,20 @@
   "nombre_canal": "Sabiduría Bíblica Oficial",
   "voz": "es-CO-SalomeNeural",
   "duracion_objetivo_seg": 420,
-  "estilo": "cálido, reflexivo, tono de análisis profundo y misterio (no de sermón), enganchando con hechos poco conocidos o intrigantes, con aplicación práctica a la vida diaria, citando referencias bíblicas de forma precisa, acento colombiano neutro",
+  "estilo": "cálido, reflexivo, tono de ENSEÑANZA real y profunda (no de sermón, pero tampoco de misterio o suspenso). Cada video debe explicar el contexto histórico o teológico del pasaje, qué significa realmente, y cómo se aplica a la vida diaria de forma concreta. EVITAR por completo lenguaje sensacionalista tipo 'lo que no te contaron', 'el secreto oculto', 'nadie te dijo esto' — eso es clickbait vacío. El video debe dejar al oyente con una enseñanza clara y útil, no solo intriga. Citar referencias bíblicas exactas (libro, capítulo, versículo). Acento colombiano neutro",
   "estilo_imagenes": "atmosféricas y espirituales: naturaleza, luz, amaneceres/atardeceres, desiertos, montañas, cielos dramáticos, biblia abierta, velas, manos en oración. NO busques representaciones literales de personajes o escenas bíblicas (no existen en bancos de fotos)",
   "temas": [
-    "misterios del Apocalipsis y su significado",
-    "hechos asombrosos y poco conocidos de la Biblia",
-    "parábolas de Jesús y su enseñanza para la vida hoy",
-    "personajes del Antiguo Testamento y las lecciones de su historia",
-    "salmos y su mensaje de consuelo o fortaleza",
-    "profecías bíblicas y su significado",
-    "historias de fe y superación en la Biblia",
-    "pasajes bíblicos menos conocidos pero fascinantes",
-    "el significado profundo de versículos conocidos",
-    "vidas de los apóstoles y lo que podemos aprender de ellos",
-    "análisis de eventos bíblicos relevantes",
-    "anécdotas bíblicas sorprendentes del Antiguo y Nuevo Testamento"
+    "parábolas de Jesús explicadas: contexto y enseñanza real",
+    "personajes del Antiguo Testamento: qué podemos aprender de su vida",
+    "salmos explicados versículo a versículo y su mensaje",
+    "el fruto del Espíritu: qué significa cada uno y cómo vivirlo",
+    "historias de fe en la Biblia: contexto histórico y lección práctica",
+    "principios bíblicos sobre las relaciones y la familia",
+    "cómo manejar la ansiedad desde una perspectiva bíblica, con base en pasajes concretos",
+    "el significado teológico de versículos muy conocidos, explicado a fondo",
+    "vidas de los apóstoles: su ministerio y enseñanza para hoy",
+    "el Padre Nuestro explicado línea por línea",
+    "los mandamientos explicados en su contexto y aplicación actual",
+    "el sermón del monte: enseñanzas explicadas una por una"
   ]
 }

@@ -94,9 +94,10 @@ const estiloImagenes = canalConfig.estilo_imagenes ||
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
 Escribes guiones para narración en voz colombiana, estilo: ${canalConfig.estilo}.
 Tu guion debe:
-- Enganchar en la primera frase (sin saludos tipo "hola a todos")
+- Enganchar en la primera frase (sin saludos tipo "hola a todos"). VARÍA el tipo de gancho cada vez: a veces una pregunta directa, a veces un dato impactante, a veces una afirmación polémica, a veces una historia corta — NUNCA uses la misma fórmula de apertura en cada guion
 - Ir directo al contenido, sin relleno
 - Tener ritmo natural para ser leído en voz alta
+- VARÍA también el cierre: a veces una reflexión, a veces una pregunta al oyente, a veces un dato final sorprendente — no repitas siempre la misma frase de despedida
 - Terminar con un cierre que invite a seguir el canal (sin ser genérico tipo "no olvides suscribirte")
 - Longitud objetivo: ${palabrasObjetivo} palabras. ESTO ES IMPORTANTE: nunca entregues menos de ${Math.round(palabrasObjetivo * 0.9)} palabras, desarrolla el tema con ejemplos y contexto suficiente para llegar a la longitud pedida, no lo resumas de forma corta.
 - NUNCA uses markdown ni símbolos especiales (nada de *, #, _, guiones para listas, etc). Es texto plano que se va a leer en voz alta palabra por palabra, cualquier símbolo se escucharía literal.
@@ -107,6 +108,7 @@ Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown,
   "guion": "el guion completo listo para narrar",
   "descripcion": "descripción para YouTube, 2-3 líneas, con contexto y llamado a la acción",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
 }`;
 
@@ -130,7 +132,7 @@ async function generarGuion() {
         { role: "user", content: userPrompt },
       ],
       temperature: 0.9, // más creatividad, cada video debe sentirse distinto
-      max_completion_tokens: 4096,
+      max_completion_tokens: 2200,
       response_format: { type: "json_object" },
     }),
   });
@@ -151,7 +153,7 @@ async function generarGuion() {
   }
 
   // Validación básica de estructura
-  const camposRequeridos = ["titulo", "guion", "descripcion", "tags", "palabras_clave_imagenes"];
+  const camposRequeridos = ["titulo", "guion", "descripcion", "tags", "texto_miniatura", "palabras_clave_imagenes"];
   for (const campo of camposRequeridos) {
     if (!parsed[campo]) {
       throw new Error(`Falta el campo "${campo}" en la respuesta de Groq`);
@@ -170,8 +172,12 @@ async function generarGuion() {
     try {
       resultado = await generarGuion();
     } catch (err) {
-      if (err.message.includes("max completion tokens") || err.message.includes("json_validate_failed")) {
-        console.log("⚠️  Groq se quedó sin espacio, reintentando una vez más...");
+      const esLimiteDeTasa = err.message.includes("rate_limit_exceeded");
+      const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
+      if (esLimiteDeTasa || esFaltaDeEspacio) {
+        const espera = esLimiteDeTasa ? 20000 : 2000;
+        console.log(`⚠️  ${esLimiteDeTasa ? "Límite de tasa alcanzado" : "Groq se quedó sin espacio"}, esperando ${espera / 1000}s y reintentando...`);
+        await new Promise((r) => setTimeout(r, espera));
         resultado = await generarGuion();
       } else {
         throw err;
