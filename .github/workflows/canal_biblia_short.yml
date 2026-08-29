@@ -1,12 +1,12 @@
-name: Canal Superate777 - Video Automático
+name: Canal Sabiduría Bíblica - Short Automático
 
 permissions:
   contents: write
 
 on:
   schedule:
-    - cron: "8 7 * * *"  # 2am hora Colombia
-    - cron: "33 19 * * *" # 2pm hora Colombia
+    - cron: "22 13 * * *" # 8am hora Colombia
+    - cron: "47 1 * * *"  # 8pm hora Colombia
   workflow_dispatch:
 
 jobs:
@@ -44,16 +44,16 @@ jobs:
       - name: Instalar dependencias de Python
         run: pip install -r requirements.txt
 
-      - name: Preparar credenciales de YouTube (canal Superate777)
+      - name: Preparar credenciales de YouTube (canal bíblico)
         run: |
           mkdir -p config
-          echo '${{ secrets.YT_CREDENTIALS_JSON_SUPERATE }}' > config/credentials.json
-          echo '${{ secrets.YT_TOKEN_JSON_SUPERATE }}' > config/token.json
+          echo '${{ secrets.YT_CREDENTIALS_JSON_BIBLIA }}' > config/credentials.json
+          echo '${{ secrets.YT_TOKEN_JSON_BIBLIA }}' > config/token.json
 
       - name: Generar guion
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        run: node scripts/generar_guion.js config/canal_superate.json
+        run: node scripts/generar_guion.js config/canal_biblia_short.json
 
       - name: Guardar historial de temas
         continue-on-error: true
@@ -61,7 +61,7 @@ jobs:
           git config user.name "youtube-auto-bot"
           git config user.email "actions@github.com"
           git add historial/
-          git commit -m "Actualizar historial de temas" || echo "Sin cambios que guardar"
+          git commit -m "Actualizar historial de temas (short)" || echo "Sin cambios que guardar"
           git pull --rebase origin main || true
           git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
 
