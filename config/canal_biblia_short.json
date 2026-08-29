@@ -1,0 +1,20 @@
+{
+  "nombre_canal": "Sabiduría Bíblica Oficial",
+  "voz": "es-CO-SalomeNeural",
+  "formato": "vertical",
+  "duracion_objetivo_seg": 45,
+  "estilo": "cálido, reflexivo, tono de ENSEÑANZA real (no de misterio ni suspenso, nada de 'lo que no te contaron'). Un solo versículo o idea por video, explicado con claridad y aplicación directa a la vida diaria. Citar referencia bíblica exacta. Acento colombiano neutro",
+  "estilo_imagenes": "atmosféricas y espirituales: naturaleza, luz, amaneceres/atardeceres, desiertos, montañas, cielos dramáticos, biblia abierta, velas, manos en oración",
+  "temas": [
+    "un versículo del día explicado en menos de 1 minuto",
+    "una frase de Jesús y su significado directo",
+    "un salmo corto y su mensaje de consuelo",
+    "una lección rápida de una parábola",
+    "un principio bíblico sobre la ansiedad, en 45 segundos",
+    "una verdad bíblica sobre el perdón",
+    "una enseñanza corta sobre la gratitud según la Biblia",
+    "un mandamiento explicado de forma directa y práctica",
+    "una reflexión corta sobre la fe en tiempos difíciles",
+    "una verdad bíblica sobre el amor al prójimo"
+  ]
+}

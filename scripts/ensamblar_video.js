@@ -26,8 +26,19 @@ const MUSICA_DIR = path.join(BASE_DIR, "assets", "musica");
 const OUTPUT_PATH = path.join(BASE_DIR, "output", "video_final.mp4");
 const TEMP_DIR = path.join(BASE_DIR, "output", "_temp");
 
-const ANCHO = 1920;
-const ALTO = 1080;
+const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
+let esShort = false;
+if (fs.existsSync(GUION_PATH)) {
+  try {
+    const guionData = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
+    esShort = guionData.formato === "vertical";
+  } catch {
+    esShort = false;
+  }
+}
+
+const ANCHO = esShort ? 1080 : 1920;
+const ALTO = esShort ? 1920 : 1080;
 const FPS = 30;
 const VOLUMEN_MUSICA_DB = "-28dB";
 
@@ -36,11 +47,14 @@ const VOLUMEN_MUSICA_DB = "-28dB";
 const SUBTITULOS_ACTIVADOS = false;
 
 // Cuánto se superponen 2 imágenes durante la transición
-const DURACION_TRANSICION = 0.6;
+const DURACION_TRANSICION = esShort ? 0.3 : 0.6;
 
 // Rango de duración por imagen (varía dentro de este rango, no es fija)
-const DURACION_MIN = 5;
-const DURACION_MAX = 9;
+// Los shorts van con ritmo más rápido, imágenes más cortas
+const DURACION_MIN = esShort ? 2 : 5;
+const DURACION_MAX = esShort ? 4 : 9;
+
+console.log(`📐 Formato: ${esShort ? "vertical (short)" : "horizontal"} — ${ANCHO}x${ALTO}`);
 
 // ------------------------------------------------------------
 // 1. Validaciones

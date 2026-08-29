@@ -57,10 +57,10 @@ console.log(`🖼️  Necesitamos ~${cantidadImagenes} imágenes (video de ~${Ma
 // ------------------------------------------------------------
 // 2. Buscar en Pexels
 // ------------------------------------------------------------
-async function buscarImagenes(query, cantidad) {
+async function buscarImagenes(query, cantidad, orientacion) {
   const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(
     query
-  )}&per_page=${cantidad}&orientation=landscape`;
+  )}&per_page=${cantidad}&orientation=${orientacion}`;
 
   const response = await fetch(url, {
     headers: { Authorization: PEXELS_API_KEY },
@@ -94,13 +94,14 @@ async function descargarImagen(url, destino) {
     if (!fs.existsSync(IMAGENES_DIR)) fs.mkdirSync(IMAGENES_DIR, { recursive: true });
     fs.readdirSync(IMAGENES_DIR).forEach((f) => fs.unlinkSync(path.join(IMAGENES_DIR, f)));
 
+    const orientacion = guionData.formato === "vertical" ? "portrait" : "landscape";
     const porPalabraClave = Math.max(2, Math.ceil(cantidadImagenes / palabrasClave.length));
     let fotos = [];
     const idsVistos = new Set();
 
     for (const clave of palabrasClave) {
       try {
-        const resultados = await buscarImagenes(clave, porPalabraClave);
+        const resultados = await buscarImagenes(clave, porPalabraClave, orientacion);
         for (const foto of resultados) {
           if (!idsVistos.has(foto.id)) {
             idsVistos.add(foto.id);

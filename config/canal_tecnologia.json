@@ -1,7 +1,8 @@
 {
   "nombre_canal": "Cristian David Benavides - Android Apps y Trucos",
   "voz": "es-CO-GonzaloNeural",
-  "duracion_objetivo_seg": 420,
+  "formato": "vertical",
+  "duracion_objetivo_seg": 45,
   "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y sorprendentes, acento colombiano neutro, energía entusiasta pero no exagerada. IMPORTANTE: nunca uses formato de tutorial paso a paso (nada de 'primero haz esto, luego esto'), siempre formato de dato/revelación/curiosidad, ya que el video no muestra capturas de pantalla reales",
   "temas": [
     "datos que no sabías sobre tu celular Android",

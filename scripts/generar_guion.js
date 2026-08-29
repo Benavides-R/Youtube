@@ -88,25 +88,36 @@ console.log(`📋 Temas usados en esta vuelta: ${nuevoHistorial.length}/${canalC
 const palabrasObjetivo = Math.round((canalConfig.duracion_objetivo_seg / 60) * 150);
 // ~150 palabras por minuto hablado a ritmo normal
 
+const formato = canalConfig.formato || "horizontal"; // "vertical" = short
+const esShort = formato === "vertical";
+
 const estiloImagenes = canalConfig.estilo_imagenes ||
   "una mezcla de imágenes conceptuales relacionadas al tema y planos atmosféricos genéricos (no busques capturas de pantalla literales de apps o interfaces, esas no existen en bancos de fotos)";
 
+const instruccionesFormato = esShort
+  ? `Este es un YOUTUBE SHORT (video vertical corto). Reglas específicas:
+- Un SOLO punto/idea, no desarrolles varios temas, ve directo a lo más impactante
+- El gancho debe estar en la PRIMERA frase, sin ninguna introducción, la gente decide en 1-2 segundos si sigue viendo
+- Ritmo rápido, frases cortas, sin relleno de ningún tipo
+- Cierre muy breve, casi inmediato después del dato principal`
+  : `Este es un video largo. Desarrolla el tema con ejemplos y contexto suficiente.`;
+
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
 Escribes guiones para narración en voz colombiana, estilo: ${canalConfig.estilo}.
+${instruccionesFormato}
 Tu guion debe:
 - Enganchar en la primera frase (sin saludos tipo "hola a todos"). VARÍA el tipo de gancho cada vez: a veces una pregunta directa, a veces un dato impactante, a veces una afirmación polémica, a veces una historia corta — NUNCA uses la misma fórmula de apertura en cada guion
 - Ir directo al contenido, sin relleno
 - Tener ritmo natural para ser leído en voz alta
 - VARÍA también el cierre: a veces una reflexión, a veces una pregunta al oyente, a veces un dato final sorprendente — no repitas siempre la misma frase de despedida
-- Terminar con un cierre que invite a seguir el canal (sin ser genérico tipo "no olvides suscribirte")
-- Longitud objetivo: ${palabrasObjetivo} palabras. ESTO ES IMPORTANTE: nunca entregues menos de ${Math.round(palabrasObjetivo * 0.9)} palabras, desarrolla el tema con ejemplos y contexto suficiente para llegar a la longitud pedida, no lo resumas de forma corta.
+- Longitud objetivo: ${palabrasObjetivo} palabras. ${esShort ? "No te pases de esta cantidad, un short debe ser corto y directo." : `ESTO ES IMPORTANTE: nunca entregues menos de ${Math.round(palabrasObjetivo * 0.9)} palabras, desarrolla el tema con ejemplos y contexto suficiente para llegar a la longitud pedida, no lo resumas de forma corta.`}
 - NUNCA uses markdown ni símbolos especiales (nada de *, #, _, guiones para listas, etc). Es texto plano que se va a leer en voz alta palabra por palabra, cualquier símbolo se escucharía literal.
 
 Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown, con esta estructura exacta:
 {
-  "titulo": "título llamativo, máx 60 caracteres, con gancho",
+  "titulo": "título llamativo, máx 60 caracteres, con gancho${esShort ? ", incluye la palabra Shorts o #Shorts al final" : ""}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "descripción para YouTube, 2-3 líneas, con contexto y llamado a la acción",
+  "descripcion": "descripción para YouTube, 2-3 líneas, con contexto y llamado a la acción${esShort ? ", incluye #Shorts" : ""}",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
@@ -164,6 +175,46 @@ async function generarGuion() {
 }
 
 // ------------------------------------------------------------
+// 3.5. Segunda pasada: "editor" que pule el guion para que suene
+// más natural en voz alta (corrige frases raras, repeticiones,
+// cosas que un locutor humano jamás diría así). No cambia el
+// contenido ni los datos, solo la redacción.
+// ------------------------------------------------------------
+async function pulirGuion(guionOriginal) {
+  const tokensEstimados = Math.min(2200, Math.ceil(guionOriginal.split(/\s+/).length * 2) + 200);
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Eres un editor de guiones para narración en voz alta. Te dan un texto y tu trabajo es SOLO pulir la redacción: corregir frases que suenen raras, artificiales o repetitivas cuando se leen en voz alta, mejorar la fluidez natural. NO cambies datos, hechos, ni el largo del texto de forma significativa, NO agregues ni quites contenido, NO uses markdown ni símbolos. Responde ÚNICAMENTE con el texto pulido, sin explicaciones ni comentarios.",
+        },
+        { role: "user", content: guionOriginal },
+      ],
+      temperature: 0.4, // menos creatividad acá, es edición, no reescritura libre
+      max_completion_tokens: tokensEstimados,
+    }),
+  });
+
+  if (!response.ok) {
+    // Si falla la pulida, no es grave: seguimos con el guion original
+    console.log("⚠️  No se pudo pulir el guion, se usa la versión original");
+    return guionOriginal;
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content.trim();
+}
+
+// ------------------------------------------------------------
 // 4. Ejecutar y guardar output
 // ------------------------------------------------------------
 (async () => {
@@ -184,12 +235,16 @@ async function generarGuion() {
       }
     }
 
+    console.log("✏️  Puliendo redacción del guion...");
+    resultado.guion = await pulirGuion(resultado.guion);
+
     const outputDir = path.join(__dirname, "..", "output");
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
     const outputData = {
       canal: canalConfig.nombre_canal,
       voz: canalConfig.voz,
+      formato,
       tema: temaElegido,
       fecha_generacion: new Date().toISOString(),
       ...resultado,

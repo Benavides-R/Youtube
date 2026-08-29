@@ -36,6 +36,13 @@ if (imagenes.length === 0) {
 
 const guionData = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
 const primeraImagen = path.join(IMAGENES_DIR, imagenes[0]);
+const esShort = guionData.formato === "vertical";
+const ANCHO = esShort ? 720 : 1280;
+const ALTO = esShort ? 1280 : 720;
+const CAJA_Y = esShort ? Math.round(ALTO * 0.68) : 470;
+const CAJA_ALTO = esShort ? Math.round(ALTO * 0.22) : 250;
+const TEXTO_Y = CAJA_Y + Math.round(CAJA_ALTO * 0.15);
+const TAMANO_FUENTE = esShort ? 55 : 70;
 
 // Fuente según sistema operativo
 const fontPathRaw =
@@ -62,9 +69,9 @@ fs.writeFileSync(TEXTO_TEMP_PATH, `${linea1}\n${linea2}`, "utf-8");
 const textoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
 const filtro = [
-  "scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720",
-  "drawbox=x=0:y=470:w=1280:h=250:color=black@0.55:t=fill",
-  `drawtext=fontfile='${fontPath}':textfile='${textoPathEscapado}':fontcolor=white:fontsize=70:x=(w-text_w)/2:y=500:line_spacing=15:borderw=3:bordercolor=black@0.8`,
+  `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
+  `drawbox=x=0:y=${CAJA_Y}:w=${ANCHO}:h=${CAJA_ALTO}:color=black@0.55:t=fill`,
+  `drawtext=fontfile='${fontPath}':textfile='${textoPathEscapado}':fontcolor=white:fontsize=${TAMANO_FUENTE}:x=(w-text_w)/2:y=${TEXTO_Y}:line_spacing=15:borderw=3:bordercolor=black@0.8`,
 ].join(",");
 
 const cmd = `ffmpeg -y -i "${primeraImagen}" -vf "${filtro}" "${OUTPUT_PATH}"`;
