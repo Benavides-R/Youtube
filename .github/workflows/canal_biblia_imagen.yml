@@ -1,0 +1,62 @@
+name: Canal Bíblico - Tarjeta de Versículo
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "15 16 * * *" # 11:15am hora Colombia — no choca con ningún otro horario
+  workflow_dispatch:
+
+jobs:
+  generar_y_publicar_tarjeta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar FFmpeg y fuentes
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Generar el versículo del día
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generar_cita_biblica.js
+
+      - name: Guardar historial de temas
+        continue-on-error: true
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add historial/
+          git commit -m "Actualizar historial de citas bíblicas" || echo "Sin cambios que guardar"
+          git pull --rebase origin main || true
+          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
+
+      - name: Generar la tarjeta visual
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/generar_tarjeta_biblica.js
+
+      - name: Subir a Facebook
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_BIBLIA }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_BIBLIA }}
+        run: node scripts/subir_facebook_imagen.js
+
+      - name: Notificar por Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/notificar_telegram_imagen.js
