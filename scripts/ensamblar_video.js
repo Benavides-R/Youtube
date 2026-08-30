@@ -225,7 +225,9 @@ if (haySubtitulos) {
   const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
   // Alignment=5 (centrado, medio de pantalla) para shorts — más dinámico,
   // estilo TikTok/Reels. Tamaño más grande porque el video es vertical.
-  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':force_style='FontName=Arial,FontSize=34,PrimaryColour=&Hffffff,OutlineColour=&H000000,BorderStyle=1,Outline=3,Bold=1,Alignment=5'"`;
+  // original_size le dice a FFmpeg la resolución real del video, sin esto
+  // el texto se escala mal y sale gigante/descontrolado (bug detectado)
+  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':original_size=${ANCHO}x${ALTO}:force_style='FontName=Arial,FontSize=64,PrimaryColour=&Hffffff,OutlineColour=&H000000,BorderStyle=1,Outline=4,Bold=1,Alignment=5'"`;
 }
 
 const cmdFinal = [
