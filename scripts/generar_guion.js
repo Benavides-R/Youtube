@@ -149,7 +149,7 @@ async function generarGuion() {
         { role: "user", content: userPrompt },
       ],
       temperature: 0.9, // más creatividad, cada video debe sentirse distinto
-      max_completion_tokens: 2200,
+      max_completion_tokens: 3200,
       response_format: { type: "json_object" },
     }),
   });
@@ -226,18 +226,21 @@ async function pulirGuion(guionOriginal) {
 (async () => {
   try {
     let resultado;
-    try {
-      resultado = await generarGuion();
-    } catch (err) {
-      const esLimiteDeTasa = err.message.includes("rate_limit_exceeded");
-      const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
-      if (esLimiteDeTasa || esFaltaDeEspacio) {
-        const espera = esLimiteDeTasa ? 20000 : 2000;
-        console.log(`⚠️  ${esLimiteDeTasa ? "Límite de tasa alcanzado" : "Groq se quedó sin espacio"}, esperando ${espera / 1000}s y reintentando...`);
-        await new Promise((r) => setTimeout(r, espera));
+    const MAX_INTENTOS = 3;
+    for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
+      try {
         resultado = await generarGuion();
-      } else {
-        throw err;
+        break;
+      } catch (err) {
+        const esLimiteDeTasa = err.message.includes("rate_limit_exceeded");
+        const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
+        if ((esLimiteDeTasa || esFaltaDeEspacio) && intento < MAX_INTENTOS) {
+          const espera = esLimiteDeTasa ? 20000 : 3000 * intento;
+          console.log(`⚠️  Intento ${intento} falló (${esLimiteDeTasa ? "límite de tasa" : "sin espacio"}), esperando ${espera / 1000}s y reintentando...`);
+          await new Promise((r) => setTimeout(r, espera));
+        } else {
+          throw err;
+        }
       }
     }
 

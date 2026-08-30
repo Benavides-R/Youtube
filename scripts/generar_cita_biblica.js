@@ -82,7 +82,7 @@ async function generarCita() {
         { role: "user", content: `Tema: ${temaElegido}` },
       ],
       temperature: 0.8,
-      max_completion_tokens: 800,
+      max_completion_tokens: 1200,
       response_format: { type: "json_object" },
     }),
   });
@@ -104,7 +104,24 @@ async function generarCita() {
 (async () => {
   try {
     console.log(`🎯 Tema elegido: ${temaElegido}`);
-    let resultado = await generarCita();
+    let resultado;
+    const MAX_INTENTOS = 3;
+    for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
+      try {
+        resultado = await generarCita();
+        break;
+      } catch (err) {
+        const esLimiteDeTasa = err.message.includes("rate_limit_exceeded");
+        const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
+        if ((esLimiteDeTasa || esFaltaDeEspacio) && intento < MAX_INTENTOS) {
+          const espera = esLimiteDeTasa ? 20000 : 3000 * intento;
+          console.log(`⚠️  Intento ${intento} falló, esperando ${espera / 1000}s y reintentando...`);
+          await new Promise((r) => setTimeout(r, espera));
+        } else {
+          throw err;
+        }
+      }
+    }
 
     if (ultimasReferencias.includes(resultado.referencia)) {
       console.log(`⚠️  Repitió una referencia reciente (${resultado.referencia}), reintentando...`);

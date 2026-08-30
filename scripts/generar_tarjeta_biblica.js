@@ -41,7 +41,8 @@ const ALTO = 1350; // formato 4:5, buen rendimiento en Facebook/Instagram
 // ------------------------------------------------------------
 async function buscarYDescargarFondo() {
   const query = cita.palabras_clave_imagen[0];
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5&orientation=portrait`;
+  const paginaAlAzar = Math.floor(Math.random() * 5) + 1;
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5&orientation=portrait&page=${paginaAlAzar}`;
   const response = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
   const data = await response.json();
 
