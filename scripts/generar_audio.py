@@ -34,7 +34,6 @@ ASS_PATH = os.path.join(BASE_DIR, "output", "subtitulos.ass")
 
 RATE = "-12%"
 PITCH = "+0Hz"
-PALABRAS_POR_LINEA = 4
 
 
 def segundos_a_timestamp_ass(segundos: float) -> str:
@@ -46,11 +45,12 @@ def segundos_a_timestamp_ass(segundos: float) -> str:
     return f"{horas}:{minutos:02d}:{segs:02d}.{centesimas:02d}"
 
 
-def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int) -> str:
+def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion: int) -> str:
     """
     El encabezado .ass declara la resolución (PlayResX/PlayResY) de forma
     explícita — esto es lo que evita el bug de texto gigante que teníamos
     con .srt (que no declara resolución y a veces se escala mal).
+    alineacion: 5 = centrado en pantalla (shorts), 2 = abajo centrado (largos)
     """
     import platform
     fuente = "Arial" if platform.system() == "Windows" else "DejaVu Sans"
@@ -63,22 +63,22 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{fuente},{tamano_fuente},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,5,10,10,10,1
+Style: Default,{fuente},{tamano_fuente},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,{alineacion},10,10,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
 
-def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, tamano_fuente: int) -> str:
+def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, tamano_fuente: int, palabras_por_linea: int, alineacion: int) -> str:
     """
     palabras_con_tiempo: lista de dicts con 'text', 'inicio', 'fin' (en segundos)
     Agrupa palabras en líneas cortas y arma el archivo .ass completo.
     """
-    contenido = generar_encabezado_ass(ancho, alto, tamano_fuente)
+    contenido = generar_encabezado_ass(ancho, alto, tamano_fuente, alineacion)
 
-    for i in range(0, len(palabras_con_tiempo), PALABRAS_POR_LINEA):
-        grupo = palabras_con_tiempo[i : i + PALABRAS_POR_LINEA]
+    for i in range(0, len(palabras_con_tiempo), palabras_por_linea):
+        grupo = palabras_con_tiempo[i : i + palabras_por_linea]
         if not grupo:
             continue
         inicio = segundos_a_timestamp_ass(grupo[0]["inicio"])
@@ -124,12 +124,6 @@ async def generar_audio():
     print(f"✅ Audio generado: {AUDIO_PATH}")
     print(f"📦 Tamaño: {tamaño_mb:.2f} MB")
 
-    # Solo generamos subtítulos para shorts (en videos largos quedan
-    # desactivados en ensamblar_video.js de todas formas)
-    if not es_short:
-        print("ℹ️  Video horizontal largo — no se generan subtítulos")
-        return
-
     print("👂 Transcribiendo el audio real con Whisper para timing exacto...")
     try:
         from faster_whisper import WhisperModel
@@ -149,9 +143,13 @@ async def generar_audio():
 
         ANCHO = 1080 if es_short else 1920
         ALTO = 1920 if es_short else 1080
-        TAMANO_FUENTE = 64 if es_short else 40
+        TAMANO_FUENTE = 64 if es_short else 46
+        PALABRAS_POR_LINEA = 4 if es_short else 7
+        ALINEACION = 5 if es_short else 2  # 5=centrado (shorts), 2=abajo centrado (largos)
 
-        contenido_ass = generar_ass_desde_palabras(palabras_con_tiempo, ANCHO, ALTO, TAMANO_FUENTE)
+        contenido_ass = generar_ass_desde_palabras(
+            palabras_con_tiempo, ANCHO, ALTO, TAMANO_FUENTE, PALABRAS_POR_LINEA, ALINEACION
+        )
         with open(ASS_PATH, "w", encoding="utf-8") as f:
             f.write(contenido_ass)
         print(f"✅ Subtítulos generados con timing real: {ASS_PATH}")

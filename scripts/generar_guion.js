@@ -105,7 +105,7 @@ const instruccionesFormato = esShort
 const promo = canalConfig.promocion;
 const instruccionPromocion =
   promo && promo.activa
-    ? `\nAL FINAL del guion (después del cierre normal), agrega 1-2 frases cortas conectando el tema del video con una mención a que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Estilo: ${promo.estilo}. IMPORTANTE: varía completamente cómo lo dices cada vez, que no suene repetitivo entre videos, y que se sienta conectado al tema específico de este video, no genérico. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
+    ? `\nOBLIGATORIO, sin excepción, en TODOS los guiones que generes: al final (después del cierre normal), agrega 1-2 frases cortas conectando el tema del video con una mención a que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Esta parte NUNCA se omite, es un requisito fijo del formato, no opcional. Estilo: ${promo.estilo}. Varía completamente cómo lo dices cada vez (que no suene repetitivo entre videos, y que se sienta conectado al tema específico de este video), pero SIEMPRE debe estar presente. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
     : "";
 
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.

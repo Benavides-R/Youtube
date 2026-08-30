@@ -45,7 +45,7 @@ const VOLUMEN_MUSICA_DB = "-28dB";
 // Activos solo en shorts: en videos largos el timing aproximado
 // (sin datos exactos de la voz) se desincroniza notoriamente por
 // el error acumulado; en un short de 45s el margen es mínimo.
-const SUBTITULOS_ACTIVADOS = esShort;
+const SUBTITULOS_ACTIVADOS = true;
 
 // Cuánto se superponen 2 imágenes durante la transición
 const DURACION_TRANSICION = esShort ? 0.3 : 0.6;
