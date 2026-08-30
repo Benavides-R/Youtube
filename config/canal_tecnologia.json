@@ -27,5 +27,10 @@
     "el futuro de los celulares: qué viene y sorprende",
     "datos curiosos sobre las redes 5G y el internet móvil",
     "por qué algunas apps piden permisos que no necesitan"
-  ]
+  ],
+  "promocion": {
+    "activa": true,
+    "link_telegram": "https://t.me/Benatechs_Descuentos",
+    "estilo": "cierre natural y ligeramente vendedor/sarcástico, como si se te hubiera ocurrido de repente por el tema del video (ej: 'y hablando de esto, la verdad me dieron ganas de comprar uno...'), conectando el dato del video con la idea de que en tu canal de ofertas de Telegram se consiguen gangas de tecnología. Debe sonar espontáneo, NUNCA como anuncio pegado o forzado"
+  }
 }

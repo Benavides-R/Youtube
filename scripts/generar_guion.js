@@ -102,9 +102,15 @@ const instruccionesFormato = esShort
 - Cierre muy breve, casi inmediato después del dato principal`
   : `Este es un video largo. Desarrolla el tema con ejemplos y contexto suficiente.`;
 
+const promo = canalConfig.promocion;
+const instruccionPromocion =
+  promo && promo.activa
+    ? `\nAL FINAL del guion (después del cierre normal), agrega 1-2 frases cortas conectando el tema del video con una mención a que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Estilo: ${promo.estilo}. IMPORTANTE: varía completamente cómo lo dices cada vez, que no suene repetitivo entre videos, y que se sienta conectado al tema específico de este video, no genérico. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
+    : "";
+
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
 Escribes guiones para narración en voz colombiana, estilo: ${canalConfig.estilo}.
-${instruccionesFormato}
+${instruccionesFormato}${instruccionPromocion}
 Tu guion debe:
 - Enganchar en la primera frase (sin saludos tipo "hola a todos"). VARÍA el tipo de gancho cada vez: a veces una pregunta directa, a veces un dato impactante, a veces una afirmación polémica, a veces una historia corta — NUNCA uses la misma fórmula de apertura en cada guion
 - Ir directo al contenido, sin relleno
@@ -117,7 +123,7 @@ Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown,
 {
   "titulo": "título llamativo, máx 60 caracteres, con gancho${esShort ? ", incluye la palabra Shorts o #Shorts al final" : ""}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "descripción para YouTube, 2-3 líneas, con contexto y llamado a la acción${esShort ? ", incluye #Shorts" : ""}",
+  "descripcion": "descripción para YouTube/Facebook escrita en primera persona, como si TÚ (el dueño del canal) la escribieras a mano, tono natural y conversacional, NO genérica ni de plantilla, 2-4 líneas conectadas específicamente al tema del video (no frases que sirvan para cualquier video)${esShort ? ". Incluye #Shorts entre los hashtags" : ""}${promo && promo.activa ? `. Al final, de forma SUTIL (no como anuncio), menciona el canal de ofertas: '🔥 ${promo.link_telegram}'` : ""}. Cierra con 4-6 hashtags relacionados específicamente al tema del video (no genéricos como #video o #viral, deben ser sobre el contenido real, ej: si el tema es sobre baterías de celular, usar #Android #TipsAndroid #Bateria #Tecnologia, etc.)",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
