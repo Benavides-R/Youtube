@@ -103,9 +103,14 @@ const instruccionesFormato = esShort
   : `Este es un video largo. Desarrolla el tema con ejemplos y contexto suficiente.`;
 
 const promo = canalConfig.promocion;
-const instruccionPromocion =
-  promo && promo.activa
-    ? `\nOBLIGATORIO, sin excepción, en TODOS los guiones que generes: al final (después del cierre normal), agrega 1-2 frases cortas conectando el tema del video con una mención a que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Esta parte NUNCA se omite, es un requisito fijo del formato, no opcional. Estilo: ${promo.estilo}. Varía completamente cómo lo dices cada vez (que no suene repetitivo entre videos, y que se sienta conectado al tema específico de este video), pero SIEMPRE debe estar presente. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
+// Antes esto era obligatorio en el 100% de los videos ("NUNCA se omite"),
+// lo cual hacía que el guion sonara a anuncio forzado en varios videos
+// seguidos. Ahora aparece en 1 de cada 3 videos aprox., y solo cuando el
+// tema realmente se presta para conectar de forma natural -- se siente
+// más como un comentario espontáneo que como publicidad repetitiva.
+const incluirPromoEsteVideo = promo && promo.activa && Math.random() < 0.35;
+const instruccionPromocion = incluirPromoEsteVideo
+    ? `\nSi el tema del video se presta de forma natural, puedes agregar (opcional, no forzado) 1 frase muy corta al final conectando el tema con que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Estilo: ${promo.estilo}. Debe sentirse como un comentario espontáneo de pasada, NO como un anuncio -- si no encaja bien con el tema de este video en particular, mejor omítela por completo. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
     : "";
 
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
@@ -123,7 +128,7 @@ Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown,
 {
   "titulo": "título llamativo, máx 60 caracteres, con gancho${esShort ? ", incluye la palabra Shorts o #Shorts al final" : ""}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "descripción para YouTube/Facebook escrita en primera persona, como si TÚ (el dueño del canal) la escribieras a mano, tono natural y conversacional, NO genérica ni de plantilla, 2-4 líneas conectadas específicamente al tema del video (no frases que sirvan para cualquier video)${esShort ? ". Incluye #Shorts entre los hashtags" : ""}${promo && promo.activa ? `. Al final, de forma SUTIL (no como anuncio), menciona el canal de ofertas: '🔥 ${promo.link_telegram}'` : ""}. Cierra con 4-6 hashtags relacionados específicamente al tema del video (no genéricos como #video o #viral, deben ser sobre el contenido real, ej: si el tema es sobre baterías de celular, usar #Android #TipsAndroid #Bateria #Tecnologia, etc.)",
+  "descripcion": "descripción para YouTube/Facebook escrita en primera persona, como si TÚ (el dueño del canal) la escribieras a mano, tono natural y conversacional, NO genérica ni de plantilla, 2-4 líneas conectadas específicamente al tema del video (no frases que sirvan para cualquier video)${esShort ? ". Incluye #Shorts entre los hashtags" : ""}. NO incluyas ningún link ni menciones de 'link en la descripción', 'link en bio' ni nada que empuje a salir de la plataforma -- Facebook y YouTube penalizan el alcance de publicaciones que intentan sacar al usuario, así que la descripción debe hablar SOLO del contenido del video. Cierra con SOLO 2-3 hashtags relevantes al tema específico (no genéricos como #video o #viral, ej: si el tema es sobre baterías de celular, usar #Android #Bateria) -- más de 3 hashtags también se penaliza, así que no te pases de esa cantidad",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
