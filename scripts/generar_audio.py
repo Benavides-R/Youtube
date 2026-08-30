@@ -83,17 +83,31 @@ def obtener_duracion_audio(ruta_audio: str) -> float:
 def generar_srt_aproximado(texto: str, duracion_total_seg: float):
     """
     Respaldo: si la voz no da timing exacto, repartimos el texto
-    en líneas y le asignamos tiempo proporcional a la cantidad de
-    palabras de cada línea (funciona bien porque el ritmo de habla
-    de edge-tts es bastante constante).
+    en líneas y le asignamos tiempo proporcional a un "peso" de
+    cada palabra: los números pesan más (se leen más largo de lo
+    que sus caracteres sugieren, ej. "2024" se dice "dos mil
+    veinticuatro"), y las palabras que terminan en coma o punto
+    agregan una pequeña pausa extra — así el desfase en textos
+    con números o puntuación baja bastante.
     """
+
+    def peso_palabra(palabra):
+        peso = 0.0
+        for c in palabra:
+            if c.isdigit():
+                peso += 3.0  # los números se leen mucho más largo que su cantidad de caracteres
+            elif c.isalpha():
+                peso += 1.0
+        if palabra.endswith((",", ";")):
+            peso += 2.0  # pausa corta
+        elif palabra.endswith((".", "!", "?", ":")):
+            peso += 4.0  # pausa más larga
+        return max(peso, 1.0)  # nunca cero, para que toda palabra ocupe algo de tiempo
+
     palabras = texto.split()
     total_palabras = len(palabras)
-    # Repartimos el tiempo según cuántas LETRAS tiene cada palabra (no
-    # cuántas palabras hay) — así una palabra larga ocupa más tiempo que
-    # una corta, y el desfase acumulado a lo largo del video es mucho menor.
-    total_letras = sum(len(p) for p in palabras)
-    segundos_por_letra = duracion_total_seg / total_letras
+    total_peso = sum(peso_palabra(p) for p in palabras)
+    segundos_por_unidad = duracion_total_seg / total_peso
 
     lineas = []
     numero = 1
@@ -101,8 +115,8 @@ def generar_srt_aproximado(texto: str, duracion_total_seg: float):
 
     for i in range(0, total_palabras, PALABRAS_POR_LINEA):
         grupo = palabras[i : i + PALABRAS_POR_LINEA]
-        letras_grupo = sum(len(p) for p in grupo)
-        duracion_linea = letras_grupo * segundos_por_letra
+        peso_grupo = sum(peso_palabra(p) for p in grupo)
+        duracion_linea = peso_grupo * segundos_por_unidad
         inicio = tiempo_actual
         fin = tiempo_actual + duracion_linea
         texto_linea = " ".join(grupo)
