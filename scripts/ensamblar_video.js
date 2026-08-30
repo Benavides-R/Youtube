@@ -21,7 +21,7 @@ const { execSync } = require("child_process");
 const BASE_DIR = path.join(__dirname, "..");
 const AUDIO_PATH = path.join(BASE_DIR, "output", "audio.mp3");
 const IMAGENES_DIR = path.join(BASE_DIR, "output", "imagenes");
-const SRT_PATH = path.join(BASE_DIR, "output", "subtitulos.srt");
+const SRT_PATH = path.join(BASE_DIR, "output", "subtitulos.ass");
 const MUSICA_DIR = path.join(BASE_DIR, "assets", "musica");
 const OUTPUT_PATH = path.join(BASE_DIR, "output", "video_final.mp4");
 const TEMP_DIR = path.join(BASE_DIR, "output", "_temp");
@@ -223,11 +223,10 @@ console.log("🎙️  Agregando audio final...");
 let filtroSubtitulos = "";
 if (haySubtitulos) {
   const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
-  // Alignment=5 (centrado, medio de pantalla) para shorts — más dinámico,
-  // estilo TikTok/Reels. Tamaño más grande porque el video es vertical.
-  // original_size le dice a FFmpeg la resolución real del video, sin esto
-  // el texto se escala mal y sale gigante/descontrolado (bug detectado)
-  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':original_size=${ANCHO}x${ALTO}:force_style='FontName=Arial,FontSize=64,PrimaryColour=&Hffffff,OutlineColour=&H000000,BorderStyle=1,Outline=4,Bold=1,Alignment=5'"`;
+  // El archivo .ass ya trae su propia resolución (PlayResX/PlayResY) y
+  // estilo declarados en el encabezado — no necesita force_style ni
+  // original_size, eso es justo lo que evita el bug de tamaño anterior.
+  filtroSubtitulos = `-vf "subtitles='${srtEscapado}'"`;
 }
 
 const cmdFinal = [

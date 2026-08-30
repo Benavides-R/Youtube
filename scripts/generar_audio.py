@@ -2,32 +2,27 @@
 generar_audio.py
 ------------------------------------------------------------
 Lee output/guion.json y convierte el campo "guion" a audio
-usando edge-tts. Además genera output/subtitulos.srt.
-
-Nota importante: no todas las voces de edge-tts entregan
-información exacta de tiempo por palabra (WordBoundary) — las
-voces es-CO, por ejemplo, no la dan. Cuando eso pasa, este
-script calcula los subtítulos de forma APROXIMADA, repartiendo
-el texto en partes según la duración total del audio (sigue
-quedando bien sincronizado en la práctica, solo no es exacto
-al milisegundo).
+usando edge-tts. Genera output/subtitulos.ass con el tiempo
+EXACTO de cada palabra, sacado escuchando el audio real con
+Whisper (no es una estimación por conteo de palabras — es el
+timing real del sonido, mucho más preciso).
 
 Uso:
     python scripts/generar_audio.py
 
 Requiere:
-    pip install edge-tts
+    pip install edge-tts faster-whisper
 
 Output:
     output/audio.mp3
-    output/subtitulos.srt
+    output/subtitulos.ass
 ------------------------------------------------------------
 """
 
 import asyncio
 import json
 import os
-import subprocess
+import re
 import sys
 
 import edge_tts
@@ -35,99 +30,63 @@ import edge_tts
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GUION_PATH = os.path.join(BASE_DIR, "output", "guion.json")
 AUDIO_PATH = os.path.join(BASE_DIR, "output", "audio.mp3")
-SRT_PATH = os.path.join(BASE_DIR, "output", "subtitulos.srt")
+ASS_PATH = os.path.join(BASE_DIR, "output", "subtitulos.ass")
 
 RATE = "-12%"
 PITCH = "+0Hz"
 PALABRAS_POR_LINEA = 4
 
 
-def segundos_a_timestamp_srt(segundos: float) -> str:
+def segundos_a_timestamp_ass(segundos: float) -> str:
+    """Formato ASS: H:MM:SS.cc (centésimas, no milisegundos)"""
     horas = int(segundos // 3600)
     minutos = int((segundos % 3600) // 60)
     segs = int(segundos % 60)
-    milisegs = int((segundos - int(segundos)) * 1000)
-    return f"{horas:02d}:{minutos:02d}:{segs:02d},{milisegs:03d}"
+    centesimas = int((segundos - int(segundos)) * 100)
+    return f"{horas}:{minutos:02d}:{segs:02d}.{centesimas:02d}"
 
 
-def generar_srt_exacto(palabras_con_tiempo):
-    """Usa el timing real que dio edge-tts (cuando la voz lo soporta)"""
-    lineas = []
-    numero = 1
+def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int) -> str:
+    """
+    El encabezado .ass declara la resolución (PlayResX/PlayResY) de forma
+    explícita — esto es lo que evita el bug de texto gigante que teníamos
+    con .srt (que no declara resolución y a veces se escala mal).
+    """
+    import platform
+    fuente = "Arial" if platform.system() == "Windows" else "DejaVu Sans"
+
+    return f"""[Script Info]
+ScriptType: v4.00+
+PlayResX: {ancho}
+PlayResY: {alto}
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,{fuente},{tamano_fuente},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,5,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+
+
+def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, tamano_fuente: int) -> str:
+    """
+    palabras_con_tiempo: lista de dicts con 'text', 'inicio', 'fin' (en segundos)
+    Agrupa palabras en líneas cortas y arma el archivo .ass completo.
+    """
+    contenido = generar_encabezado_ass(ancho, alto, tamano_fuente)
+
     for i in range(0, len(palabras_con_tiempo), PALABRAS_POR_LINEA):
         grupo = palabras_con_tiempo[i : i + PALABRAS_POR_LINEA]
         if not grupo:
             continue
-        inicio_seg = grupo[0]["offset"] / 10_000_000
-        fin_seg = (grupo[-1]["offset"] + grupo[-1]["duration"]) / 10_000_000
+        inicio = segundos_a_timestamp_ass(grupo[0]["inicio"])
+        fin = segundos_a_timestamp_ass(grupo[-1]["fin"])
         texto = " ".join(p["text"] for p in grupo)
-        lineas.append(
-            f"{numero}\n{segundos_a_timestamp_srt(inicio_seg)} --> {segundos_a_timestamp_srt(fin_seg)}\n{texto}\n"
-        )
-        numero += 1
-    return "\n".join(lineas)
+        contenido += f"Dialogue: 0,{inicio},{fin},Default,,0,0,0,,{texto}\n"
 
-
-def obtener_duracion_audio(ruta_audio: str) -> float:
-    salida = subprocess.check_output(
-        [
-            "ffprobe", "-v", "error",
-            "-show_entries", "format=duration",
-            "-of", "default=noprint_wrappers=1:nokey=1",
-            ruta_audio,
-        ]
-    )
-    return float(salida.decode().strip())
-
-
-def generar_srt_aproximado(texto: str, duracion_total_seg: float):
-    """
-    Respaldo: si la voz no da timing exacto, repartimos el texto
-    en líneas y le asignamos tiempo proporcional a un "peso" de
-    cada palabra: los números pesan más (se leen más largo de lo
-    que sus caracteres sugieren, ej. "2024" se dice "dos mil
-    veinticuatro"), y las palabras que terminan en coma o punto
-    agregan una pequeña pausa extra — así el desfase en textos
-    con números o puntuación baja bastante.
-    """
-
-    def peso_palabra(palabra):
-        peso = 0.0
-        for c in palabra:
-            if c.isdigit():
-                peso += 3.0  # los números se leen mucho más largo que su cantidad de caracteres
-            elif c.isalpha():
-                peso += 1.0
-        if palabra.endswith((",", ";")):
-            peso += 2.0  # pausa corta
-        elif palabra.endswith((".", "!", "?", ":")):
-            peso += 4.0  # pausa más larga
-        return max(peso, 1.0)  # nunca cero, para que toda palabra ocupe algo de tiempo
-
-    palabras = texto.split()
-    total_palabras = len(palabras)
-    total_peso = sum(peso_palabra(p) for p in palabras)
-    segundos_por_unidad = duracion_total_seg / total_peso
-
-    lineas = []
-    numero = 1
-    tiempo_actual = 0.0
-
-    for i in range(0, total_palabras, PALABRAS_POR_LINEA):
-        grupo = palabras[i : i + PALABRAS_POR_LINEA]
-        peso_grupo = sum(peso_palabra(p) for p in grupo)
-        duracion_linea = peso_grupo * segundos_por_unidad
-        inicio = tiempo_actual
-        fin = tiempo_actual + duracion_linea
-        texto_linea = " ".join(grupo)
-
-        lineas.append(
-            f"{numero}\n{segundos_a_timestamp_srt(inicio)} --> {segundos_a_timestamp_srt(fin)}\n{texto_linea}\n"
-        )
-        tiempo_actual = fin
-        numero += 1
-
-    return "\n".join(lineas)
+    return contenido
 
 
 async def generar_audio():
@@ -140,6 +99,8 @@ async def generar_audio():
 
     texto = data.get("guion")
     voz = data.get("voz", "es-CO-GonzaloNeural")
+    formato = data.get("formato", "horizontal")
+    es_short = formato == "vertical"
 
     if not texto:
         print("❌ El guion.json no tiene el campo 'guion'")
@@ -147,7 +108,6 @@ async def generar_audio():
 
     # Limpiamos símbolos que la IA a veces mete (markdown) y que la voz
     # leería literal ("asterisco", "numeral", etc.)
-    import re
     texto = re.sub(r"[*_#`~]", "", texto)
     texto = re.sub(r"\s+", " ", texto).strip()
 
@@ -155,32 +115,49 @@ async def generar_audio():
     print(f"📝 Texto: {len(texto.split())} palabras")
 
     communicate = edge_tts.Communicate(texto, voz, rate=RATE, pitch=PITCH)
-
-    palabras_con_tiempo = []
     with open(AUDIO_PATH, "wb") as audio_file:
         async for chunk in communicate.stream():
             if chunk["type"] == "audio":
                 audio_file.write(chunk["data"])
-            elif chunk["type"] == "WordBoundary":
-                palabras_con_tiempo.append(
-                    {"text": chunk["text"], "offset": chunk["offset"], "duration": chunk["duration"]}
-                )
 
     tamaño_mb = os.path.getsize(AUDIO_PATH) / (1024 * 1024)
     print(f"✅ Audio generado: {AUDIO_PATH}")
     print(f"📦 Tamaño: {tamaño_mb:.2f} MB")
 
-    if palabras_con_tiempo:
-        print("📝 Generando subtítulos con timing exacto...")
-        srt_contenido = generar_srt_exacto(palabras_con_tiempo)
-    else:
-        print("📝 Esta voz no da timing exacto — generando subtítulos aproximados...")
-        duracion = obtener_duracion_audio(AUDIO_PATH)
-        srt_contenido = generar_srt_aproximado(texto, duracion)
+    # Solo generamos subtítulos para shorts (en videos largos quedan
+    # desactivados en ensamblar_video.js de todas formas)
+    if not es_short:
+        print("ℹ️  Video horizontal largo — no se generan subtítulos")
+        return
 
-    with open(SRT_PATH, "w", encoding="utf-8") as f:
-        f.write(srt_contenido)
-    print(f"✅ Subtítulos generados: {SRT_PATH}")
+    print("👂 Transcribiendo el audio real con Whisper para timing exacto...")
+    try:
+        from faster_whisper import WhisperModel
+
+        modelo = WhisperModel("base", device="cpu", compute_type="int8")
+        segmentos, _ = modelo.transcribe(AUDIO_PATH, language="es", word_timestamps=True)
+
+        palabras_con_tiempo = []
+        for segmento in segmentos:
+            for palabra in segmento.words:
+                palabras_con_tiempo.append(
+                    {"text": palabra.word.strip(), "inicio": palabra.start, "fin": palabra.end}
+                )
+
+        if not palabras_con_tiempo:
+            raise ValueError("Whisper no devolvió palabras")
+
+        ANCHO = 1080 if es_short else 1920
+        ALTO = 1920 if es_short else 1080
+        TAMANO_FUENTE = 64 if es_short else 40
+
+        contenido_ass = generar_ass_desde_palabras(palabras_con_tiempo, ANCHO, ALTO, TAMANO_FUENTE)
+        with open(ASS_PATH, "w", encoding="utf-8") as f:
+            f.write(contenido_ass)
+        print(f"✅ Subtítulos generados con timing real: {ASS_PATH}")
+
+    except Exception as err:
+        print(f"⚠️  No se pudieron generar subtítulos con Whisper ({err}). El video se genera igual, sin subtítulos.")
 
 
 if __name__ == "__main__":
