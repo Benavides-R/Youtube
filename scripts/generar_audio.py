@@ -39,7 +39,7 @@ SRT_PATH = os.path.join(BASE_DIR, "output", "subtitulos.srt")
 
 RATE = "-12%"
 PITCH = "+0Hz"
-PALABRAS_POR_LINEA = 7
+PALABRAS_POR_LINEA = 4
 
 
 def segundos_a_timestamp_srt(segundos: float) -> str:

@@ -42,9 +42,10 @@ const ALTO = esShort ? 1920 : 1080;
 const FPS = 30;
 const VOLUMEN_MUSICA_DB = "-28dB";
 
-// Desactivado por decisión del usuario: el timing aproximado (sin datos
-// exactos de la voz) a veces se desincroniza. Para reactivarlo, cambia a true.
-const SUBTITULOS_ACTIVADOS = false;
+// Activos solo en shorts: en videos largos el timing aproximado
+// (sin datos exactos de la voz) se desincroniza notoriamente por
+// el error acumulado; en un short de 45s el margen es mínimo.
+const SUBTITULOS_ACTIVADOS = esShort;
 
 // Cuánto se superponen 2 imágenes durante la transición
 const DURACION_TRANSICION = esShort ? 0.3 : 0.6;
@@ -222,7 +223,9 @@ console.log("🎙️  Agregando audio final...");
 let filtroSubtitulos = "";
 if (haySubtitulos) {
   const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
-  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':force_style='FontName=Arial,FontSize=22,PrimaryColour=&Hffffff,OutlineColour=&H000000,BorderStyle=1,Outline=3,Alignment=2,MarginV=70'"`;
+  // Alignment=5 (centrado, medio de pantalla) para shorts — más dinámico,
+  // estilo TikTok/Reels. Tamaño más grande porque el video es vertical.
+  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':force_style='FontName=Arial,FontSize=34,PrimaryColour=&Hffffff,OutlineColour=&H000000,BorderStyle=1,Outline=3,Bold=1,Alignment=5'"`;
 }
 
 const cmdFinal = [
