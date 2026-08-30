@@ -82,6 +82,13 @@ jobs:
       - name: Subir a YouTube
         run: node scripts/subir_youtube.js
 
+      - name: Subir a Facebook Reels
+        continue-on-error: true
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_TECNOLOGIA }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_TECNOLOGIA }}
+        run: node scripts/subir_facebook.js
+
       - name: Notificar por Telegram
         if: always()
         env:
