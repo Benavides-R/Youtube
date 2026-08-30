@@ -236,7 +236,21 @@ async function pulirGuion(guionOriginal) {
     }
 
     console.log("✏️  Puliendo redacción del guion...");
-    resultado.guion = await pulirGuion(resultado.guion);
+    const guionOriginal = resultado.guion;
+    const guionPulido = await pulirGuion(guionOriginal);
+
+    const palabrasOriginal = guionOriginal.split(/\s+/).length;
+    const palabrasPulido = guionPulido.trim().split(/\s+/).length;
+
+    // Si la versión pulida quedó vacía o perdió más de la mitad del
+    // contenido, algo salió mal (respuesta rota de Groq) — nos quedamos
+    // con el guion original en vez de arruinar el video
+    if (guionPulido.trim().length === 0 || palabrasPulido < palabrasOriginal * 0.5) {
+      console.log("⚠️  La versión pulida se ve incompleta, se usa el guion original sin pulir");
+      resultado.guion = guionOriginal;
+    } else {
+      resultado.guion = guionPulido;
+    }
 
     const outputDir = path.join(__dirname, "..", "output");
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
