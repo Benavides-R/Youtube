@@ -24,6 +24,7 @@ if (!GROQ_API_KEY) {
 const BASE_DIR = path.join(__dirname, "..");
 const CONFIG_PATH = path.join(BASE_DIR, "config", "canal_biblia_imagen.json");
 const HISTORIAL_PATH = path.join(BASE_DIR, "historial", "canal_biblia_imagen.json");
+const HISTORIAL_VERSICULOS_PATH = path.join(BASE_DIR, "historial", "canal_biblia_imagen_versiculos.json");
 
 const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
 
@@ -41,7 +42,24 @@ if (disponibles.length === 0) disponibles = config.temas;
 const temaElegido = disponibles[Math.floor(Math.random() * disponibles.length)];
 const nuevoHistorial = historial.includes(temaElegido) ? historial : [...historial, temaElegido];
 
+let historialVersiculos = [];
+if (fs.existsSync(HISTORIAL_VERSICULOS_PATH)) {
+  try {
+    historialVersiculos = JSON.parse(fs.readFileSync(HISTORIAL_VERSICULOS_PATH, "utf-8"));
+  } catch {
+    historialVersiculos = [];
+  }
+}
+// Solo guardamos las últimas 30 referencias, para no bloquear para siempre
+const ultimasReferencias = historialVersiculos.slice(-30);
+const excluirReferencias =
+  ultimasReferencias.length > 0
+    ? `NO uses ninguna de estas referencias que ya se usaron recientemente: ${ultimasReferencias.join(", ")}. Elige un versículo distinto a esos.`
+    : "";
+
 const systemPrompt = `Eres un experto en la Biblia que crea contenido para tarjetas de versículo en redes sociales.
+IMPORTANTE sobre el lenguaje: usa una traducción con lenguaje universal/ecuménico (tipo Nueva Versión Internacional o Dios Habla Hoy), usando términos como "Dios", "Señor", "Padre", "Jesús". EVITA el nombre "Jehová" (específico de la traducción Reina-Valera y asociado a una denominación particular) — si el versículo que elegiste lo usa en esa traducción, elige la misma cita pero en una traducción que use "Señor" o "Dios" en su lugar, sin cambiar el significado ni inventar el texto.
+${excluirReferencias}
 Responde ÚNICAMENTE en formato JSON válido, sin markdown, con esta estructura exacta:
 {
   "verso": "el texto EXACTO del versículo bíblico, corto (máx 25 palabras), en español, cita textual real y precisa",
@@ -86,7 +104,16 @@ async function generarCita() {
 (async () => {
   try {
     console.log(`🎯 Tema elegido: ${temaElegido}`);
-    const resultado = await generarCita();
+    let resultado = await generarCita();
+
+    if (ultimasReferencias.includes(resultado.referencia)) {
+      console.log(`⚠️  Repitió una referencia reciente (${resultado.referencia}), reintentando...`);
+      resultado = await generarCita();
+    }
+
+    const nuevoHistorialVersiculos = [...historialVersiculos, resultado.referencia].slice(-30);
+    if (!fs.existsSync(path.dirname(HISTORIAL_VERSICULOS_PATH))) fs.mkdirSync(path.dirname(HISTORIAL_VERSICULOS_PATH), { recursive: true });
+    fs.writeFileSync(HISTORIAL_VERSICULOS_PATH, JSON.stringify(nuevoHistorialVersiculos, null, 2));
 
     if (!fs.existsSync(path.dirname(HISTORIAL_PATH))) fs.mkdirSync(path.dirname(HISTORIAL_PATH), { recursive: true });
     fs.writeFileSync(HISTORIAL_PATH, JSON.stringify(nuevoHistorial, null, 2));
