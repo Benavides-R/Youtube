@@ -61,6 +61,7 @@ async function subirArchivo(uploadUrl, videoId) {
     headers: {
       Authorization: `OAuth ${FB_ACCESS_TOKEN}`,
       "Content-Type": "application/octet-stream",
+      offset: "0",
       file_size: videoBuffer.length.toString(),
     },
     body: videoBuffer,
