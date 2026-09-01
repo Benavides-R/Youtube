@@ -23,18 +23,33 @@ if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
 const BASE_DIR = path.join(__dirname, "..");
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
 const RESULTADO_PATH = path.join(BASE_DIR, "output", "resultado_subida.json");
+const RESULTADO_FB_PATH = path.join(BASE_DIR, "output", "resultado_facebook.json");
 
-// El video_id se guarda en subir_youtube.js (ver ajuste abajo)
 let mensaje;
+const hayResultadoYoutube = fs.existsSync(RESULTADO_PATH);
+const hayResultadoFacebook = fs.existsSync(RESULTADO_FB_PATH);
 
-if (fs.existsSync(RESULTADO_PATH)) {
-  const resultado = JSON.parse(fs.readFileSync(RESULTADO_PATH, "utf-8"));
-  mensaje = `✅ Video subido con éxito\n\n📹 ${resultado.titulo}\n🔗 https://youtube.com/watch?v=${resultado.videoId}\n📢 Canal: ${resultado.canal}\n\n⚠️ Está en PRIVADO, revísalo y publícalo desde YouTube Studio.`;
+if (hayResultadoYoutube || hayResultadoFacebook) {
+  const partes = [];
+
+  if (hayResultadoYoutube) {
+    const r = JSON.parse(fs.readFileSync(RESULTADO_PATH, "utf-8"));
+    partes.push(`✅ YouTube: subido (privado)\n🔗 https://youtube.com/watch?v=${r.videoId}\n📹 ${r.titulo}\n📢 Canal: ${r.canal}`);
+  } else {
+    partes.push("❌ YouTube: falló la subida, revisa el log en GitHub Actions");
+  }
+
+  if (hayResultadoFacebook) {
+    const rf = JSON.parse(fs.readFileSync(RESULTADO_FB_PATH, "utf-8"));
+    partes.push(rf.exito ? "✅ Facebook: publicado" : `❌ Facebook: falló (${rf.error})`);
+  }
+
+  mensaje = partes.join("\n\n");
 } else if (fs.existsSync(GUION_PATH)) {
   const guion = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
-  mensaje = `✅ Video generado: ${guion.titulo}`;
+  mensaje = `⚠️ Se generó el guion ("${guion.titulo}") pero no se completó ninguna subida. Revisa el log en GitHub Actions.`;
 } else {
-  mensaje = "✅ El proceso automático terminó.";
+  mensaje = "❌ El proceso automático terminó sin generar contenido. Revisa el log en GitHub Actions.";
 }
 
 async function enviarMensaje() {

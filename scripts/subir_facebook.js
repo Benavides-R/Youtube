@@ -108,8 +108,17 @@ async function publicarReel(videoId) {
     console.log("🚀 Publicando el Reel...");
     await publicarReel(video_id);
     console.log(`\n✅ Reel publicado en Facebook con éxito (video_id: ${video_id})`);
+
+    fs.writeFileSync(
+      path.join(BASE_DIR, "output", "resultado_facebook.json"),
+      JSON.stringify({ exito: true, video_id }, null, 2)
+    );
   } catch (err) {
     console.error("❌ Error subiendo a Facebook:", err.message);
+    fs.writeFileSync(
+      path.join(BASE_DIR, "output", "resultado_facebook.json"),
+      JSON.stringify({ exito: false, error: err.message }, null, 2)
+    );
     // No detenemos el resto del proceso por esto — el video ya se subió
     // a YouTube de todas formas, Facebook es un extra
     process.exit(0);
