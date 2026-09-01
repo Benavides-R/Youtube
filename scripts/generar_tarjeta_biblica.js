@@ -40,7 +40,11 @@ const ALTO = 1350; // formato 4:5, buen rendimiento en Facebook/Instagram
 // 1. Buscar y descargar una foto de fondo (vertical)
 // ------------------------------------------------------------
 async function buscarYDescargarFondo() {
-  const query = cita.palabras_clave_imagen[0];
+  // Elegimos una palabra clave al azar de la lista, no siempre la primera
+  // (la IA suele repetir sugerencias parecidas — "sunrise", "faith" — en
+  // muchos versículos, esto ayuda a variar la búsqueda de verdad)
+  const opciones = cita.palabras_clave_imagen;
+  const query = opciones[Math.floor(Math.random() * opciones.length)];
   const paginaAlAzar = Math.floor(Math.random() * 5) + 1;
   const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5&orientation=portrait&page=${paginaAlAzar}`;
   const response = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
