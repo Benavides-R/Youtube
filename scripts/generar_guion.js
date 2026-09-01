@@ -103,14 +103,9 @@ const instruccionesFormato = esShort
   : `Este es un video largo. Desarrolla el tema con ejemplos y contexto suficiente.`;
 
 const promo = canalConfig.promocion;
-// Antes esto era obligatorio en el 100% de los videos ("NUNCA se omite"),
-// lo cual hacía que el guion sonara a anuncio forzado en varios videos
-// seguidos. Ahora aparece en 1 de cada 3 videos aprox., y solo cuando el
-// tema realmente se presta para conectar de forma natural -- se siente
-// más como un comentario espontáneo que como publicidad repetitiva.
-const incluirPromoEsteVideo = promo && promo.activa && Math.random() < 0.35;
-const instruccionPromocion = incluirPromoEsteVideo
-    ? `\nSi el tema del video se presta de forma natural, puedes agregar (opcional, no forzado) 1 frase muy corta al final conectando el tema con que en tu canal de ofertas de Telegram se consiguen descuentos de tecnología. Estilo: ${promo.estilo}. Debe sentirse como un comentario espontáneo de pasada, NO como un anuncio -- si no encaja bien con el tema de este video en particular, mejor omítela por completo. NO uses la URL completa (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
+const instruccionPromocion =
+  promo && promo.activa
+    ? `\nCuando conecte de forma natural con el tema (no en todos los videos, solo cuando tenga sentido real), puedes mencionar de forma MUY sutil y casual tu canal de ofertas de tecnología en Telegram — nunca como venta forzada, nunca con tono de anuncio o vendedor. Debe sonar como un comentario espontáneo de pasada, tipo "por cierto, en mi canal de Telegram comparto ofertas así" — sin insistir, sin urgencia, sin palabras tipo "no te lo pierdas" o "aprovecha ya". Si el tema no se presta naturalmente para mencionarlo, mejor NO lo menciones esa vez.`
     : "";
 
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
@@ -128,7 +123,7 @@ Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown,
 {
   "titulo": "título llamativo, máx 60 caracteres, con gancho${esShort ? ", incluye la palabra Shorts o #Shorts al final" : ""}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "descripción para YouTube/Facebook escrita en primera persona, como si TÚ (el dueño del canal) la escribieras a mano, tono natural y conversacional, NO genérica ni de plantilla, 2-4 líneas conectadas específicamente al tema del video (no frases que sirvan para cualquier video)${esShort ? ". Incluye #Shorts entre los hashtags" : ""}. NO incluyas ningún link ni menciones de 'link en la descripción', 'link en bio' ni nada que empuje a salir de la plataforma -- Facebook y YouTube penalizan el alcance de publicaciones que intentan sacar al usuario, así que la descripción debe hablar SOLO del contenido del video. Cierra con SOLO 2-3 hashtags relevantes al tema específico (no genéricos como #video o #viral, ej: si el tema es sobre baterías de celular, usar #Android #Bateria) -- más de 3 hashtags también se penaliza, así que no te pases de esa cantidad",
+  "descripcion": "descripción para YouTube/Facebook escrita en primera persona, como si TÚ (el dueño del canal) la escribieras a mano, tono natural y conversacional, NO genérica ni de plantilla, 2-4 líneas conectadas específicamente al tema del video (no frases que sirvan para cualquier video)${esShort ? ". Incluye #Shorts entre los hashtags" : ""}${promo && promo.activa ? `. Al final, de forma SUTIL (no como anuncio), menciona el canal de ofertas: '🔥 ${promo.link_telegram}'` : ""}. Cierra con 4-6 hashtags relacionados específicamente al tema del video (no genéricos como #video o #viral, deben ser sobre el contenido real, ej: si el tema es sobre baterías de celular, usar #Android #TipsAndroid #Bateria #Tecnologia, etc.)",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
@@ -186,13 +181,19 @@ async function generarGuion() {
 }
 
 // ------------------------------------------------------------
-// 3.5. Segunda pasada: "editor" que pule el guion para que suene
-// más natural en voz alta (corrige frases raras, repeticiones,
-// cosas que un locutor humano jamás diría así). No cambia el
-// contenido ni los datos, solo la redacción.
+// 3.5. Segunda pasada: "editor" que revisa TODO el paquete de
+// texto (guion + título + descripción) buscando errores reales:
+// datos que no tengan sentido, frases raras al leerse en voz
+// alta, gramática, tono genérico de IA. Es una sola llamada,
+// no varias, para no gastar de más el cupo compartido de Groq.
 // ------------------------------------------------------------
-async function pulirGuion(guionOriginal) {
-  const tokensEstimados = Math.min(2200, Math.ceil(guionOriginal.split(/\s+/).length * 2) + 200);
+async function revisarPaqueteCompleto(resultado) {
+  const paquete = {
+    titulo: resultado.titulo,
+    guion: resultado.guion,
+    descripcion: resultado.descripcion,
+  };
+  const tokensEstimados = Math.min(3000, Math.ceil(resultado.guion.split(/\s+/).length * 2.5) + 400);
 
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -205,24 +206,39 @@ async function pulirGuion(guionOriginal) {
       messages: [
         {
           role: "system",
-          content:
-            "Eres un editor de guiones para narración en voz alta. Te dan un texto y tu trabajo es SOLO pulir la redacción: corregir frases que suenen raras, artificiales o repetitivas cuando se leen en voz alta, mejorar la fluidez natural. NO cambies datos, hechos, ni el largo del texto de forma significativa, NO agregues ni quites contenido, NO uses markdown ni símbolos. Responde ÚNICAMENTE con el texto pulido, sin explicaciones ni comentarios.",
+          content: `Eres un editor de control de calidad para contenido de YouTube. Te dan un JSON con "titulo", "guion" y "descripcion". Revisa y corrige:
+- Errores gramaticales u ortográficos
+- Datos o afirmaciones que no tengan sentido lógico o parezcan inventados/incorrectos
+- Frases que suenen artificiales, repetitivas o "genéricas de IA" cuando se leen en voz alta (el guion se narra, debe sonar natural)
+- Que el título y la descripción realmente correspondan al contenido del guion
+
+NO cambies el largo del guion de forma significativa, NO agregues ni quites el tema principal, NO uses markdown ni símbolos especiales en el guion. Si un campo ya está bien, déjalo igual.
+Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titulo, guion, descripcion), sin texto adicional.`,
         },
-        { role: "user", content: guionOriginal },
+        { role: "user", content: JSON.stringify(paquete) },
       ],
-      temperature: 0.4, // menos creatividad acá, es edición, no reescritura libre
+      temperature: 0.4,
       max_completion_tokens: tokensEstimados,
+      response_format: { type: "json_object" },
     }),
   });
 
   if (!response.ok) {
-    // Si falla la pulida, no es grave: seguimos con el guion original
-    console.log("⚠️  No se pudo pulir el guion, se usa la versión original");
-    return guionOriginal;
+    console.log("⚠️  No se pudo revisar el paquete de texto, se usa la versión original");
+    return resultado;
   }
 
-  const data = await response.json();
-  return data.choices[0].message.content.trim();
+  try {
+    const data = await response.json();
+    const corregido = JSON.parse(data.choices[0].message.content);
+    if (!corregido.titulo || !corregido.guion || !corregido.descripcion) {
+      throw new Error("Respuesta incompleta");
+    }
+    return { ...resultado, titulo: corregido.titulo, guion: corregido.guion, descripcion: corregido.descripcion };
+  } catch (e) {
+    console.log("⚠️  La revisión no devolvió un JSON válido, se usa la versión original");
+    return resultado;
+  }
 }
 
 // ------------------------------------------------------------
@@ -249,21 +265,20 @@ async function pulirGuion(guionOriginal) {
       }
     }
 
-    console.log("✏️  Puliendo redacción del guion...");
+    console.log("✏️  Revisando texto completo (guion, título, descripción)...");
     const guionOriginal = resultado.guion;
-    const guionPulido = await pulirGuion(guionOriginal);
+    const resultadoRevisado = await revisarPaqueteCompleto(resultado);
 
     const palabrasOriginal = guionOriginal.split(/\s+/).length;
-    const palabrasPulido = guionPulido.trim().split(/\s+/).length;
+    const palabrasRevisado = resultadoRevisado.guion.trim().split(/\s+/).length;
 
-    // Si la versión pulida quedó vacía o perdió más de la mitad del
+    // Si la versión revisada quedó vacía o perdió más de la mitad del
     // contenido, algo salió mal (respuesta rota de Groq) — nos quedamos
     // con el guion original en vez de arruinar el video
-    if (guionPulido.trim().length === 0 || palabrasPulido < palabrasOriginal * 0.5) {
-      console.log("⚠️  La versión pulida se ve incompleta, se usa el guion original sin pulir");
-      resultado.guion = guionOriginal;
+    if (resultadoRevisado.guion.trim().length === 0 || palabrasRevisado < palabrasOriginal * 0.5) {
+      console.log("⚠️  La versión revisada se ve incompleta, se usa el guion original sin revisar");
     } else {
-      resultado.guion = guionPulido;
+      resultado = resultadoRevisado;
     }
 
     const outputDir = path.join(__dirname, "..", "output");

@@ -24,6 +24,7 @@ const BASE_DIR = path.join(__dirname, "..");
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
 const RESULTADO_PATH = path.join(BASE_DIR, "output", "resultado_subida.json");
 const RESULTADO_FB_PATH = path.join(BASE_DIR, "output", "resultado_facebook.json");
+const AVISO_AUDIO_PATH = path.join(BASE_DIR, "output", "aviso_calidad_audio.txt");
 
 let mensaje;
 const hayResultadoYoutube = fs.existsSync(RESULTADO_PATH);
@@ -45,6 +46,10 @@ if (hayResultadoYoutube || hayResultadoFacebook) {
   }
 
   mensaje = partes.join("\n\n");
+
+  if (fs.existsSync(AVISO_AUDIO_PATH)) {
+    mensaje += `\n\n⚠️ ${fs.readFileSync(AVISO_AUDIO_PATH, "utf-8")}`;
+  }
 } else if (fs.existsSync(GUION_PATH)) {
   const guion = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
   mensaje = `⚠️ Se generó el guion ("${guion.titulo}") pero no se completó ninguna subida. Revisa el log en GitHub Actions.`;

@@ -100,6 +100,9 @@ async function descargarImagen(url, destino) {
     let fotos = [];
     const idsVistos = new Set();
 
+    // Buscamos en TODAS las palabras clave (no paramos apenas alcanzamos
+    // el número que necesitamos) para tener más candidatos entre los
+    // cuales elegir los más relevantes, no solo los primeros que llegaron
     for (const clave of palabrasClave) {
       try {
         const resultados = await buscarImagenes(clave, porPalabraClave, orientacion);
@@ -113,13 +116,38 @@ async function descargarImagen(url, destino) {
       } catch (err) {
         console.log(`  ⚠️  Falló la búsqueda de "${clave}": ${err.message}`);
       }
-      if (fotos.length >= cantidadImagenes) break;
     }
 
     if (fotos.length === 0) {
       console.error("❌ Pexels no encontró ninguna imagen con esas palabras clave.");
       process.exit(1);
     }
+
+    // Filtro de relevancia: Pexels da una descripción ("alt") de cada
+    // foto. Le damos prioridad a las que mencionan alguna palabra clave
+    // o el tema — así descartamos las claramente ajenas sin usar IA extra
+    const palabrasRelevancia = [
+      ...palabrasClave.flatMap((p) => p.toLowerCase().split(/\s+/)),
+      ...guionData.tema.toLowerCase().split(/\s+/),
+    ].filter((p) => p.length > 3); // ignoramos palabras muy cortas (the, and, de, la, etc)
+
+    function puntajeRelevancia(foto) {
+      const alt = (foto.alt || "").toLowerCase();
+      if (!alt) return 0;
+      return palabrasRelevancia.filter((p) => alt.includes(p)).length;
+    }
+
+    // Mezclamos al azar PRIMERO, y ordenamos por relevancia después — así
+    // seguimos priorizando lo más relacionado al tema, pero entre fotos
+    // igual de relevantes el orden cambia cada vez (evita repetir siempre
+    // las mismas fotos "genéricas" que le pegan a cualquier tema)
+    for (let i = fotos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [fotos[i], fotos[j]] = [fotos[j], fotos[i]];
+    }
+    fotos.sort((a, b) => puntajeRelevancia(b) - puntajeRelevancia(a));
+    const conDescripcion = fotos.filter((f) => f.alt).length;
+    console.log(`  📋 ${conDescripcion}/${fotos.length} fotos con descripción, ordenadas por relevancia al tema (con variedad)`);
 
     if (fotos.length < cantidadImagenes) {
       console.log(`⚠️  Solo ${fotos.length} imágenes distintas encontradas. Se repetirán para completar.`);

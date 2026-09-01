@@ -32,7 +32,7 @@ GUION_PATH = os.path.join(BASE_DIR, "output", "guion.json")
 AUDIO_PATH = os.path.join(BASE_DIR, "output", "audio.mp3")
 ASS_PATH = os.path.join(BASE_DIR, "output", "subtitulos.ass")
 
-RATE = "-5%"
+RATE = "-12%"
 PITCH = "+0Hz"
 
 
@@ -111,25 +111,25 @@ async def generar_audio():
     texto = re.sub(r"[*_#`~]", "", texto)
     texto = re.sub(r"\s+", " ", texto).strip()
 
-    print(f"🎙️  Generando audio con voz: {voz}")
-    print(f"📝 Texto: {len(texto.split())} palabras")
+    async def generar_y_transcribir_audio():
+        """Genera el audio con edge-tts y lo transcribe con Whisper.
+        Devuelve (palabras_con_tiempo, coincidencia) o (None, 0) si falla."""
+        communicate = edge_tts.Communicate(texto, voz, rate=RATE, pitch=PITCH)
+        with open(AUDIO_PATH, "wb") as audio_file:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_file.write(chunk["data"])
 
-    communicate = edge_tts.Communicate(texto, voz, rate=RATE, pitch=PITCH)
-    with open(AUDIO_PATH, "wb") as audio_file:
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                audio_file.write(chunk["data"])
-
-    tamaño_mb = os.path.getsize(AUDIO_PATH) / (1024 * 1024)
-    print(f"✅ Audio generado: {AUDIO_PATH}")
-    print(f"📦 Tamaño: {tamaño_mb:.2f} MB")
-
-    print("👂 Transcribiendo el audio real con Whisper para timing exacto...")
-    try:
         from faster_whisper import WhisperModel
 
-        modelo = WhisperModel("base", device="cpu", compute_type="int8")
-        segmentos, _ = modelo.transcribe(AUDIO_PATH, language="es", word_timestamps=True)
+        modelo = WhisperModel("small", device="cpu", compute_type="int8")
+        segmentos, _ = modelo.transcribe(
+            AUDIO_PATH,
+            language="es",
+            word_timestamps=True,
+            beam_size=5,
+            vad_filter=True,
+        )
 
         palabras_con_tiempo = []
         for segmento in segmentos:
@@ -139,8 +139,56 @@ async def generar_audio():
                 )
 
         if not palabras_con_tiempo:
-            raise ValueError("Whisper no devolvió palabras")
+            return None, 0.0
 
+        texto_normalizado = set(re.sub(r"[^\w\s]", "", texto.lower()).split())
+        escuchado_normalizado = set(
+            re.sub(r"[^\w\s]", "", " ".join(p["text"] for p in palabras_con_tiempo).lower()).split()
+        )
+        coincidencia = (
+            len(texto_normalizado & escuchado_normalizado) / len(texto_normalizado) if texto_normalizado else 0.0
+        )
+        return palabras_con_tiempo, coincidencia
+
+    print(f"🎙️  Generando audio con voz: {voz}")
+    print(f"📝 Texto: {len(texto.split())} palabras")
+
+    mejor_palabras, mejor_coincidencia = None, -1.0
+    UMBRAL_REINTENTO = 0.60  # si sale peor que esto, vale la pena regenerar
+    UMBRAL_AVISO = 0.75  # si sale peor que esto (tras reintentar o no), avisamos por Telegram
+
+    for intento in range(1, 3):  # hasta 2 intentos
+        print(f"👂 Intento {intento}: generando audio y transcribiendo con Whisper...")
+        try:
+            palabras, coincidencia = await generar_y_transcribir_audio()
+        except Exception as err:
+            print(f"⚠️  Falló el intento {intento}: {err}")
+            palabras, coincidencia = None, 0.0
+
+        print(f"🔍 Coincidencia audio↔texto: {coincidencia*100:.0f}%")
+
+        if coincidencia > mejor_coincidencia:
+            mejor_palabras, mejor_coincidencia = palabras, coincidencia
+            # Guardamos una copia del mejor audio hasta ahora, por si el
+            # segundo intento resulta peor y hay que quedarnos con este
+            if os.path.exists(AUDIO_PATH):
+                import shutil
+                shutil.copyfile(AUDIO_PATH, AUDIO_PATH + ".mejor")
+
+        if coincidencia >= UMBRAL_REINTENTO:
+            break  # ya está lo suficientemente bien, no hace falta reintentar
+        print("⚠️  Coincidencia baja, regenerando el audio una vez más...")
+
+    # Nos aseguramos de que el archivo final sea el del mejor intento
+    if os.path.exists(AUDIO_PATH + ".mejor"):
+        import shutil
+        shutil.move(AUDIO_PATH + ".mejor", AUDIO_PATH)
+
+    tamaño_mb = os.path.getsize(AUDIO_PATH) / (1024 * 1024)
+    print(f"✅ Audio generado: {AUDIO_PATH}")
+    print(f"📦 Tamaño: {tamaño_mb:.2f} MB")
+
+    if mejor_palabras:
         ANCHO = 1080 if es_short else 1920
         ALTO = 1920 if es_short else 1080
         TAMANO_FUENTE = 64 if es_short else 46
@@ -148,14 +196,22 @@ async def generar_audio():
         ALINEACION = 5 if es_short else 2  # 5=centrado (shorts), 2=abajo centrado (largos)
 
         contenido_ass = generar_ass_desde_palabras(
-            palabras_con_tiempo, ANCHO, ALTO, TAMANO_FUENTE, PALABRAS_POR_LINEA, ALINEACION
+            mejor_palabras, ANCHO, ALTO, TAMANO_FUENTE, PALABRAS_POR_LINEA, ALINEACION
         )
         with open(ASS_PATH, "w", encoding="utf-8") as f:
             f.write(contenido_ass)
         print(f"✅ Subtítulos generados con timing real: {ASS_PATH}")
 
-    except Exception as err:
-        print(f"⚠️  No se pudieron generar subtítulos con Whisper ({err}). El video se genera igual, sin subtítulos.")
+        if mejor_coincidencia < UMBRAL_AVISO:
+            aviso_path = os.path.join(BASE_DIR, "output", "aviso_calidad_audio.txt")
+            with open(aviso_path, "w", encoding="utf-8") as f:
+                f.write(
+                    f"Coincidencia audio-texto de solo {mejor_coincidencia*100:.0f}% (tras reintentar) — "
+                    f"posible problema de pronunciación, revisa este video antes de publicarlo."
+                )
+            print("⚠️  Coincidencia sigue baja tras reintentar — se dejó un aviso para la notificación de Telegram")
+    else:
+        print("⚠️  No se pudieron generar subtítulos con Whisper. El video se genera igual, sin subtítulos.")
 
 
 if __name__ == "__main__":
