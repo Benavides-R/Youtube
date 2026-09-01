@@ -80,9 +80,11 @@ jobs:
         run: node scripts/ensamblar_video.js
 
       - name: Subir a YouTube
+        continue-on-error: true
         run: node scripts/subir_youtube.js
 
       - name: Subir a Facebook Reels
+        if: always()
         continue-on-error: true
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_TECNOLOGIA }}
