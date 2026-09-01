@@ -64,7 +64,7 @@ Responde ÚNICAMENTE en formato JSON válido, sin markdown, con esta estructura 
 {
   "verso": "el texto EXACTO del versículo bíblico, corto (máx 25 palabras), en español, cita textual real y precisa",
   "referencia": "libro capítulo:versículo, ej: 'Filipenses 4:13'",
-  "descripcion": "descripción para Facebook escrita en primera persona, cálida y natural, como si tú la escribieras a mano reflexionando sobre este versículo y por qué lo elegiste hoy, 2-4 líneas, termina con 5-6 hashtags relacionados (ej: #Biblia #Fe #PalabraDeDios #Salmos #Esperanza)",
+  "descripcion": "descripción para Facebook escrita en primera persona, cálida y natural, como si tú la escribieras a mano reflexionando sobre este versículo y por qué lo elegiste hoy, 2-4 líneas, termina con SOLO 2-3 hashtags relacionados (ej: #Biblia #Fe #Esperanza) -- no más de 3, hashtags en exceso penalizan el alcance",
   "palabras_clave_imagen": ["4 a 6 palabras cortas EN INGLÉS para buscar una foto de fondo atmosférica en un banco de imágenes, estilo: ${config.estilo_imagenes}"]
 }`;
 
