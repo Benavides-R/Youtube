@@ -105,7 +105,7 @@ const instruccionesFormato = esShort
 const promo = canalConfig.promocion;
 const instruccionPromocion =
   promo && promo.activa
-    ? `\nCuando conecte de forma natural con el tema (no en todos los videos, solo cuando tenga sentido real), puedes mencionar de forma MUY sutil y casual tu canal de ofertas de tecnología en Telegram — nunca como venta forzada, nunca con tono de anuncio o vendedor. Debe sonar como un comentario espontáneo de pasada, tipo "por cierto, en mi canal de Telegram comparto ofertas así" — sin insistir, sin urgencia, sin palabras tipo "no te lo pierdas" o "aprovecha ya". Si el tema no se presta naturalmente para mencionarlo, mejor NO lo menciones esa vez.`
+    ? `\nEl cuerpo del video debe dar datos o información realmente interesante y útil sobre el tema (esto es lo más importante, el valor real del video). AL FINAL, en TODOS los videos sin excepción, agrega 1 frase corta redirigiendo a tu canal de ofertas de tecnología en Telegram. Estilo: ${promo.estilo}. Varía las palabras exactas cada vez (no repitas literalmente la misma frase en cada video), pero mantén el tono directo y simple, sin sarcasmo, sin intentos de humor. NO uses la URL completa en el guion hablado (nadie la puede tocar en un video), solo di algo como "el link está en la descripción" o "búscanos como Benatechs Descuentos en Telegram".`
     : "";
 
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
