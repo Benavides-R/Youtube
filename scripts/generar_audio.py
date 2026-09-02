@@ -11,7 +11,7 @@ Uso:
     python scripts/generar_audio.py
 
 Requiere:
-    pip install edge-tts faster-whisper
+    pip install edge-tts faster-whisper num2words
 
 Output:
     output/audio.mp3
@@ -43,6 +43,29 @@ def segundos_a_timestamp_ass(segundos: float) -> str:
     segs = int(segundos % 60)
     centesimas = int((segundos - int(segundos)) * 100)
     return f"{horas}:{minutos:02d}:{segs:02d}.{centesimas:02d}"
+
+
+def normalizar_numeros(texto: str) -> str:
+    """
+    Convierte números a palabras en español ANTES de la síntesis de voz
+    (ej. "23:4" -> "veintitrés cuatro", "2024" -> "dos mil veinticuatro").
+    Esto evita que Whisper transcriba mal referencias con números (el
+    problema real detrás de los avisos de baja calidad de audio) — tanto
+    la voz como la transcripción trabajan sobre el mismo texto claro.
+    """
+    try:
+        from num2words import num2words
+    except ImportError:
+        return texto  # si no está instalado, seguimos sin normalizar (no es crítico)
+
+    def reemplazar(match):
+        numero = match.group()
+        try:
+            return num2words(int(numero), lang="es")
+        except (ValueError, OverflowError):
+            return numero
+
+    return re.sub(r"\d+", reemplazar, texto)
 
 
 def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion: int) -> str:
@@ -110,6 +133,7 @@ async def generar_audio():
     # leería literal ("asterisco", "numeral", etc.)
     texto = re.sub(r"[*_#`~]", "", texto)
     texto = re.sub(r"\s+", " ", texto).strip()
+    texto = normalizar_numeros(texto)
 
     async def generar_y_transcribir_audio():
         """Genera el audio con edge-tts y lo transcribe con Whisper.
