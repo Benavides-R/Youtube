@@ -80,7 +80,17 @@ jobs:
         run: node scripts/ensamblar_video.js
 
       - name: Subir a YouTube
+        id: subir_youtube
+        continue-on-error: true
         run: node scripts/subir_youtube.js
+
+      - name: Enviar video de respaldo a Telegram (si falló YouTube)
+        if: steps.subir_youtube.outcome == 'failure'
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/enviar_telegram_respaldo.js
 
       - name: Notificar por Telegram
         if: always()
