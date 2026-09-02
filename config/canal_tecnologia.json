@@ -1,6 +1,6 @@
 {
   "nombre_canal": "Cristian David Benavides - Android Apps y Trucos",
-  "voz": "es-MX-JorgeNeural",
+  "voz": "es-CO-GonzaloNeural",
   "formato": "vertical",
   "duracion_objetivo_seg": 45,
   "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y sorprendentes, acento colombiano neutro, energía entusiasta pero no exagerada. IMPORTANTE: nunca uses formato de tutorial paso a paso (nada de 'primero haz esto, luego esto'), siempre formato de dato/revelación/curiosidad, ya que el video no muestra capturas de pantalla reales",
@@ -31,6 +31,6 @@
   "promocion": {
     "activa": true,
     "link_telegram": "https://t.me/Benatechs_Descuentos",
-    "estilo": "cierre natural y ligeramente vendedor/sarcástico, como si se te hubiera ocurrido de repente por el tema del video (ej: 'y hablando de esto, la verdad me dieron ganas de comprar uno...'), conectando el dato del video con la idea de que en tu canal de ofertas de Telegram se consiguen gangas de tecnología. Debe sonar espontáneo, NUNCA como anuncio pegado o forzado"
+    "estilo": "cierre directo y simple, SIN sarcasmo (la IA no lo maneja bien). Ejemplo de tono a seguir: 'Si vas a comprar en Amazon, ahorra plata con nuestros cupones y ofertas diarias en Telegram'. Debe ser claro, útil, sin rodeos ni intentos de gracia — informativo y directo"
   }
 }
