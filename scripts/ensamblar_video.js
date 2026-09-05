@@ -194,7 +194,7 @@ if (usaXfade) {
 let audioFinalPath = AUDIO_PATH;
 
 if (hayMusica) {
-  console.log("🎶 Mezclando música de fondo con la voz...");
+  console.log("🎶 Mezclando música de fondo con ducking automático (baja sola cuando hay voz)...");
   const canciones = fs.readdirSync(MUSICA_DIR).filter((f) => f.endsWith(".mp3"));
   const cancionElegida = canciones[Math.floor(Math.random() * canciones.length)];
   const cancionPath = path.join(MUSICA_DIR, cancionElegida);
@@ -202,11 +202,14 @@ if (hayMusica) {
 
   audioFinalPath = path.join(TEMP_DIR, "audio_mezclado.mp3");
 
+  // sidechaincompress: la música se comprime (baja) automáticamente
+  // usando la voz como referencia — cuando hay voz, la música baja sola;
+  // en silencios, vuelve a subir. Más natural que un volumen fijo parejo.
   const cmdMezcla = [
     "ffmpeg -y",
     `-i "${AUDIO_PATH}"`,
     `-stream_loop -1 -i "${cancionPath}"`,
-    `-filter_complex "[1:a]volume=${VOLUMEN_MUSICA_DB}[musica];[0:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio_final]"`,
+    `-filter_complex "[1:a]volume=${VOLUMEN_MUSICA_DB}[musica_base];[musica_base][0:a]sidechaincompress=threshold=0.03:ratio=10:attack=5:release=300:makeup=1[musica_ducked];[0:a][musica_ducked]amix=inputs=2:duration=first:dropout_transition=2[audio_final]"`,
     `-map "[audio_final]"`,
     `-t ${duracionTotal}`,
     `"${audioFinalPath}"`,
@@ -235,6 +238,10 @@ const cmdFinal = [
   `-i "${audioFinalPath}"`,
   filtroSubtitulos,
   filtroSubtitulos ? "-c:v libx264 -pix_fmt yuv420p" : "-c:v copy",
+  // loudnorm normaliza el volumen a un estándar de streaming (-16 LUFS,
+  // el que usa YouTube/Spotify) — así todos los videos suenan parejo,
+  // sin importar si uno quedó más bajito o más fuerte que otro
+  '-af "loudnorm=I=-16:TP=-1.5:LRA=11"',
   "-c:a aac -shortest",
   `"${OUTPUT_PATH}"`,
 ].join(" ");
