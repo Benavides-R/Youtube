@@ -85,7 +85,7 @@ function envolverTexto(texto, palabrasPorLinea) {
       process.platform === "win32" ? "C:/Windows/Fonts/arial.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
     const fontPathEscapado = fontPath.replace(/:/g, "\\:");
 
-    const versoTexto = envolverTexto(`"${cita.verso}"`, 5);
+    const versoTexto = envolverTexto(`"${cita.verso}"`, 4);
     fs.writeFileSync(TEXTO_TEMP_PATH, versoTexto, "utf-8");
     const versoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
@@ -94,9 +94,9 @@ function envolverTexto(texto, palabrasPorLinea) {
 
     let filtro = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
-      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.35:t=fill`, // oscurece un poco el fondo para que el texto resalte
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=54:x=(w-text_w)/2:y=(h-text_h)/2-60:line_spacing=20:borderw=2:bordercolor=black@0.6`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${refPathEscapado}':fontcolor=white:fontsize=34:x=(w-text_w)/2:y=(h/2)+180:borderw=2:bordercolor=black@0.6`,
+      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.35:t=fill`,
+      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=54:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=20:borderw=2:bordercolor=black@0.6:expansion=none`,
+      `drawtext=fontfile='${fontPathEscapado}':textfile='${refPathEscapado}':fontcolor=white:fontsize=34:x=max(60\\, (w-text_w)/2):y=(h/2)+180:borderw=2:bordercolor=black@0.6:expansion=none`,
     ];
 
     let inputs = `-i "${FONDO_PATH}"`;
@@ -106,7 +106,7 @@ function envolverTexto(texto, palabrasPorLinea) {
       inputs += ` -i "${LOGO_PATH}"`;
       // Filtro combinado: primero el texto sobre el fondo, luego el logo encima en la esquina inferior derecha
       const filtroTexto = filtro.join(",");
-      const cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroTexto}[base];[1:v]scale=140:-1[logo];[base][logo]overlay=W-w-30:H-h-30" "${OUTPUT_PATH}"`;
+      const cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroTexto}[base];[1:v]scale=260:-1[logo];[base][logo]overlay=W-w-30:H-h-30" "${OUTPUT_PATH}"`;
       execSync(cmd, { stdio: "pipe" });
     } else {
       const cmd = `ffmpeg -y ${inputs} -vf "${filtro.join(",")}" "${OUTPUT_PATH}"`;

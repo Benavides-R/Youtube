@@ -86,8 +86,8 @@ function envolverTexto(texto, palabrasPorLinea) {
     const filtroBase = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.40:t=fill`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=52:x=(w-text_w)/2:y=(h-text_h)/2-70:line_spacing=18:borderw=2:bordercolor=black@0.7`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${autorEsc}':fontcolor=#f0c060:fontsize=34:x=(w-text_w)/2:y=(h/2)+160:borderw=2:bordercolor=black@0.7`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=52:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=18:borderw=2:bordercolor=black@0.7:expansion=none`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${autorEsc}':fontcolor=#f0c060:fontsize=34:x=max(60\\, (w-text_w)/2):y=(h/2)+160:borderw=2:bordercolor=black@0.7:expansion=none`,
     ].join(",");
 
     let cmd;
