@@ -64,12 +64,24 @@ async function buscarYDescargarFondo() {
 // 2. Envolver el texto del versículo en varias líneas (a mano,
 // simple, para que quepa bien en la tarjeta)
 // ------------------------------------------------------------
-function envolverTexto(texto, palabrasPorLinea) {
+function envolverTexto(texto, caracteresPorLinea = 26) {
+  // Antes se cortaba cada 4 palabras fijas, sin importar si eran cortas
+  // ("y", "el") o largas ("quebrantados") -- eso hacía que unas líneas
+  // salieran "llenitas" y otras casi vacías. Envolviendo por cantidad de
+  // caracteres, cada línea ocupa un ancho visual mucho más parejo.
   const palabras = texto.split(" ");
   const lineas = [];
-  for (let i = 0; i < palabras.length; i += palabrasPorLinea) {
-    lineas.push(palabras.slice(i, i + palabrasPorLinea).join(" "));
+  let lineaActual = "";
+  for (const palabra of palabras) {
+    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
+    if (candidata.length > caracteresPorLinea && lineaActual) {
+      lineas.push(lineaActual);
+      lineaActual = palabra;
+    } else {
+      lineaActual = candidata;
+    }
   }
+  if (lineaActual) lineas.push(lineaActual);
   return lineas.join("\n");
 }
 
@@ -85,7 +97,7 @@ function envolverTexto(texto, palabrasPorLinea) {
       process.platform === "win32" ? "C:/Windows/Fonts/arial.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
     const fontPathEscapado = fontPath.replace(/:/g, "\\:");
 
-    const versoTexto = envolverTexto(`"${cita.verso}"`, 4);
+    const versoTexto = envolverTexto(`"${cita.verso}"`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, versoTexto, "utf-8");
     const versoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
@@ -106,7 +118,7 @@ function envolverTexto(texto, palabrasPorLinea) {
       inputs += ` -i "${LOGO_PATH}"`;
       // Filtro combinado: primero el texto sobre el fondo, luego el logo encima en la esquina inferior derecha
       const filtroTexto = filtro.join(",");
-      const cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroTexto}[base];[1:v]scale=260:-1[logo];[base][logo]overlay=W-w-30:H-h-30" "${OUTPUT_PATH}"`;
+      const cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroTexto}[base];[1:v]scale=180:-1[logo];[base][logo]overlay=W-w-30:H-h-30" "${OUTPUT_PATH}"`;
       execSync(cmd, { stdio: "pipe" });
     } else {
       const cmd = `ffmpeg -y ${inputs} -vf "${filtro.join(",")}" "${OUTPUT_PATH}"`;

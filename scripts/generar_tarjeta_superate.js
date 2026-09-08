@@ -53,12 +53,20 @@ async function buscarYDescargarFondo() {
   console.log(`  🖼️  Fondo: "${query}" (pág ${paginaAlAzar})`);
 }
 
-function envolverTexto(texto, palabrasPorLinea) {
+function envolverTexto(texto, caracteresPorLinea = 26) {
   const palabras = texto.split(" ");
   const lineas = [];
-  for (let i = 0; i < palabras.length; i += palabrasPorLinea) {
-    lineas.push(palabras.slice(i, i + palabrasPorLinea).join(" "));
+  let lineaActual = "";
+  for (const palabra of palabras) {
+    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
+    if (candidata.length > caracteresPorLinea && lineaActual) {
+      lineas.push(lineaActual);
+      lineaActual = palabra;
+    } else {
+      lineaActual = candidata;
+    }
   }
+  if (lineaActual) lineas.push(lineaActual);
   return lineas.join("\n");
 }
 
@@ -72,7 +80,7 @@ function envolverTexto(texto, palabrasPorLinea) {
     const fontPathEsc = fontPath.replace(/:/g, "\\:");
 
     // Frase entre comillas decorativas
-    const textoFrase = envolverTexto(`"${frase.frase}"`, 4);
+    const textoFrase = envolverTexto(`"${frase.frase}"`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, textoFrase, "utf-8");
     const textoEsc = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
@@ -92,7 +100,7 @@ function envolverTexto(texto, palabrasPorLinea) {
 
     let cmd;
     if (hayLogo) {
-      cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroBase}[base];[1:v]scale=130:-1[logo];[base][logo]overlay=W-w-25:H-h-25" "${OUTPUT_PATH}"`;
+      cmd = `ffmpeg -y ${inputs} -filter_complex "[0:v]${filtroBase}[base];[1:v]scale=180:-1[logo];[base][logo]overlay=W-w-25:H-h-25" "${OUTPUT_PATH}"`;
     } else {
       cmd = `ffmpeg -y ${inputs} -vf "${filtroBase}" "${OUTPUT_PATH}"`;
     }
