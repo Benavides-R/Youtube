@@ -58,7 +58,7 @@ console.log(`🖼️  Necesitamos ~${cantidadImagenes} imágenes (video de ~${Ma
 // 2. Buscar en Pexels
 // ------------------------------------------------------------
 async function buscarImagenes(query, cantidad, orientacion) {
-  const paginaAlAzar = Math.floor(Math.random() * 5) + 1; // pág 1 a 5, evita repetir siempre el mismo top de resultados
+  const paginaAlAzar = Math.floor(Math.random() * 12) + 1; // pág 1 a 12, mucha más variedad
   const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(
     query
   )}&per_page=${cantidad}&orientation=${orientacion}&page=${paginaAlAzar}`;

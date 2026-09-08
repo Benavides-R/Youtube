@@ -72,7 +72,7 @@ function envolverTexto(texto, palabrasPorLinea) {
     const fontPathEsc = fontPath.replace(/:/g, "\\:");
 
     // Frase entre comillas decorativas
-    const textoFrase = envolverTexto(`"${frase.frase}"`, 5);
+    const textoFrase = envolverTexto(`"${frase.frase}"`, 4);
     fs.writeFileSync(TEXTO_TEMP_PATH, textoFrase, "utf-8");
     const textoEsc = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
