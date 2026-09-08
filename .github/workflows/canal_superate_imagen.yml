@@ -1,0 +1,64 @@
+name: Canal Superate777 - Tarjeta Motivacional
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "25 10 * * *" # 5:25am hora Colombia
+    - cron: "25 17 * * *" # 12:25pm hora Colombia
+    - cron: "25 23 * * *" # 6:25pm hora Colombia
+  workflow_dispatch:
+
+jobs:
+  generar_y_publicar_tarjeta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar FFmpeg y fuentes
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Generar la frase motivacional
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generar_frase_motivacional.js
+
+      - name: Guardar historial de frases
+        continue-on-error: true
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add historial/
+          git commit -m "Actualizar historial de frases motivacionales" || echo "Sin cambios que guardar"
+          git pull --rebase origin main || true
+          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
+
+      - name: Generar la tarjeta visual
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/generar_tarjeta_superate.js
+
+      - name: Subir a Facebook
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_SUPERATE }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_SUPERATE }}
+        run: node scripts/subir_facebook_superate.js
+
+      - name: Notificar por Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/notificar_telegram_superate.js

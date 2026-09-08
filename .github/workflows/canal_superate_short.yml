@@ -92,6 +92,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/enviar_telegram_respaldo.js
 
+      - name: Subir a Facebook Reels
+        if: always()
+        continue-on-error: true
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_SUPERATE }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_SUPERATE }}
+        run: node scripts/subir_facebook.js
+
       - name: Notificar por Telegram
         if: always()
         env:
