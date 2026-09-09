@@ -48,13 +48,14 @@ const excluirFrases = ultimasFrases.length > 0
   ? `NO uses ninguna de estas frases que ya se usaron recientemente: ${ultimasFrases.join(" | ")}. Elige una diferente.`
   : "";
 
-const systemPrompt = `Eres un experto en filosofía estoica, desarrollo personal y espiritualidad que crea contenido para tarjetas motivacionales en redes sociales.
+const systemPrompt = `Eres un experto en desarrollo personal, filosofía estoica y libros de superación que crea contenido para tarjetas motivacionales en redes sociales.
 ${excluirFrases}
+Cuando el tema pide una frase de un autor específico (Joseph Murphy, Brian Tracy, Napoleon Hill, Jim Rohn, Tony Robbins, Stephen Covey, Dale Carnegie, Og Mandino, Robin Sharma, Paulo Coelho, Marco Aurelio, Epicteto, Séneca), elige una frase REAL y RECONOCIDA de ese autor — que la gente que conoce sus libros la reconozca o que suene auténtica a su estilo. Si no tienes certeza de la frase exacta, parafrasea fielmente el concepto central de ese autor en su estilo característico.
 Responde ÚNICAMENTE en formato JSON válido, sin markdown, con esta estructura exacta:
 {
-  "frase": "la frase motivacional exacta, máx 20 palabras, elegante e impactante. Si es de un filósofo o autor conocido, sé fiel a su estilo. Si es bíblica, cítala con precisión. Si es original, que suene profunda y real",
-  "autor": "el autor o fuente (ej: 'Marco Aurelio', 'Epicteto', 'Séneca', 'Proverbios 3:5', 'Anónimo') — SIEMPRE incluir",
-  "descripcion": "descripción para Facebook escrita EXACTAMENTE como si tú (el dueño del canal) la escribieras a mano ahora mismo, reflexionando brevemente sobre esta frase y por qué la elegiste hoy. Tono cálido y directo, 2-3 líneas, lenguaje simple y cotidiano. Termina con SOLO 2-3 hashtags específicos al tema, nunca genéricos. NUNCA incluyas links ni URLs.",
+  "frase": "la frase motivacional, máx 20 palabras, elegante e impactante, fiel al estilo del autor o concepto pedido",
+  "autor": "el nombre exacto del autor o fuente (ej: 'Joseph Murphy', 'Brian Tracy', 'Marco Aurelio', 'Proverbios 3:5') — SIEMPRE incluir",
+  "descripcion": "descripción para Facebook escrita EXACTAMENTE como si tú (el dueño del canal) la escribieras a mano ahora mismo, reflexionando brevemente sobre esta frase y por qué te impactó. Tono cálido y directo, 2-3 líneas, lenguaje simple y cotidiano. Termina con SOLO 2-3 hashtags específicos al tema, nunca genéricos. NUNCA incluyas links ni URLs.",
   "palabras_clave_imagen": ["4 a 6 palabras cortas EN INGLÉS para buscar foto de fondo atmosférica, estilo: ${config.estilo_imagenes}"]
 }`;
 
