@@ -62,10 +62,10 @@ IMPORTANTE sobre el lenguaje: usa una traducción con lenguaje universal/ecumén
 ${excluirReferencias}
 Responde ÚNICAMENTE en formato JSON válido, sin markdown, con esta estructura exacta:
 {
-  "verso": "el texto EXACTO del versículo bíblico, corto (máx 25 palabras), en español, cita textual real y precisa",
+  "verso": "el texto EXACTO del versículo bíblico EN ESPAÑOL, corto (máx 25 palabras), cita textual real y precisa. SIEMPRE en español",
   "referencia": "libro capítulo:versículo, ej: 'Filipenses 4:13'",
   "descripcion": "descripción para Facebook escrita EXACTAMENTE como si tú mismo la hubieras tecleado a mano ahora mismo, cálida y natural, reflexionando brevemente sobre este versículo y por qué lo elegiste hoy — algo personal, no genérico, 2-3 líneas, lenguaje simple y cotidiano. Termina con SOLO 2-3 hashtags (no más) relacionados específicamente al tema del versículo, nunca genéricos. NUNCA incluyas ningún link o URL.",
-  "palabras_clave_imagen": ["4 a 6 palabras cortas EN INGLÉS para buscar una foto de fondo atmosférica en un banco de imágenes, estilo: ${config.estilo_imagenes}"]
+  "palabras_clave_imagen": ["4 a 6 palabras cortas EN INGLÉS para buscar foto de fondo atmosférica en Pexels, estilo: ${config.estilo_imagenes}. IMPORTANTE: busca SOLO imágenes de naturaleza, paisajes, luz o personas en oración/silueta — NUNCA uses términos como 'quote', 'text', 'bible verse poster' ni nada que devuelva fotos con texto impreso en inglés visible, ya que el canal es en español"]
 }`;
 
 async function generarCita() {
