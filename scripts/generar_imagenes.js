@@ -26,8 +26,14 @@ const BASE_DIR = path.join(__dirname, "..");
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
 const IMAGENES_DIR = path.join(BASE_DIR, "output", "imagenes");
 
-// Cada imagen se muestra ~7 segundos en el video final
-const SEGUNDOS_POR_IMAGEN = 7;
+// Cada escena se muestra distinto tiempo según el formato: un short debe
+// cortar rápido (coincide con DURACION_MIN/MAX de ensamblar_video.js para
+// shorts, 2-4s), un video largo puede sostener cada escena más tiempo.
+// Antes esto era un solo número fijo (7s) para ambos formatos, lo cual
+// hacía que un short con pocas escenas terminara con cada una estirada
+// mucho más de lo previsto para cubrir toda la duración del audio.
+const SEGUNDOS_POR_ESCENA_SHORT = 3;
+const SEGUNDOS_POR_ESCENA_LARGO = 7;
 
 // Qué proporción de las escenas intenta usar un clip de video real en vez
 // de una foto fija -- el resto sigue siendo foto (con su zoom Ken Burns de
@@ -56,7 +62,9 @@ const palabrasClave =
 // Calculamos cuántas imágenes necesitamos según la duración estimada
 const palabras = guionData.guion.split(/\s+/).length;
 const duracionEstimadaSeg = (palabras / 150) * 60;
-const cantidadImagenes = Math.max(3, Math.ceil(duracionEstimadaSeg / SEGUNDOS_POR_IMAGEN));
+const segundosPorEscena =
+  guionData.formato === "vertical" ? SEGUNDOS_POR_ESCENA_SHORT : SEGUNDOS_POR_ESCENA_LARGO;
+const cantidadImagenes = Math.max(3, Math.ceil(duracionEstimadaSeg / segundosPorEscena));
 
 console.log(`🔍 Palabras clave: ${palabrasClave.join(", ")}`);
 console.log(`🖼️  Necesitamos ~${cantidadImagenes} imágenes (video de ~${Math.round(duracionEstimadaSeg)}s)`);
