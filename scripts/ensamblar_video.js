@@ -65,7 +65,7 @@ if (!fs.existsSync(AUDIO_PATH)) {
   process.exit(1);
 }
 if (!fs.existsSync(IMAGENES_DIR) || fs.readdirSync(IMAGENES_DIR).length === 0) {
-  console.error("❌ No hay imágenes en output/imagenes/. Corre primero generar_imagenes.js");
+  console.error("❌ No hay escenas en output/imagenes/. Corre primero generar_imagenes.js");
   process.exit(1);
 }
 try {
@@ -96,9 +96,9 @@ console.log(`🎙️  Duración de la voz: ${duracionTotal.toFixed(1)}s`);
 //    RANDOM (dentro de DURACION_MIN-DURACION_MAX) pero que la
 //    suma dé exacto el total del audio.
 // ------------------------------------------------------------
-const imagenes = fs
+const escenas = fs
   .readdirSync(IMAGENES_DIR)
-  .filter((f) => f.match(/\.(jpg|jpeg|png)$/i))
+  .filter((f) => f.match(/\.(jpg|jpeg|png|mp4)$/i))
   .sort();
 
 function generarDuracionesVariables(cantidad, total) {
@@ -112,9 +112,9 @@ function generarDuracionesVariables(cantidad, total) {
   return duraciones.map((d) => d * factor);
 }
 
-const duraciones = generarDuracionesVariables(imagenes.length, duracionTotal);
+const duraciones = generarDuracionesVariables(escenas.length, duracionTotal);
 console.log(
-  `🖼️  ${imagenes.length} imágenes, duración variable (${DURACION_MIN}-${DURACION_MAX}s cada una aprox.)`
+  `🎬 ${escenas.length} escenas, duración variable (${DURACION_MIN}-${DURACION_MAX}s cada una aprox.)`
 );
 
 if (fs.existsSync(TEMP_DIR)) fs.rmSync(TEMP_DIR, { recursive: true });
@@ -127,27 +127,46 @@ fs.mkdirSync(TEMP_DIR, { recursive: true });
 console.log("🎬 Generando clips individuales...");
 const clipsInfo = [];
 
-imagenes.forEach((img, idx) => {
-  const inputPath = path.join(IMAGENES_DIR, img);
+escenas.forEach((archivo, idx) => {
+  const inputPath = path.join(IMAGENES_DIR, archivo);
   const clipPath = path.join(TEMP_DIR, `clip_${idx}.mp4`);
+  const esVideo = /\.mp4$/i.test(archivo);
   // Le sumamos la transición extra (menos al último) para que al recortar
   // con el crossfade no se quede corto
-  const esUltimo = idx === imagenes.length - 1;
+  const esUltimo = idx === escenas.length - 1;
   const duracionClip = duraciones[idx] + (esUltimo ? 0 : DURACION_TRANSICION);
-  const totalFrames = Math.round(duracionClip * FPS);
 
-  const cmd = [
-    "ffmpeg -y",
-    `-loop 1 -i "${inputPath}"`,
-    `-vf "scale=${ANCHO * 1.2}:${ALTO * 1.2},zoompan=z='min(zoom+0.0008,1.15)':d=${totalFrames}:s=${ANCHO}x${ALTO}:fps=${FPS}"`,
-    `-t ${duracionClip}`,
-    "-c:v libx264 -pix_fmt yuv420p",
-    `"${clipPath}"`,
-  ].join(" ");
+  let cmd;
+  if (esVideo) {
+    // Video real: se recorta a la duración del slot (o se repite en loop
+    // si el clip original es más corto), y se escala+recorta para llenar
+    // el encuadre exacto sin dejar franjas ni deformar la imagen -- el
+    // propio movimiento del video reemplaza el zoom Ken Burns, no se le
+    // aplica encima porque se vería sobrecargado.
+    cmd = [
+      "ffmpeg -y",
+      `-stream_loop -1 -i "${inputPath}"`,
+      `-vf "scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO},fps=${FPS}"`,
+      `-t ${duracionClip}`,
+      "-an", // el video de stock no aporta audio propio, solo se usa la voz
+      "-c:v libx264 -pix_fmt yuv420p",
+      `"${clipPath}"`,
+    ].join(" ");
+  } else {
+    const totalFrames = Math.round(duracionClip * FPS);
+    cmd = [
+      "ffmpeg -y",
+      `-loop 1 -i "${inputPath}"`,
+      `-vf "scale=${ANCHO * 1.2}:${ALTO * 1.2},zoompan=z='min(zoom+0.0008,1.15)':d=${totalFrames}:s=${ANCHO}x${ALTO}:fps=${FPS}"`,
+      `-t ${duracionClip}`,
+      "-c:v libx264 -pix_fmt yuv420p",
+      `"${clipPath}"`,
+    ].join(" ");
+  }
 
   execSync(cmd, { stdio: "ignore" });
   clipsInfo.push({ path: clipPath, duracion: duracionClip });
-  console.log(`  ✅ clip ${idx + 1}/${imagenes.length} (${duracionClip.toFixed(1)}s)`);
+  console.log(`  ✅ clip ${idx + 1}/${escenas.length} (${esVideo ? "video" : "foto"}, ${duracionClip.toFixed(1)}s)`);
 });
 
 // ------------------------------------------------------------

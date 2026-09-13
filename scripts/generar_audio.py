@@ -86,7 +86,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{fuente},{tamano_fuente},&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,{alineacion},10,10,60,1
+Style: Default,{fuente},{tamano_fuente},&H0000FFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,{alineacion},10,10,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -96,7 +96,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, tamano_fuente: int, palabras_por_linea: int, alineacion: int) -> str:
     """
     palabras_con_tiempo: lista de dicts con 'text', 'inicio', 'fin' (en segundos)
-    Agrupa palabras en líneas cortas y arma el archivo .ass completo.
+    Agrupa palabras en líneas cortas y arma el archivo .ass completo, con
+    tags de karaoke \\k por palabra -- cada palabra se resalta en amarillo
+    justo cuando se pronuncia (el estilo típico de reels/shorts), en vez de
+    mostrar toda la línea de un solo color de principio a fin.
+
+    La duración de cada \\k se calcula contra el INICIO de la siguiente
+    palabra (no contra su propio fin) para que los silencios cortos entre
+    palabras queden absorbidos en el resaltado anterior, en vez de dejar un
+    hueco donde ninguna palabra está resaltada.
     """
     contenido = generar_encabezado_ass(ancho, alto, tamano_fuente, alineacion)
 
@@ -106,7 +114,17 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
             continue
         inicio = segundos_a_timestamp_ass(grupo[0]["inicio"])
         fin = segundos_a_timestamp_ass(grupo[-1]["fin"])
-        texto = " ".join(p["text"] for p in grupo)
+
+        partes = []
+        for j, palabra in enumerate(grupo):
+            if j < len(grupo) - 1:
+                duracion_cs = round((grupo[j + 1]["inicio"] - palabra["inicio"]) * 100)
+            else:
+                duracion_cs = round((palabra["fin"] - palabra["inicio"]) * 100)
+            duracion_cs = max(duracion_cs, 1)  # nunca 0 o negativo, rompería el tag
+            partes.append(f"{{\\k{duracion_cs}}}{palabra['text']}")
+
+        texto = " ".join(partes)
         contenido += f"Dialogue: 0,{inicio},{fin},Default,,0,0,0,,{texto}\n"
 
     return contenido

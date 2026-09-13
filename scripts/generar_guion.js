@@ -83,6 +83,33 @@ console.log(`🎯 Tema elegido: ${temaElegido}`);
 console.log(`📋 Temas usados en esta vuelta: ${nuevoHistorial.length}/${canalConfig.temas.length}`);
 
 // ------------------------------------------------------------
+// 1.5. Historial de ÁNGULOS específicos ya usados (no solo la
+// categoría general) -- esto es lo que de verdad evita que, meses
+// después, cuando la lista de temas empiece a repetirse, el video
+// salga prácticamente igual al de la primera vuelta. Se guardan los
+// últimos 40 títulos/ganchos reales generados, y se le piden a la IA
+// como referencia de "esto ya lo usaste, no lo repitas".
+// ------------------------------------------------------------
+const HISTORIAL_ANGULOS_PATH = path.join(HISTORIAL_DIR, `${nombreConfig}_angulos.json`);
+let historialAngulos = [];
+if (fs.existsSync(HISTORIAL_ANGULOS_PATH)) {
+  try {
+    historialAngulos = JSON.parse(fs.readFileSync(HISTORIAL_ANGULOS_PATH, "utf-8"));
+  } catch {
+    historialAngulos = [];
+  }
+}
+// Cap a los últimos 40 -- si esto crece sin límite, cada corrida le
+// manda un prompt más y más largo a Groq, lo cual sube el costo en
+// tokens y puede chocar con el límite de tokens-por-minuto de la
+// cuenta gratis (ya nos pasó antes con otro proyecto).
+const ultimosAngulos = historialAngulos.slice(-40);
+const instruccionAngulos =
+  ultimosAngulos.length > 0
+    ? `\nEstos son los últimos enfoques/títulos específicos que ya se usaron en este canal -- tu video debe tener un ángulo genuinamente distinto a todos estos, aunque el tema general se parezca (elige otro ejemplo, otro personaje, otra perspectiva, otro dato concreto): ${ultimosAngulos.map((a) => `"${a}"`).join(", ")}.`
+    : "";
+
+// ------------------------------------------------------------
 // 2. Prompt para Groq
 // ------------------------------------------------------------
 const palabrasObjetivo = Math.round((canalConfig.duracion_objetivo_seg / 60) * 150);
@@ -110,7 +137,7 @@ const instruccionPromocion =
 
 const systemPrompt = `Eres guionista experto en contenido viral de YouTube en español.
 Escribes guiones para narración en voz colombiana, estilo: ${canalConfig.estilo}.
-${instruccionesFormato}${instruccionPromocion}
+${instruccionesFormato}${instruccionPromocion}${instruccionAngulos}
 Tu guion debe:
 - Enganchar en la primera frase (sin saludos tipo "hola a todos"). VARÍA el tipo de gancho cada vez: a veces una pregunta directa, a veces un dato impactante, a veces una afirmación polémica, a veces una historia corta — NUNCA uses la misma fórmula de apertura en cada guion
 - Ir directo al contenido, sin relleno
@@ -299,6 +326,12 @@ Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titul
     console.log(`✅ Guion generado: ${outputData.titulo}`);
     console.log(`📝 Palabras: ${outputData.guion.split(/\s+/).length}`);
     console.log(`💾 Guardado en: ${outputPath}`);
+
+    // Guardamos el título final (el ángulo real que se usó) en el
+    // historial de ángulos, para que futuras corridas lo eviten aunque
+    // la categoría general vuelva a tocarle en el sorteo.
+    const nuevoHistorialAngulos = [...historialAngulos, outputData.titulo].slice(-40);
+    fs.writeFileSync(HISTORIAL_ANGULOS_PATH, JSON.stringify(nuevoHistorialAngulos, null, 2), "utf-8");
   } catch (err) {
     console.error("❌ Error generando el guion:", err.message);
     process.exit(1);
