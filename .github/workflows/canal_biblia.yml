@@ -5,7 +5,6 @@ permissions:
 
 on:
   schedule:
-    - cron: "12 9 * * *"  # 4am hora Colombia
     - cron: "37 21 * * *" # 4pm hora Colombia
   workflow_dispatch:
 
