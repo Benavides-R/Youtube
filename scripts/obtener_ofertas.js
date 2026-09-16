@@ -53,6 +53,13 @@ function acortarParaVoz(titulo, maxPalabras = 10) {
   return palabras.join(" ");
 }
 
+// El precio viene como "~$165.900 COP" (para mostrar en pantalla) -- para
+// que el TTS lo lea bien, se limpia el "~", el "$" y "COP" y se dice
+// "pesos" al final, en vez de arriesgarnos a que lo lea mal.
+function precioParaVoz(precioTexto) {
+  return precioTexto.replace(/[~$]/g, "").replace(/\s*COP\s*/i, "").trim() + " pesos";
+}
+
 // Frases variadas para que no suene siempre igual (plantilla robótica) --
 // se elige una al azar en cada corrida, tono colombiano y casual.
 const GANCHOS_INICIO = [
@@ -81,7 +88,8 @@ function armarGuion(ofertas) {
     else if (i === ofertas.length - 1) conector = elegir(CONECTORES_FINAL) + " ";
     else conector = elegir(CONECTORES_MEDIO) + " ";
     const descuento = o.descuento_pct ? `, con ${o.descuento_pct} por ciento de descuento` : "";
-    return `${conector}${acortarParaVoz(o.titulo)}, por ${o.precio}${descuento}.`;
+    const cupon = o.tiene_cupon ? ", y trae cupón especial, míralo en la descripción" : "";
+    return `${conector}${acortarParaVoz(o.titulo)}, por ${precioParaVoz(o.precio)}${descuento}${cupon}.`;
   }).join(" ");
 
   const cierre = elegir(CIERRES);
