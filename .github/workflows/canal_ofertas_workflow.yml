@@ -5,8 +5,8 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 19 * * *"  # 2:00pm hora Colombia
-    - cron: "0 23 * * *"  # 6:00pm hora Colombia
+    - cron: "0 1 * * *"  # 8:00pm hora Colombia
+    - cron: "20 2 * * *"  # 9:20pm hora Colombia
   workflow_dispatch:
 
 jobs:
@@ -43,16 +43,6 @@ jobs:
           OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
         run: node scripts/obtener_ofertas.js
 
-      - name: Guardar ofertas ya usadas
-        if: always()
-        run: |
-          git config user.name "youtube-auto-bot"
-          git config user.email "actions@github.com"
-          git add data/ofertas_procesadas.json
-          git commit -m "Actualiza ofertas ya usadas en video" || echo "Sin cambios que guardar"
-          git pull --rebase origin main || true
-          git push || echo "No se pudo guardar esta vez, no es grave, seguimos"
-
       - name: Generar audio y subtítulos
         run: python scripts/generar_audio.py
 
@@ -64,6 +54,19 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_TECNOLOGIA }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_TECNOLOGIA }}
         run: node scripts/subir_facebook.js
+
+      - name: Marcar ofertas como usadas (solo si sí se publicó)
+        run: node scripts/marcar_ofertas_usadas.js
+
+      - name: Guardar ofertas ya usadas
+        if: always()
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add data/ofertas_procesadas.json
+          git commit -m "Actualiza ofertas ya usadas en video" || echo "Sin cambios que guardar"
+          git pull --rebase origin main || true
+          git push || echo "No se pudo guardar esta vez, no es grave, seguimos"
 
       - name: Notificar por Telegram
         if: always()
