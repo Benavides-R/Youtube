@@ -142,6 +142,11 @@ async def generar_audio():
     voz = data.get("voz", "es-CO-GonzaloNeural")
     formato = data.get("formato", "horizontal")
     es_short = formato == "vertical"
+    # Por defecto los shorts llevan subtítulos centrados -- pero si el
+    # producto/imagen es lo importante (ej. canal de ofertas), guion.json
+    # puede pedir "subtitulos_abajo": true para no tapar la foto. No afecta
+    # a ningún otro canal porque ese campo no existe en sus guion.json.
+    subtitulos_abajo = data.get("subtitulos_abajo", False)
 
     if not texto:
         print("❌ El guion.json no tiene el campo 'guion'")
@@ -235,7 +240,7 @@ async def generar_audio():
         ALTO = 1920 if es_short else 1080
         TAMANO_FUENTE = 64 if es_short else 46
         PALABRAS_POR_LINEA = 4 if es_short else 7
-        ALINEACION = 5 if es_short else 2  # 5=centrado (shorts), 2=abajo centrado (largos)
+        ALINEACION = 2 if subtitulos_abajo else (5 if es_short else 2)  # 5=centrado (shorts), 2=abajo centrado
 
         contenido_ass = generar_ass_desde_palabras(
             mejor_palabras, ANCHO, ALTO, TAMANO_FUENTE, PALABRAS_POR_LINEA, ALINEACION
