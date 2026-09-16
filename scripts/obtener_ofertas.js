@@ -46,11 +46,6 @@ function cargarProcesadas() {
   }
 }
 
-function guardarProcesadas(links) {
-  fs.mkdirSync(path.dirname(PROCESADAS_PATH), { recursive: true });
-  fs.writeFileSync(PROCESADAS_PATH, JSON.stringify(links, null, 2));
-}
-
 // Recorta un título largo de Amazon a algo que suene natural al leerlo
 // en voz alta, sin cortar una palabra a la mitad.
 function acortarParaVoz(titulo, maxPalabras = 10) {
@@ -161,11 +156,17 @@ async function descargarImagen(url, destino) {
     process.exit(1);
   }
 
-  // 3. Marcar como procesadas (se guarda esto, no todo el historial de
-  // texto/imágenes -- ensamblar_video.js y demás ya no las necesitan)
-  const yaVistos = [...procesadas, ...elegidas.map((o) => o.link)];
-  guardarProcesadas(yaVistos);
-  console.log(`✅ ${elegidas.length} ofertas marcadas como usadas`);
+  // 3. Guardar cuáles se eligieron para este intento -- OJO: todavía no se
+  // marcan como "procesadas" en el registro definitivo. Eso solo pasa al
+  // final del workflow, si Facebook confirma que el video se publicó. Así,
+  // si algo falla más adelante (audio, ensamblado, subida), estas mismas
+  // ofertas se vuelven a intentar en la siguiente corrida en vez de
+  // perderse sin haberse publicado nunca.
+  fs.writeFileSync(
+    path.join(BASE_DIR, "output", "elegidas.json"),
+    JSON.stringify(elegidas.map((o) => o.link), null, 2)
+  );
+  console.log(`✅ ${elegidas.length} ofertas listas para este intento (se marcarán como usadas solo si se publica bien)`);
 })().catch((err) => {
   console.error("❌ Error obteniendo ofertas:", err.message);
   process.exit(1);
