@@ -176,8 +176,8 @@ async function generarCardOferta(oferta, indice, total) {
     let mapaFinal;
 
     if (fs.existsSync(LOGO_PATH)) {
-      // Con logo
-      filtros.push(`[1:v]scale=180:-1[logo]`);
+      // Con logo: [1:v]=producto, [2:v]=logo
+      filtros.push(`[2:v]scale=180:-1[logo]`);
       filtros.push(`[con_cta][logo]overlay=W-w-30:H-h-30[salida]`);
       filtroFinal = filtros.join(",");
       inputs = `-i "${imagenPath}" -i "${LOGO_PATH}"`;
