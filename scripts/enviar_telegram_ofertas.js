@@ -152,7 +152,7 @@ async function enviarMensaje(texto) {
     `💡 Tips:\n` +
     `- Graba en lugar tranquilo, con energía\n` +
     `- Muestra las cards en el orden que aparecen\n` +
-    `- Cuando subas a Facebook, las ofertas se marcan solas`;
+    `- Estas ofertas ya quedaron marcadas como usadas (desde que se enviaron aquí)`;
 
   await enviarMensaje(mensajeFinal);
   console.log("  ✅ Guión + links enviados");

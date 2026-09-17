@@ -86,7 +86,7 @@ function intentarGenerarCard(opts) {
   const tituloEnvuelto = envolverTexto(tituloCorto, 28);
   const precioOriginal = extraerPrecio(oferta.precio || "");
   const tieneDescuento = !!oferta.descuento_pct;
-  const descuento = tieneDescuento ? `-${oferta.descuento_pct}%` : "";
+  const descuento = tieneDescuento ? `-${oferta.descuento_pct}\\%` : "";
 
   // Escribir textos temporales
   fs.writeFileSync(tempFiles.titulo, tituloEnvuelto, "utf-8");
@@ -102,18 +102,12 @@ function intentarGenerarCard(opts) {
   // 1. Fondo sólido
   f.push(`color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
 
-  // 2. Borde decorativo detrás del producto (sombra sutil)
-  f.push(`color=c=${SHADOW_COLOR}:s=640x640:d=1,format=rgba,
-    split[sombra][sombraA];
-    [sombraA]colorchannelmixer=aa=0.3[sombraB]`);
-  f.push(`[base][sombraB]overlay=(W-640)/2:370[con_sombra]`);
-
-  // 3. Producto centrado (contain, sin estirar)
+  // 2. Producto centrado (contain, sin estirar)
   f.push(`[1:v]scale=580:-1:force_original_aspect_ratio=decrease,
     pad=600:600:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
 
-  // 4. Superponer producto
-  f.push(`[con_sombra][producto]overlay=(W-w)/2:390[con_producto]`);
+  // 3. Superponer producto directo sobre el fondo
+  f.push(`[base][producto]overlay=(W-w)/2:390[con_producto]`);
 
   // 5. Badge rojo "OFERTA DEL DÍA"
   f.push(`[con_producto]drawbox=x=290:y=100:w=500:h=65:color=0xdc2626:t=fill[con_badge_bg]`);
@@ -127,8 +121,14 @@ function intentarGenerarCard(opts) {
 
   // 8. Precios
   if (tieneDescuento) {
-    // Precio tachado (gris)
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precioOriginal}':fontcolor=0x6b7280:fontsize=50:x=(w-text_w)/2:y=1280:strikethrough=1[con_ptachado]`);
+    // Precio tachado: ffmpeg no tiene "strikethrough" real en drawtext, se
+    // simula dibujando una línea (drawbox) encima del texto, con un ancho
+    // estimado a partir del número de caracteres (no es exacto al pixel,
+    // pero se ve bien y es mucho más simple que medir la fuente real).
+    const textoPrecioTachado = `$${precioOriginal}`;
+    const anchoLineaTachado = Math.round(textoPrecioTachado.length * 50 * 0.56);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='${textoPrecioTachado}':fontcolor=0x6b7280:fontsize=50:x=(w-text_w)/2:y=1280[con_ptachado_txt]`);
+    f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLineaTachado})/2:y=1280+25:w=${anchoLineaTachado}:h=4:color=0x6b7280:t=fill[con_ptachado]`);
     // Descuento (rojo grande)
     f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='${descuento}':fontcolor=0xef4444:fontsize=72:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.4[con_precio]`);
   } else {
