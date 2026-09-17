@@ -88,7 +88,8 @@ async function enviarMensaje(texto) {
   console.log("📱 Enviando ofertas a Telegram...");
 
   const guion = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
-  const cards = fs.readdirSync(CARDS_DIR).filter((f) => f.startsWith("card_") && f.endsWith(".jpg")).sort();
+  const cards = fs.readdirSync(CARDS_DIR).filter((f) => f.startsWith("card_") && f.endsWith(".jpg")).sort()
+    .map((f) => path.join(CARDS_DIR, f));
 
   if (cards.length === 0) {
     console.error("❌ No hay cards en output/cards/");
