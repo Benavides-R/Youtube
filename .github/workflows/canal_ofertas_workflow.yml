@@ -4,9 +4,8 @@ permissions:
   contents: write
 
 on:
-  schedule:
-    - cron: "0 1 * * *"  # 8:00pm hora Colombia
-    - cron: "20 2 * * *"  # 9:20pm hora Colombia
+  # schedule suspendido -- GitHub lo corre con horas de atraso variable.
+  # Se dispara por fuera con cron-job.org a las 8:00pm y 9:20pm Colombia.
   workflow_dispatch:
 
 jobs:
