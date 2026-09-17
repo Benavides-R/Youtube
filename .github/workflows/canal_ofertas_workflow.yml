@@ -59,7 +59,6 @@ jobs:
         run: node scripts/marcar_ofertas_usadas.js
 
       - name: Guardar ofertas ya usadas
-        if: always()
         run: |
           git config user.name "youtube-auto-bot"
           git config user.email "actions@github.com"
