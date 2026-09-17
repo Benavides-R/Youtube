@@ -22,7 +22,7 @@ const BASE_DIR = path.join(__dirname, "..");
 const ELEGIDAS_PATH = path.join(BASE_DIR, "output", "elegidas.json");
 const IMAGENES_DIR = path.join(BASE_DIR, "output", "imagenes");
 const CARDS_DIR = path.join(BASE_DIR, "output", "cards");
-const LOGO_PATH = path.join(BASE_DIR, "assets", "logo.png");
+const LOGO_PATH = path.join(BASE_DIR, "assets", "logo_ofertas.png");
 
 const ANCHO = 1080;
 const ALTO = 1920;
