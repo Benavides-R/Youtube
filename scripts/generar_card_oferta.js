@@ -1,18 +1,16 @@
 /**
  * generar_card_oferta.js
  * ------------------------------------------------------------
- * Genera una tarjeta profesional de oferta (imagen estática)
- * con el producto centrado sobre fondo de color sólido, precio
- * tachado → precio real, nombre del producto, badge y logo.
+ * Genera tarjetas profesionales de oferta (imagen estática)
+ * con producto centrado sobre fondo de color sólido, precio
+ * tachado → precio real, badge y logo.
  *
- * Formato: vertical 1080x1920 (ideal para Stories/Reels)
+ * Formato: vertical 1080x1920 (Stories/Reels)
  *
  * Uso:
  *   node scripts/generar_card_oferta.js
  *
- * Requiere que obtener_ofertas.js haya corrido primero
- * (necesita output/elegidas.json con las ofertas seleccionadas
- * y output/imagenes/ con las fotos descargadas).
+ * Requiere: obtener_ofertas.js primero
  * ------------------------------------------------------------
  */
 
@@ -28,200 +26,236 @@ const LOGO_PATH = path.join(BASE_DIR, "assets", "logo.png");
 
 const ANCHO = 1080;
 const ALTO = 1920;
+const MAX_RETRIES = 3;
 
-// Colores de fondo (rotación para variar entre cards)
-const COLORES_FONDO = [
-  "0x1a365d", // azul marino
-  "0x111827", // gris oscuro
-  "0x1e3a5f", // azul petróleo
-  "0x2d1b4e", // morado oscuro
-  "0x1a2332", // azul非常 oscuro
+// Paleta profesional de fondos
+const PALETA = [
+  { fondo: "0x0f172a", acento: "0x3b82f6", nombre: "slate-900/blue" },
+  { fondo: "0x1e293b", acento: "0x6366f1", nombre: "slate-800/indigo" },
+  { fondo: "0x0c1222", acento: "0x8b5cf6", nombre: "navy/violet" },
+  { fondo: "0x18181b", acento: "0xf59e0b", nombre: "zinc-900/amber" },
+  { fondo: "0x1a1a2e", acento: "0x06b6d4", nombre: "dark/cyan" },
+  { fondo: "0x111827", acento: "0x10b981", nombre: "gray-900/emerald" },
 ];
 
-// Colores de acento para precios
-const COLOR_PRECIO_REAL = "0x22c55e"; // verde
-const COLOR_PRECIO_TACHADO = "0x9ca3af"; // gris
-const COLOR_Badge = "0xef4444"; // rojo
+// Extras visuales
+const BORDE_GRADIENTE = "0x374151"; // borde sutil alrededor del producto
+const SHADOW_COLOR = "black@0.4";
 
-if (!fs.existsSync(ELEGIDAS_PATH)) {
-  console.error("❌ No existe output/elegidas.json. Corre primero obtener_ofertas.js");
-  process.exit(1);
-}
+// ─── Helpers ──────────────────────────────────────────────
 
-const elegidas = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
-
-// También necesitamos los datos completos de las ofertas (título, precio, etc.)
-// obtener_ofertas.js guarda las ofertas completas en elegidas.json como array de links,
-// pero necesitamos los datos. Vamos a re-leer el JSON original.
-const OFERTAS_JSON_URL = process.env.OFERTAS_JSON_URL;
-
-async function cargarDatosOfertas() {
-  if (!OFERTAS_JSON_URL) {
-    console.error("❌ Falta OFERTAS_JSON_URL para obtener datos de las ofertas");
-    process.exit(1);
-  }
-  const respuesta = await fetch(OFERTAS_JSON_URL);
-  if (!respuesta.ok) {
-    console.error(`❌ No se pudo descargar seleccion_video.json (HTTP ${respuesta.status})`);
-    process.exit(1);
-  }
-  return await respuesta.json();
-}
-
-// Escapar texto para FFmpeg drawtext (reemplazar caracteres especiales)
-function escaparTexto(texto) {
-  return texto
-    .replace(/\\/g, "\\\\\\\\")
-    .replace(/"/g, '\\"')
-    .replace(/'/g, "\\'")
-    .replace(/:/g, "\\:")
-    .replace(/\n/g, "");
-}
-
-// Envolver texto en líneas (para nombre del producto)
-function envolverTexto(texto, caracteresPorLinea = 30) {
+function envolverTexto(texto, maxChars = 28) {
   const palabras = texto.split(" ");
   const lineas = [];
-  let lineaActual = "";
-  for (const palabra of palabras) {
-    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
-    if (candidata.length > caracteresPorLinea && lineaActual) {
-      lineas.push(lineaActual);
-      lineaActual = palabra;
+  let actual = "";
+  for (const p of palabras) {
+    const candidata = actual ? `${actual} ${p}` : p;
+    if (candidata.length > maxChars && actual) {
+      lineas.push(actual);
+      actual = p;
     } else {
-      lineaActual = candidata;
+      actual = candidata;
     }
   }
-  if (lineaActual) lineas.push(lineaActual);
+  if (actual) lineas.push(actual);
   return lineas.join("\n");
 }
 
-// Extraer solo el precio numérico de un string como "~$165.900 COP"
-function extraerPrecio(precioTexto) {
-  const match = precioTexto.match(/[\d.]+/);
-  return match ? match[0] : precioTexto;
+function extraerPrecio(txt) {
+  const m = txt.match(/[\d.]+/);
+  return m ? m[0] : txt;
 }
 
+function limpiarTemp(files) {
+  files.forEach((f) => {
+    try { if (fs.existsSync(f)) fs.unlinkSync(f); } catch {}
+  });
+}
+
+function ejecutarFFmpeg(cmd) {
+  execSync(cmd, { stdio: "pipe", timeout: 30000 });
+}
+
+// ─── Generar una card ─────────────────────────────────────
+
+function intentarGenerarCard(opts) {
+  const { oferta, imagenPath, cardPath, paleta, tempFiles, fontPath } = opts;
+  const { fondo, acento } = paleta;
+
+  const tituloCorto = oferta.titulo.slice(0, 50);
+  const tituloEnvuelto = envolverTexto(tituloCorto, 28);
+  const precioOriginal = extraerPrecio(oferta.precio || "");
+  const tieneDescuento = !!oferta.descuento_pct;
+  const descuento = tieneDescuento ? `-${oferta.descuento_pct}%` : "";
+
+  // Escribir textos temporales
+  fs.writeFileSync(tempFiles.titulo, tituloEnvuelto, "utf-8");
+  fs.writeFileSync(tempFiles.precio, `$${precioOriginal}`, "utf-8");
+
+  const fontEsc = fontPath.replace(/:/g, "\\:");
+  const tituloEsc = tempFiles.titulo.replace(/\\/g, "/").replace(/:/g, "\\:");
+  const precioEsc = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
+
+  // ── Filtros FFmpeg ──
+  const f = [];
+
+  // 1. Fondo sólido
+  f.push(`color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
+
+  // 2. Borde decorativo detrás del producto (sombra sutil)
+  f.push(`color=c=${SHADOW_COLOR}:s=640x640:d=1,format=rgba,
+    split[sombra][sombraA];
+    [sombraA]colorchannelmixer=aa=0.3[sombraB]`);
+  f.push(`[base][sombraB]overlay=(W-640)/2:370[con_sombra]`);
+
+  // 3. Producto centrado (contain, sin estirar)
+  f.push(`[1:v]scale=580:-1:force_original_aspect_ratio=decrease,
+    pad=600:600:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
+
+  // 4. Superponer producto
+  f.push(`[con_sombra][producto]overlay=(W-w)/2:390[con_producto]`);
+
+  // 5. Badge rojo "OFERTA DEL DÍA"
+  f.push(`[con_producto]drawbox=x=290:y=100:w=500:h=65:color=0xdc2626:t=fill[con_badge_bg]`);
+  f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=34:x=(w-text_w)/2:y=110:borderw=1:bordercolor=black@0.2[con_badge]`);
+
+  // 6. Línea decorativa debajo del badge
+  f.push(`[con_badge]drawbox=x=340:y=190:w=400:h=3:color=${acento}:t=fill[con_linea]`);
+
+  // 7. Nombre del producto
+  f.push(`[con_linea]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=1080:line_spacing=14:borderw=2:bordercolor=black@0.6[con_titulo]`);
+
+  // 8. Precios
+  if (tieneDescuento) {
+    // Precio tachado (gris)
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precioOriginal}':fontcolor=0x6b7280:fontsize=50:x=(w-text_w)/2:y=1280:strikethrough=1[con_ptachado]`);
+    // Descuento (rojo grande)
+    f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='${descuento}':fontcolor=0xef4444:fontsize=72:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.4[con_precio]`);
+  } else {
+    // Solo precio real (verde grande)
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${precioEsc}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.4[con_precio]`);
+  }
+
+  // 9. Línea decorativa inferior
+  f.push(`[con_precio]drawbox=x=340:y=1500:w=400:h=3:color=${acento}:t=fill[con_linea2]`);
+
+  // 10. CTA
+  f.push(`[con_linea2]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.7:fontsize=34:x=(w-text_w)/2:y=1540:borderw=1:bordercolor=black@0.3[con_cta]`);
+
+  // 11. Logo (opcional)
+  let mapaFinal;
+  if (fs.existsSync(LOGO_PATH)) {
+    f.push(`[2:v]scale=160:-1[logo]`);
+    f.push(`[con_cta][logo]overlay=W-w-25:H-h-25[salida]`);
+    mapaFinal = "[salida]";
+  } else {
+    mapaFinal = "[con_cta]";
+  }
+
+  const filtroFinal = f.join(",");
+  const inputs = fs.existsSync(LOGO_PATH)
+    ? `-i "${imagenPath}" -i "${LOGO_PATH}"`
+    : `-i "${imagenPath}"`;
+
+  const cmd = `ffmpeg -y -f lavfi -i "color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1" ${inputs} -filter_complex "${filtroFinal}" -map "${mapaFinal}" -frames:v 1 "${cardPath}"`;
+
+  ejecutarFFmpeg(cmd);
+}
+
+// ─── Flujo principal ──────────────────────────────────────
+
 async function generarCardOferta(oferta, indice, total) {
-  const colorFondo = COLORES_FONDO[indice % COLORES_FONDO.length];
   const numeroImagen = String(indice + 1).padStart(2, "0");
   const imagenPath = path.join(IMAGENES_DIR, `escena_${numeroImagen}.jpg`);
   const cardPath = path.join(CARDS_DIR, `card_${numeroImagen}.jpg`);
 
   if (!fs.existsSync(imagenPath)) {
-    console.error(`  ⚠️ No existe imagen escena_${numeroImagen}.jpg, saltando...`);
+    console.error(`  ⚠️  No existe escena_${numeroImagen}.jpg, saltando...`);
     return null;
   }
 
-  // Preparar textos
-  const tituloCorto = oferta.titulo.slice(0, 50);
-  const tituloEnvuelto = envolverTexto(tituloCorto, 28);
-  const precioOriginal = extraerPrecio(oferta.precio || "");
-  const descuento = oferta.descuento_pct ? `-${oferta.descuento_pct}%` : "";
+  const fontPath = process.platform === "win32"
+    ? "C:/Windows/Fonts/arial.ttf"
+    : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
 
-  // Archivos temporales para drawtext (FFmpeg necesita archivos, no strings)
-  const tempTitulo = path.join(BASE_DIR, "output", `_card_titulo_${numeroImagen}.txt`);
-  const tempPrecio = path.join(BASE_DIR, "output", `_card_precio_${numeroImagen}.txt`);
+  const tempFiles = {
+    titulo: path.join(BASE_DIR, "output", `_card_titulo_${numeroImagen}.txt`),
+    precio: path.join(BASE_DIR, "output", `_card_precio_${numeroImagen}.txt`),
+  };
 
-  fs.writeFileSync(tempTitulo, tituloEnvuelto, "utf-8");
-  fs.writeFileSync(tempPrecio, `$${precioOriginal}`, "utf-8");
+  // Rotar paleta por índice para variar entre cards
+  const paletaBase = PALETA[indice % PALETA.length];
 
-  const fontPath =
-    process.platform === "win32"
-      ? "C:/Windows/Fonts/arial.ttf"
-      : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
-  const fontPathEscapado = fontPath.replace(/:/g, "\\:");
-  const tempTituloEscapado = tempTitulo.replace(/\\/g, "/").replace(/:/g, "\\:");
-  const tempPrecioEscapado = tempPrecio.replace(/\\/g, "/").replace(/:/g, "\\:");
+  for (let intento = 1; intento <= MAX_RETRIES; intento++) {
+    // En reintentos, rotar a siguiente paleta
+    const paleta = intento === 1
+      ? paletaBase
+      : PALETA[(indice + intento) % PALETA.length];
 
-  try {
-    // Construir filtro FFmpeg
-    const filtros = [];
+    try {
+      limpiarTemp(Object.values(tempFiles));
 
-    // 1. Fondo de color sólido
-    filtros.push(`color=c=${colorFondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
+      intentarGenerarCard({
+        oferta,
+        imagenPath,
+        cardPath,
+        paleta,
+        tempFiles,
+        fontPath,
+      });
 
-    // 2. Producto centrado con padding (contain, no stretch)
-    //    Escalar para que quepa dentro de un rectángulo 700x700 centrado
-    filtros.push(`[1:v]scale=600:-1:force_original_aspect_ratio=decrease,pad=620:620:(ow-iw)/2:(oh-ih)/2:color=${colorFondo}[producto]`);
-
-    // 3. Superponer producto sobre el fondo
-    filtros.push(`[base][producto]overlay=(W-w)/2:400[con_producto]`);
-
-    // 4. Badge "OFERTA DEL DÍA" arriba
-    filtros.push(`[con_producto]drawbox=x=340:y=120:w=400:h=60:color=0xef4444:t=fill[con_badge]`);
-
-    // 5. Texto del badge
-    filtros.push(`[con_badge]drawtext=fontfile='${fontPathEscapado}':text='OFERTA DEL DIA':fontcolor=white:fontsize=32:x=(w-text_w)/2:y=130:borderw=1:bordercolor=black@0.3[con_badge_texto]`);
-
-    // 6. Nombre del producto (abajo del producto)
-    filtros.push(`[con_badge_texto]drawtext=fontfile='${fontPathEscapado}':textfile='${tempTituloEscapado}':fontcolor=white:fontsize=42:x=(w-text_w)/2:y=1100:line_spacing=12:borderw=2:bordercolor=black@0.5[con_titulo]`);
-
-    // 7. Precio tachado (si hay descuento)
-    if (descuento) {
-      filtros.push(`[con_titulo]drawtext=fontfile='${fontPathEscapado}':text='$${precioOriginal}':fontcolor=0x9ca3af:fontsize=48:x=(w-text_w)/2:y=1300:strikethrough=1[con_precio_tachado]`);
-
-      // 8. Precio real (más grande, verde)
-      filtros.push(`[con_precio_tachado]drawtext=fontfile='${fontPathEscapado}':text='${descuento}':fontcolor=0xef4444:fontsize=56:x=(w-text_w)/2:y=1380:borderw=2:bordercolor=black@0.3[con_precio_final]`);
-    } else {
-      // Sin descuento, solo mostrar precio
-      filtros.push(`[con_titulo]drawtext=fontfile='${fontPathEscapado}':textfile='${tempPrecioEscapado}':fontcolor=0x22c55e:fontsize=64:x=(w-text_w)/2:y=1320:borderw=2:bordercolor=black@0.3[con_precio_final]`);
+      console.log(`  ✅ card_${numeroImagen}.jpg — ${oferta.titulo.slice(0, 40)}...`);
+      return cardPath;
+    } catch (err) {
+      const errMsg = err.stderr ? err.stderr.toString().slice(0, 150) : err.message;
+      if (intento < MAX_RETRIES) {
+        console.log(`  ⚠️  Intento ${intento}/${MAX_RETRIES} falló, reintentando con otro color...`);
+      } else {
+        console.error(`  ❌ Card ${numeroImagen} falló tras ${MAX_RETRIES} intentos: ${errMsg}`);
+      }
+    } finally {
+      limpiarTemp(Object.values(tempFiles));
     }
-
-    // 9. Link / CTA abajo
-    filtros.push(`[con_precio_final]drawtext=fontfile='${fontPathEscapado}':text='Link en comentarios 👇':fontcolor=white@0.8:fontsize=36:x=(w-text_w)/2:y=1600:borderw=1:bordercolor=black@0.3[con_cta]`);
-
-    let filtroFinal;
-    let inputs;
-    let mapaFinal;
-
-    if (fs.existsSync(LOGO_PATH)) {
-      // Con logo: [1:v]=producto, [2:v]=logo
-      filtros.push(`[2:v]scale=180:-1[logo]`);
-      filtros.push(`[con_cta][logo]overlay=W-w-30:H-h-30[salida]`);
-      filtroFinal = filtros.join(",");
-      inputs = `-i "${imagenPath}" -i "${LOGO_PATH}"`;
-      mapaFinal = "[salida]";
-    } else {
-      filtroFinal = filtros.join(",");
-      inputs = `-i "${imagenPath}"`;
-      mapaFinal = "[con_cta]";
-    }
-
-    // Crear directorio de salida
-    fs.mkdirSync(CARDS_DIR, { recursive: true });
-
-    const cmd = `ffmpeg -y -f lavfi -i "color=c=${colorFondo}:s=${ANCHO}x${ALTO}:d=1" ${inputs} -filter_complex "${filtroFinal}" -map "${mapaFinal}" -frames:v 1 "${cardPath}"`;
-
-    execSync(cmd, { stdio: "pipe" });
-
-    console.log(`  ✅ card_${numeroImagen}.jpg — ${tituloCorto}`);
-    return cardPath;
-  } catch (err) {
-    console.error(`  ❌ Error generando card para "${oferta.titulo}":`, err.stderr ? err.stderr.toString().slice(0, 200) : err.message);
-    return null;
-  } finally {
-    // Limpiar archivos temporales
-    [tempTitulo, tempPrecio].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
   }
+
+  return null;
 }
 
+// ─── Main ─────────────────────────────────────────────────
+
 (async () => {
-  console.log("🖼️  Generando cards de ofertas...");
+  console.log("🖼️  Generando cards de ofertas...\n");
 
-  // Cargar datos completos de ofertas
-  const todasLasOfertas = await cargarDatosOfertas();
-  const linksElegidos = new Set(elegidas);
+  if (!fs.existsSync(ELEGIDAS_PATH)) {
+    console.error("❌ No existe output/elegidas.json. Corre primero obtener_ofertas.js");
+    process.exit(1);
+  }
 
-  // Filtrar solo las ofertas que fueron elegidas
-  const ofertasConDatos = todasLasOfertas.filter((o) => linksElegidos.has(o.link));
+  const elegidas = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
+  const OFERTAS_JSON_URL = process.env.OFERTAS_JSON_URL;
+
+  if (!OFERTAS_JSON_URL) {
+    console.error("❌ Falta OFERTAS_JSON_URL");
+    process.exit(1);
+  }
+
+  const respuesta = await fetch(OFERTAS_JSON_URL);
+  if (!respuesta.ok) {
+    console.error(`❌ No se pudo descargar seleccion_video.json (HTTP ${respuesta.status})`);
+    process.exit(1);
+  }
+  const todasLasOfertas = await respuesta.json();
+  const linksSet = new Set(elegidas);
+  const ofertasConDatos = todasLasOfertas.filter((o) => linksSet.has(o.link));
 
   if (ofertasConDatos.length === 0) {
     console.error("❌ No se encontraron datos de las ofertas elegidas");
     process.exit(1);
   }
 
-  console.log(`📋 ${ofertasConDatos.length} ofertas para generar cards`);
+  console.log(`📋 ${ofertasConDatos.length} ofertas para generar cards\n`);
+
+  fs.mkdirSync(CARDS_DIR, { recursive: true });
 
   const cardsGeneradas = [];
   for (let i = 0; i < ofertasConDatos.length; i++) {
@@ -230,15 +264,14 @@ async function generarCardOferta(oferta, indice, total) {
   }
 
   if (cardsGeneradas.length === 0) {
-    console.error("❌ No se generó ninguna card");
+    console.error("\n❌ No se generó ninguna card");
     process.exit(1);
   }
 
-  // Guardar lista de cards generadas
   fs.writeFileSync(
     path.join(BASE_DIR, "output", "cards_generadas.json"),
     JSON.stringify(cardsGeneradas, null, 2)
   );
 
-  console.log(`\n✅ ${cardsGeneradas.length} cards generadas en output/cards/`);
+  console.log(`\n✅ ${cardsGeneradas.length}/${ofertasConDatos.length} cards generadas en output/cards/`);
 })();
