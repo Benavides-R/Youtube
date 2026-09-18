@@ -90,12 +90,14 @@ function generarNarracionProducto(oferta, indice, total) {
 
   let frase = `${conector}${nombre}`;
 
-  if (precio) {
+  if (precio && oferta.descuento_pct) {
+    // Calcular precio original para mencionarlo
+    const numActual = parseInt(precio.replace(/\./g, "").replace(" pesos", ""));
+    const original = Math.round(numActual / (1 - oferta.descuento_pct / 100));
+    const originalFormateado = original.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " pesos";
+    frase += `, que costaba ${originalFormateado}, ahora por tan solo ${precio}, con ${oferta.descuento_pct} por ciento de descuento`;
+  } else if (precio) {
     frase += `, por tan solo ${precio}`;
-  }
-
-  if (oferta.descuento_pct) {
-    frase += `, con ${oferta.descuento_pct} por ciento de descuento`;
   }
 
   if (oferta.tiene_cupon) {

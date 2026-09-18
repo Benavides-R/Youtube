@@ -66,6 +66,16 @@ function extraerPrecio(txt) {
   return m[0];
 }
 
+// Calcular precio original a partir del precio actual y el descuento
+// Si el precio actual es 165.900 y el descuento es 30%, el original era ~237.000
+function calcularPrecioOriginal(precioActual, descuentoPct) {
+  if (!precioActual || !descuentoPct) return null;
+  const numActual = parseInt(precioActual.replace(/\./g, ""));
+  const original = Math.round(numActual / (1 - descuentoPct / 100));
+  // Formatear con puntos como separador de miles
+  return original.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 function limpiarTemp(files) {
   files.forEach((f) => {
     try { if (fs.existsSync(f)) fs.unlinkSync(f); } catch {}
@@ -127,12 +137,18 @@ function intentarGenerarCard(opts) {
 
   // 9. Bloque de precio
   if (tieneDescuento) {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='PRECIO CON DESCUENTO':fontcolor=white@0.7:fontsize=28:x=(w-text_w)/2:y=1320:borderw=1:bordercolor=black@0.3[con_label]`);
-    f.push(`[con_label]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1370:strikethrough=1[con_ptachado]`);
-    f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='-${oferta.descuento_pct}%':fontcolor=0xfbbf24:fontsize=80:x=(w-text_w)/2:y=1440:borderw=3:bordercolor=black@0.5[con_precio]`);
+    const precioOriginal = calcularPrecioOriginal(precio, oferta.descuento_pct);
+    if (precioOriginal) {
+      // Precio original tachado (gris)
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precioOriginal}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1320:strikethrough=1[con_ptachado]`);
+      // Precio con descuento (amarillo grande)
+      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
+    } else {
+      // Sin precio original calculable, solo mostrar precio actual
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
+    }
   } else if (precio) {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='PRECIO ESPECIAL':fontcolor=white@0.7:fontsize=28:x=(w-text_w)/2:y=1340:borderw=1:bordercolor=black@0.3[con_label]`);
-    f.push(`[con_label]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
   } else {
     f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=56:x=(w-text_w)/2:y=1380:borderw=2:bordercolor=black@0.4[con_precio]`);
   }
