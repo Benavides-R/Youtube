@@ -23,8 +23,7 @@ const fs = require("fs");
 const path = require("path");
 
 const OFERTAS_JSON_URL = process.env.OFERTAS_JSON_URL;
-const MIN_OFERTAS_POR_VIDEO = 2;
-const MAX_OFERTAS_POR_VIDEO = 5;
+const MIN_OFERTAS_POR_VIDEO = 1;
 const VOZ = process.env.OFERTAS_VOZ || "es-CO-GonzaloNeural";
 
 const BASE_DIR = path.join(__dirname, "..");
@@ -121,8 +120,8 @@ async function descargarImagen(url, destino) {
     process.exit(0);
   }
 
-  const elegidas = disponibles.slice(0, MAX_OFERTAS_POR_VIDEO);
-  console.log(`✅ ${elegidas.length} ofertas para este video: ${elegidas.map((o) => o.titulo).join(" | ")}`);
+  const elegidas = disponibles;
+  console.log(`✅ ${elegidas.length} ofertas para este lote: ${elegidas.map((o) => o.titulo).join(" | ")}`);
 
   // 1. guion.json
   const guionTexto = armarGuion(elegidas);
