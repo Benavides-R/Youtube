@@ -116,8 +116,8 @@ async function descargarImagen(url, destino) {
   const disponibles = todas.filter((o) => o.link && !procesadas.has(o.link));
 
   if (disponibles.length < MIN_OFERTAS_POR_VIDEO) {
-    console.log(`ℹ️  Solo hay ${disponibles.length} oferta(s) nueva(s), se necesitan al menos ${MIN_OFERTAS_POR_VIDEO}. Se omite este video por ahora.`);
-    process.exit(0);
+    console.log(`ℹ️  Solo hay ${disponibles.length} oferta(s) nueva(s), se necesitan al menos ${MIN_OFERTAS_POR_VIDEO}. No hay ofertas para procesar.`);
+    process.exit(1);
   }
 
   const elegidas = disponibles;

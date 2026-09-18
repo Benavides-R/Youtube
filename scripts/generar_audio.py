@@ -231,6 +231,10 @@ async def generar_audio():
         import shutil
         shutil.move(AUDIO_PATH + ".mejor", AUDIO_PATH)
 
+    if not os.path.exists(AUDIO_PATH):
+        print("❌ No se generó el audio. No hay con qué armar el video.")
+        sys.exit(1)
+
     tamaño_mb = os.path.getsize(AUDIO_PATH) / (1024 * 1024)
     print(f"✅ Audio generado: {AUDIO_PATH}")
     print(f"📦 Tamaño: {tamaño_mb:.2f} MB")

@@ -83,6 +83,12 @@ const CONECTORES = [
   "Esta otra qué tal:",
 ];
 
+const CONECTORES_FINAL = [
+  "Y para cerrar, esta no se la pueden perder:",
+  "Y la última de hoy:",
+  "Para terminar, miren esta:",
+];
+
 const CIERRES = [
   "Y eso es todo por hoy. Los links están en la descripción. Síganos para más ofertas.",
   "Esas son las de hoy. Encuentran los links abajo. No se pierdan las próximas.",
@@ -97,7 +103,7 @@ function generarNarracionProducto(oferta, indice, total) {
   if (indice === 0) {
     conector = elegir(GANCHOS) + " ";
   } else if (indice === total - 1) {
-    conector = elegir(CONECTORES) + " ";
+    conector = elegir(CONECTORES_FINAL) + " ";
   } else {
     conector = elegir(CONECTORES) + " ";
   }
