@@ -86,6 +86,14 @@ function ejecutarFFmpeg(cmd) {
   execSync(cmd, { stdio: "pipe", timeout: 30000 });
 }
 
+// Verificar que la card generada no esté corrupta
+function validarCard(cardPath) {
+  if (!fs.existsSync(cardPath)) return false;
+  const stats = fs.statSync(cardPath);
+  if (stats.size < 10000) return false; // menor a 10KB = probablemente corrupta
+  return true;
+}
+
 // ─── Generar una card ─────────────────────────────────────
 
 function intentarGenerarCard(opts) {
@@ -217,6 +225,11 @@ async function generarCardOferta(oferta, indice, total) {
         fontPath,
       });
 
+      // Validar que la card no esté corrupta
+      if (!validarCard(cardPath)) {
+        throw new Error("Card generada pero corrupta o muy pequeña");
+      }
+
       console.log(`  ✅ card_${numeroImagen}.jpg — ${oferta.titulo.slice(0, 40)}...`);
       return cardPath;
     } catch (err) {
@@ -277,8 +290,12 @@ async function generarCardOferta(oferta, indice, total) {
   }
 
   if (cardsGeneradas.length === 0) {
-    console.error("\n❌ No se generó ninguna card");
+    console.error("\n❌ No se generó ninguna card — no hay con qué armar el video");
     process.exit(1);
+  }
+
+  if (cardsGeneradas.length < ofertasConDatos.length) {
+    console.log(`\n⚠️  Solo ${cardsGeneradas.length}/${ofertasConDatos.length} cards se generaron bien. Las demás fallaron.`);
   }
 
   fs.writeFileSync(

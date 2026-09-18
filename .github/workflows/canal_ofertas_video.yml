@@ -36,18 +36,32 @@ jobs:
 
       # ── PASO 1: Obtener ofertas ──
       - name: Obtener ofertas
+        id: ofertas
         env:
           OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
         run: node scripts/obtener_ofertas.js
 
       # ── PASO 2: Generar cards profesionales ──
       - name: Generar cards de ofertas
+        id: cards
         env:
           OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
         run: node scripts/generar_card_oferta.js
 
+      # ── PASO 2b: Validar que al menos 1 card exista ──
+      - name: Validar cards generadas
+        run: |
+         /cards=$(ls output/cards/card_*.jpg 2>/dev/null | wc -l)
+          echo "Cards generadas: $cards"
+          if [ "$cards" -eq 0 ]; then
+            echo "❌ No se generó ninguna card. No hay con qué armar el video."
+            exit 1
+          fi
+          echo "✅ Hay $cards cards para procesar"
+
       # ── PASO 3: Generar narración para TTS ──
       - name: Generar narración
+        id: narracion
         env:
           OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
         run: node scripts/generar_narracion_ofertas.js
@@ -66,11 +80,23 @@ jobs:
 
       # ── PASO 5: Generar audio con TTS ──
       - name: Generar audio y subtítulos
+        id: audio
         run: python scripts/generar_audio.py
 
       # ── PASO 6: Ensamblar video ──
       - name: Ensamblar video
+        id: video
         run: node scripts/ensamblar_video.js
+
+      # ── PASO 6b: Validar que el video exista ──
+      - name: Validar video generado
+        run: |
+          if [ ! -f "output/video_final.mp4" ]; then
+            echo "❌ No se generó el video final"
+            exit 1
+          fi
+          size=$(stat -c%s "output/video_final.mp4" 2>/dev/null || stat -f%z "output/video_final.mp4")
+          echo "✅ Video generado: $(($size / 1048576)) MB"
 
       # ── PASO 7: Subir a YouTube ──
       - name: Preparar credenciales YouTube
@@ -80,10 +106,13 @@ jobs:
           echo '${{ secrets.YT_TOKEN_JSON }}' > config/token.json
 
       - name: Subir a YouTube
+        id: youtube
         run: node scripts/subir_youtube.js
 
       # ── PASO 8: Subir a Facebook Reels ──
       - name: Subir a Facebook Reels
+        id: facebook
+        continue-on-error: true
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_TECNOLOGIA }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_TECNOLOGIA }}
@@ -108,6 +137,7 @@ jobs:
       # ── PASO 11: Notificar por Telegram ──
       - name: Notificar por Telegram
         if: always()
+        continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -115,7 +145,8 @@ jobs:
 
       # ── PASO 12: Enviar respaldo si YouTube falló ──
       - name: Enviar video de respaldo a Telegram
-        if: failure()
+        if: failure() && steps.youtube.outcome == 'failure'
+        continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

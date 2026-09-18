@@ -127,70 +127,98 @@ function generarNarracionProducto(oferta, indice, total) {
 (async () => {
   console.log("📝 Generando narración para ofertas...\n");
 
-  const elegidas = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
+  try {
+    const elegidas = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
 
-  const respuesta = await fetch(OFERTAS_JSON_URL);
-  if (!respuesta.ok) {
-    console.error(`❌ No se pudo descargar seleccion_video.json (HTTP ${respuesta.status})`);
-    process.exit(1);
+    const respuesta = await fetch(OFERTAS_JSON_URL);
+    if (!respuesta.ok) {
+      throw new Error(`HTTP ${respuesta.status} al descargar seleccion_video.json`);
+    }
+    const todasLasOfertas = await respuesta.json();
+    const linksSet = new Set(elegidas);
+    const ofertasConDatos = todasLasOfertas.filter((o) => linksSet.has(o.link));
+
+    if (ofertasConDatos.length === 0) {
+      throw new Error("No se encontraron datos de las ofertas elegidas");
+    }
+
+    // Armar narración completa (si una oferta falla, se salta)
+    const partes = [];
+    for (let i = 0; i < ofertasConDatos.length; i++) {
+      try {
+        const parte = generarNarracionProducto(ofertasConDatos[i], i, ofertasConDatos.length);
+        partes.push(parte);
+      } catch (err) {
+        console.error(`  ⚠️ Error narrando oferta ${i + 1}: ${err.message}, saltando...`);
+      }
+    }
+
+    if (partes.length === 0) {
+      throw new Error("No se pudo generar ninguna parte de la narración");
+    }
+
+    const ganchoFinal = elegir(CIERRES);
+    const guionTexto = partes.join("") + ganchoFinal;
+
+    // Título para YouTube
+    const titulo = ofertasConDatos.length === 1
+      ? `${acortarParaVoz(ofertasConDatos[0].titulo, 6)} — Oferta del día`
+      : `${ofertasConDatos.length} Ofertas de Hoy que No Te Puedes Perder`;
+
+    // Descripción para YouTube/Facebook
+    const descripcion = ofertasConDatos.map((o, i) => {
+      let linea = `${i + 1}. ${o.titulo}`;
+      if (o.precio) linea += ` — ${o.precio}`;
+      if (o.descuento_pct) linea += ` (-${o.descuento_pct}%)`;
+      if (o.link) linea += `\n   ${o.link}`;
+      return linea;
+    }).join("\n\n") + "\n\nMas ofertas en nuestro Telegram.";
+
+    // Tags
+    const tags = [
+      "ofertas",
+      "descuentos",
+      "amazon",
+      "ofertas del día",
+      "descuentos amazon",
+      "compras inteligentes",
+      "tecnología",
+      "ahorro",
+    ];
+
+    const guionData = {
+      titulo,
+      guion: guionTexto,
+      descripcion,
+      tags,
+      voz: VOZ,
+      formato: "vertical",
+      subtitulos_abajo: true,
+    };
+
+    fs.mkdirSync(path.dirname(GUION_PATH), { recursive: true });
+    fs.writeFileSync(GUION_PATH, JSON.stringify(guionData, null, 2));
+
+    console.log(`✅ Narración generada (${partes.length}/${ofertasConDatos.length} ofertas)`);
+    console.log(`📹 Título: ${titulo}`);
+    console.log(`🎙️  Texto: ${guionTexto.slice(0, 100)}...`);
+  } catch (err) {
+    // Si falla todo, crear un guion mínimo para que el pipeline siga
+    console.error(`⚠️  Error generando narración: ${err.message}`);
+    console.log("📝 Creando guion de respaldo...");
+
+    const guionFallback = {
+      titulo: "Ofertas del día",
+      guion: "Estas son las mejores ofertas de hoy. Miren los links en la descripción.",
+      descripcion: "Ofertas del día en nuestro canal.",
+      tags: ["ofertas", "descuentos", "amazon"],
+      voz: VOZ,
+      formato: "vertical",
+      subtitulos_abajo: true,
+    };
+
+    fs.mkdirSync(path.dirname(GUION_PATH), { recursive: true });
+    fs.writeFileSync(GUION_PATH, JSON.stringify(guionFallback, null, 2));
+    console.log("✅ Guion de respaldo generado");
   }
-  const todasLasOfertas = await respuesta.json();
-  const linksSet = new Set(elegidas);
-  const ofertasConDatos = todasLasOfertas.filter((o) => linksSet.has(o.link));
-
-  if (ofertasConDatos.length === 0) {
-    console.error("❌ No se encontraron datos de las ofertas elegidas");
-    process.exit(1);
-  }
-
-  // Armar narración completa
-  const partes = ofertasConDatos.map((o, i) =>
-    generarNarracionProducto(o, i, ofertasConDatos.length)
-  );
-
-  const ganchoFinal = elegir(CIERRES);
-  const guionTexto = partes.join("") + ganchoFinal;
-
-  // Título para YouTube
-  const titulo = ofertasConDatos.length === 1
-    ? `${acortarParaVoz(ofertasConDatos[0].titulo, 6)} — Oferta del día 🔥`
-    : `${ofertasConDatos.length} Ofertas de Hoy que No Te Puedes Perder 🔥`;
-
-  // Descripción para YouTube/Facebook
-  const descripcion = ofertasConDatos.map((o, i) => {
-    let linea = `${i + 1}. ${o.titulo}`;
-    if (o.precio) linea += ` — ${o.precio}`;
-    if (o.descuento_pct) linea += ` (-${o.descuento_pct}%)`;
-    if (o.link) linea += `\n   🔗 ${o.link}`;
-    return linea;
-  }).join("\n\n") + "\n\n📢 Más ofertas en nuestro Telegram.";
-
-  // Tags
-  const tags = [
-    "ofertas",
-    "descuentos",
-    "amazon",
-    "ofertas del día",
-    "descuentos amazon",
-    "compras inteligentes",
-    "tecnología",
-    "ahorro",
-  ];
-
-  const guionData = {
-    titulo,
-    guion: guionTexto,
-    descripcion,
-    tags,
-    voz: VOZ,
-    formato: "vertical",
-    subtitulos_abajo: true,
-  };
-
-  fs.mkdirSync(path.dirname(GUION_PATH), { recursive: true });
-  fs.writeFileSync(GUION_PATH, JSON.stringify(guionData, null, 2));
-
-  console.log(`✅ Narración generada (${ofertasConDatos.length} ofertas)`);
-  console.log(`📹 Título: ${titulo}`);
-  console.log(`🎙️  Texto: ${guionTexto.slice(0, 100)}...`);
 })();
