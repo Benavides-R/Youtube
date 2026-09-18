@@ -2,8 +2,8 @@
  * generar_card_oferta.js
  * ------------------------------------------------------------
  * Genera tarjetas profesionales de oferta (imagen estática)
- * con producto centrado sobre fondo de color sólido, precio
- * tachado → precio real, badge y logo.
+ * con producto centrado sobre fondo dinámico, precio con
+ * descuento, badge y logo.
  *
  * Formato: vertical 1080x1920 (Stories/Reels)
  *
@@ -28,23 +28,19 @@ const ANCHO = 1080;
 const ALTO = 1920;
 const MAX_RETRIES = 3;
 
-// Paleta profesional de fondos
+// Paleta profesional de fondos con acentos
 const PALETA = [
-  { fondo: "0x0f172a", acento: "0x3b82f6", nombre: "slate-900/blue" },
-  { fondo: "0x1e293b", acento: "0x6366f1", nombre: "slate-800/indigo" },
-  { fondo: "0x0c1222", acento: "0x8b5cf6", nombre: "navy/violet" },
-  { fondo: "0x18181b", acento: "0xf59e0b", nombre: "zinc-900/amber" },
-  { fondo: "0x1a1a2e", acento: "0x06b6d4", nombre: "dark/cyan" },
-  { fondo: "0x111827", acento: "0x10b981", nombre: "gray-900/emerald" },
+  { fondo: "0x0f172a", acento: "0x3b82f6", glow: "0x1e40af" },
+  { fondo: "0x1e293b", acento: "0x6366f1", glow: "0x4338ca" },
+  { fondo: "0x0c1222", acento: "0x8b5cf6", glow: "0x6d28d9" },
+  { fondo: "0x18181b", acento: "0xf59e0b", glow: "0xd97706" },
+  { fondo: "0x1a1a2e", acento: "0x06b6d4", glow: "0x0891b2" },
+  { fondo: "0x111827", acento: "0x10b981", glow: "0x059669" },
 ];
-
-// Extras visuales
-const BORDE_GRADIENTE = "0x374151"; // borde sutil alrededor del producto
-const SHADOW_COLOR = "black@0.4";
 
 // ─── Helpers ──────────────────────────────────────────────
 
-function envolverTexto(texto, maxChars = 28) {
+function envolverTexto(texto, maxChars = 30) {
   const palabras = texto.split(" ");
   const lineas = [];
   let actual = "";
@@ -62,8 +58,12 @@ function envolverTexto(texto, maxChars = 28) {
 }
 
 function extraerPrecio(txt) {
+  if (!txt) return null;
   const m = txt.match(/[\d.]+/);
-  return m ? m[0] : txt;
+  if (!m) return null;
+  const num = m[0].replace(/\./g, "");
+  if (parseInt(num) < 1000) return null;
+  return m[0];
 }
 
 function limpiarTemp(files) {
@@ -80,73 +80,74 @@ function ejecutarFFmpeg(cmd) {
 
 function intentarGenerarCard(opts) {
   const { oferta, imagenPath, cardPath, paleta, tempFiles, fontPath } = opts;
-  const { fondo, acento } = paleta;
+  const { fondo, acento, glow } = paleta;
 
-  const tituloCorto = oferta.titulo.slice(0, 50);
-  const tituloEnvuelto = envolverTexto(tituloCorto, 28);
-  const precioOriginal = extraerPrecio(oferta.precio || "");
-  const tieneDescuento = !!oferta.descuento_pct;
-  const descuento = tieneDescuento ? `-${oferta.descuento_pct}\\%` : "";
+  const tituloCorto = oferta.titulo.slice(0, 55);
+  const tituloEnvuelto = envolverTexto(tituloCorto, 26);
+  const precio = extraerPrecio(oferta.precio || "");
+  const tieneDescuento = !!oferta.descuento_pct && precio;
 
-  // Escribir textos temporales
   fs.writeFileSync(tempFiles.titulo, tituloEnvuelto, "utf-8");
-  fs.writeFileSync(tempFiles.precio, `$${precioOriginal}`, "utf-8");
 
   const fontEsc = fontPath.replace(/:/g, "\\:");
   const tituloEsc = tempFiles.titulo.replace(/\\/g, "/").replace(/:/g, "\\:");
-  const precioEsc = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
 
-  // ── Filtros FFmpeg ──
   const f = [];
 
-  // 1. Fondo sólido
+  // 1. Fondo base oscuro
   f.push(`color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
 
-  // 2. Producto centrado (contain, sin estirar)
-  f.push(`[1:v]scale=580:-1:force_original_aspect_ratio=decrease,
-    pad=600:600:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
+  // 2. Degradado radial central (luz suave)
+  f.push(`color=c=${glow}:s=${ANCHO}x${ALTO}:d=1,format=rgba,
+    geq=lum='p(X,Y)':a='if(lt(abs(X-${ANCHO}/2),300)*lt(abs(Y-${ALTO}/2-100),400),40,0)'[glow]`);
+  f.push(`[base][glow]overlay=0:0[con_glow]`);
 
-  // 3. Superponer producto directo sobre el fondo
-  f.push(`[base][producto]overlay=(W-w)/2:390[con_producto]`);
+  // 3. Líneas decorativas sutiles
+  f.push(`[con_glow]drawbox=x=50:y=250:w=100:h=2:color=${acento}@0.15:t=fill,
+    drawbox=x=930:y=250:w=100:h=2:color=${acento}@0.15:t=fill,
+    drawbox=x=50:y=1650:w=100:h=2:color=${acento}@0.15:t=fill,
+    drawbox=x=930:y=1650:w=100:h=2:color=${acento}@0.15:t=fill[con_lineas]`);
 
-  // 5. Badge rojo "OFERTA DEL DÍA"
-  f.push(`[con_producto]drawbox=x=290:y=100:w=500:h=65:color=0xdc2626:t=fill[con_badge_bg]`);
-  f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=34:x=(w-text_w)/2:y=110:borderw=1:bordercolor=black@0.2[con_badge]`);
+  // 4. Producto GRANDE (750px = ~70% del ancho)
+  f.push(`[1:v]scale=750:-1:force_original_aspect_ratio=decrease,
+    pad=770:770:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
 
-  // 6. Línea decorativa debajo del badge
-  f.push(`[con_badge]drawbox=x=340:y=190:w=400:h=3:color=${acento}:t=fill[con_linea]`);
+  // 5. Borde blanco alrededor del producto
+  f.push(`[producto]drawbox=x=0:y=0:w=770:h=770:color=white@0.9:t=3[con_marco]`);
 
-  // 7. Nombre del producto
-  f.push(`[con_linea]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=1080:line_spacing=14:borderw=2:bordercolor=black@0.6[con_titulo]`);
+  // 6. Superponer producto centrado
+  f.push(`[con_lineas][con_marco]overlay=(W-w)/2:320[con_producto]`);
 
-  // 8. Precios
+  // 7. Badge rojo GRANDE
+  f.push(`[con_producto]drawbox=x=240:y=80:w=600:h=80:color=0xdc2626:t=fill[con_badge_bg]`);
+  f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=93:borderw=2:bordercolor=black@0.3[con_badge]`);
+
+  // 8. Nombre del producto centrado
+  f.push(`[con_badge]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=1150:line_spacing=16:borderw=2:bordercolor=black@0.7[con_titulo]`);
+
+  // 9. Bloque de precio
   if (tieneDescuento) {
-    // Precio tachado: ffmpeg no tiene "strikethrough" real en drawtext, se
-    // simula dibujando una línea (drawbox) encima del texto, con un ancho
-    // estimado a partir del número de caracteres (no es exacto al pixel,
-    // pero se ve bien y es mucho más simple que medir la fuente real).
-    const textoPrecioTachado = `$${precioOriginal}`;
-    const anchoLineaTachado = Math.round(textoPrecioTachado.length * 50 * 0.56);
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='${textoPrecioTachado}':fontcolor=0x6b7280:fontsize=50:x=(w-text_w)/2:y=1280[con_ptachado_txt]`);
-    f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLineaTachado})/2:y=1280+25:w=${anchoLineaTachado}:h=4:color=0x6b7280:t=fill[con_ptachado]`);
-    // Descuento (rojo grande)
-    f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='${descuento}':fontcolor=0xef4444:fontsize=72:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.4[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='PRECIO CON DESCUENTO':fontcolor=white@0.7:fontsize=28:x=(w-text_w)/2:y=1320:borderw=1:bordercolor=black@0.3[con_label]`);
+    f.push(`[con_label]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1370:strikethrough=1[con_ptachado]`);
+    f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='-${oferta.descuento_pct}%':fontcolor=0xfbbf24:fontsize=80:x=(w-text_w)/2:y=1440:borderw=3:bordercolor=black@0.5[con_precio]`);
+  } else if (precio) {
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='PRECIO ESPECIAL':fontcolor=white@0.7:fontsize=28:x=(w-text_w)/2:y=1340:borderw=1:bordercolor=black@0.3[con_label]`);
+    f.push(`[con_label]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
   } else {
-    // Solo precio real (verde grande)
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${precioEsc}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.4[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=56:x=(w-text_w)/2:y=1380:borderw=2:bordercolor=black@0.4[con_precio]`);
   }
 
-  // 9. Línea decorativa inferior
-  f.push(`[con_precio]drawbox=x=340:y=1500:w=400:h=3:color=${acento}:t=fill[con_linea2]`);
+  // 10. Línea de acento
+  f.push(`[con_precio]drawbox=x=290:y=1580:w=500:h=4:color=${acento}:t=fill[con_linea_final]`);
 
-  // 10. CTA
-  f.push(`[con_linea2]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.7:fontsize=34:x=(w-text_w)/2:y=1540:borderw=1:bordercolor=black@0.3[con_cta]`);
+  // 11. CTA
+  f.push(`[con_linea_final]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.8:fontsize=38:x=(w-text_w)/2:y=1620:borderw=1:bordercolor=black@0.3[con_cta]`);
 
-  // 11. Logo (opcional)
+  // 12. Logo centrado abajo
   let mapaFinal;
   if (fs.existsSync(LOGO_PATH)) {
-    f.push(`[2:v]scale=160:-1[logo]`);
-    f.push(`[con_cta][logo]overlay=W-w-25:H-h-25[salida]`);
+    f.push(`[2:v]scale=200:-1[logo]`);
+    f.push(`[con_cta][logo]overlay=(W-w)/2:H-h-40[salida]`);
     mapaFinal = "[salida]";
   } else {
     mapaFinal = "[con_cta]";
@@ -180,14 +181,11 @@ async function generarCardOferta(oferta, indice, total) {
 
   const tempFiles = {
     titulo: path.join(BASE_DIR, "output", `_card_titulo_${numeroImagen}.txt`),
-    precio: path.join(BASE_DIR, "output", `_card_precio_${numeroImagen}.txt`),
   };
 
-  // Rotar paleta por índice para variar entre cards
   const paletaBase = PALETA[indice % PALETA.length];
 
   for (let intento = 1; intento <= MAX_RETRIES; intento++) {
-    // En reintentos, rotar a siguiente paleta
     const paleta = intento === 1
       ? paletaBase
       : PALETA[(indice + intento) % PALETA.length];
@@ -209,7 +207,7 @@ async function generarCardOferta(oferta, indice, total) {
     } catch (err) {
       const errMsg = err.stderr ? err.stderr.toString().slice(0, 150) : err.message;
       if (intento < MAX_RETRIES) {
-        console.log(`  ⚠️  Intento ${intento}/${MAX_RETRIES} falló, reintentando con otro color...`);
+        console.log(`  ⚠️  Intento ${intento}/${MAX_RETRIES} falló, reintentando...`);
       } else {
         console.error(`  ❌ Card ${numeroImagen} falló tras ${MAX_RETRIES} intentos: ${errMsg}`);
       }
