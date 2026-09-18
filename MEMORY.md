@@ -1,29 +1,61 @@
 # MEMORY.md - Historial de Cambios del Pipeline de Ofertas
 
-## Fecha: 18 de Septiembre 2026
+## Fecha: 18 de Septiembre 2026 (última actualización)
 
 ---
 
 ## Resumen General
 
-Se construyó un pipeline completo de automatización de ofertas de Amazon para YouTube Shorts y Facebook Reels, partiendo de un sistema que solo generaba cards estáticas para Telegram.
+Se construyó un pipeline completo de automatización de ofertas de Amazon para YouTube Shorts y Facebook Reels, con manejo resiliente de errores (fallback, retry, validación).
 
 ---
 
 ## Pipeline Final (el que queda activo)
 
 ```
-obtener_ofertas.js          → Descarga ofertas del JSON externo
-generar_card_oferta.js      → Crea cards profesionales (1080x1920)
-generar_narracion_ofertas.js → Genera narración TTS para cada oferta
+obtener_ofertas.js          → Descarga ofertas del JSON externo (sin límite)
+generar_card_oferta.js      → Crea cards profesionales (1080x1920) + retry 3x + validación
+generar_narracion_ofertas.js → Genera narración TTS con fallback si falla
 copiar cards → imagenes/    → Prepara escenas para ensamblar
 generar_audio.py            → TTS con voz colombiana + subtítulos Whisper
 ensamblar_video.js          → Ensambla: cards + audio + música + subtítulos
 subir_youtube.js            → Sube a YouTube (privado)
-subir_facebook.js           → Sube a Facebook Reels
-notificar_telegram.js       → Notifica resultado por Telegram
+subir_facebook.js           → Sube a Facebook Reels (continue-on-error)
+notificar_telegram.js       → Notifica resultado por Telegram (continue-on-error)
 enviar_telegram_respaldo.js → Envía video a Telegram si falla YouTube
 marcar_ofertas_usadas.js    → Marca ofertas procesadas
+```
+
+---
+
+## Manejo de Errores (Resiliencia)
+
+### Cards (generar_card_oferta.js)
+- Retry 3 intentos por card con rotación de paleta
+- Si una card falla, las demás se generan igual
+- Validación de tamaño (>10KB = no corrupta)
+- Si 0 cards fallan → exit(1)
+- Si 1+ cards OK → continúa con las que funcionaron
+
+### Narración (generar_narracion_ofertas.js)
+- Try-catch por cada oferta individual
+- Si una oferta falla, se salta y continúa con las demás
+- Si TODA la narración falla → crea guion de respaldo mínimo
+- El pipeline NUNCA se detiene por error de narración
+
+### Workflow (canal_ofertas_video.yml)
+- Validación de cards después de generarlas (mínimo 1)
+- Validación de video después de ensamblarlo (verifica tamaño)
+- `continue-on-error: true` en Facebook, Telegram notificación, Telegram respaldo
+- Respaldo a Telegram solo se ejecuta si YouTube falló (`steps.youtube.outcome == 'failure'`)
+- Git stash antes de pull para evitar conflictos
+
+### Flujo de error típico
+```
+1 card falla → se intenta con otro color → si falla de nuevo → se salta
+Narración falla → se crea guion mínimo → video se genera con audio genérico
+Facebook falla → YouTube se sube igual → notificación avisa
+YouTube falla → video se envía a Telegram como respaldo
 ```
 
 ---
