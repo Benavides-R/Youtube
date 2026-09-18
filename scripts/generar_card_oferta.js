@@ -146,13 +146,17 @@ function intentarGenerarCard(opts) {
   if (tieneDescuento) {
     const precioOriginal = calcularPrecioOriginal(precio, oferta.descuento_pct);
     if (precioOriginal) {
-      // Precio original tachado (gris)
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precioOriginal}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1320:strikethrough=1[con_ptachado]`);
+      // Precio original tachado (gris) -- ffmpeg no tiene "strikethrough" real
+      // en drawtext, se simula con una línea (drawbox) encima del texto.
+      const textoTachado = `$${precioOriginal}`;
+      const anchoLinea = Math.round(textoTachado.length * 42 * 0.56);
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='${textoTachado}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1320[con_ptachado_txt]`);
+      f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLinea})/2:y=1320+21:w=${anchoLinea}:h=3:color=0x6b7280:t=fill[con_ptachado]`);
       // Precio con descuento (amarillo grande)
-      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
+      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}\\%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
     } else {
       // Sin precio original calculable, solo mostrar precio actual
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}\\%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
     }
   } else if (precio) {
     f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
