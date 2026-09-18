@@ -108,6 +108,7 @@ jobs:
 
       - name: Subir a YouTube
         id: youtube
+        continue-on-error: true
         run: node scripts/subir_youtube.js
 
       # ── PASO 8: Subir a Facebook Reels ──
@@ -121,6 +122,7 @@ jobs:
 
       # ── PASO 9: Marcar ofertas como usadas ──
       - name: Marcar ofertas como usadas
+        if: steps.youtube.outcome == 'success' || steps.facebook.outcome == 'success'
         run: node scripts/marcar_ofertas_usadas.js
 
       # ── PASO 10: Guardar cambios en git ──
@@ -146,7 +148,7 @@ jobs:
 
       # ── PASO 12: Enviar respaldo si YouTube falló ──
       - name: Enviar video de respaldo a Telegram
-        if: failure() && steps.youtube.outcome == 'failure'
+        if: steps.youtube.outcome == 'failure' && steps.facebook.outcome == 'failure'
         continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
