@@ -188,6 +188,7 @@ function generarNarracionProducto(oferta, indice, total) {
 
     const guionData = {
       titulo,
+      canal: "ofertas",
       guion: guionTexto,
       descripcion,
       tags,
@@ -209,6 +210,7 @@ function generarNarracionProducto(oferta, indice, total) {
 
     const guionFallback = {
       titulo: "Ofertas del día",
+      canal: "ofertas",
       guion: "Estas son las mejores ofertas de hoy. Miren los links en la descripción.",
       descripcion: "Ofertas del día en nuestro canal.",
       tags: ["ofertas", "descuentos", "amazon"],

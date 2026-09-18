@@ -51,13 +51,13 @@ jobs:
       # ── PASO 2b: Validar que al menos 1 card exista ──
       - name: Validar cards generadas
         run: |
-         /cards=$(ls output/cards/card_*.jpg 2>/dev/null | wc -l)
+          cards=$(ls output/cards/card_*.jpg 2>/dev/null | wc -l)
           echo "Cards generadas: $cards"
           if [ "$cards" -eq 0 ]; then
-            echo "❌ No se generó ninguna card. No hay con qué armar el video."
+            echo "No se generó ninguna card. No hay con qué armar el video."
             exit 1
           fi
-          echo "✅ Hay $cards cards para procesar"
+          echo "Hay $cards cards para procesar"
 
       # ── PASO 3: Generar narración para TTS ──
       - name: Generar narración
@@ -92,11 +92,11 @@ jobs:
       - name: Validar video generado
         run: |
           if [ ! -f "output/video_final.mp4" ]; then
-            echo "❌ No se generó el video final"
+            echo "No se generó el video final"
             exit 1
           fi
           size=$(stat -c%s "output/video_final.mp4" 2>/dev/null || stat -f%z "output/video_final.mp4")
-          echo "✅ Video generado: $(($size / 1048576)) MB"
+          echo "Video generado: $(($size / 1048576)) MB"
 
       # ── PASO 7: Subir a YouTube ──
       - name: Preparar credenciales YouTube
@@ -104,6 +104,7 @@ jobs:
           mkdir -p config
           echo '${{ secrets.YT_CREDENTIALS_JSON }}' > config/credentials.json
           echo '${{ secrets.YT_TOKEN_JSON }}' > config/token.json
+          echo "Credenciales YouTube preparadas"
 
       - name: Subir a YouTube
         id: youtube
