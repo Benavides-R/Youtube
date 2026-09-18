@@ -42,10 +42,24 @@ function acortarParaVoz(titulo, maxPalabras = 8) {
 
 function precioParaVoz(precioTexto) {
   if (!precioTexto) return null;
+  // Limpiar $, ~, COP, espacios extra
   const limpio = precioTexto.replace(/[~$]/g, "").replace(/\s*COP\s*/i, "").trim();
-  const num = limpio.replace(/\./g, "");
-  if (parseInt(num) < 1000) return null;
-  return limpio + " pesos";
+  // Quitar puntos (separador de miles) para que el TTS lea el número limpio
+  const numLimpio = limpio.replace(/\./g, "");
+  const num = parseInt(numLimpio);
+  if (isNaN(num) || num < 1000) return null;
+  // Devolver el número sin puntos + "pesos" para que suene natural
+  // "165.900 pesos" → "165900 pesos" → TTS dice "ciento sesenta y cinco mil novecientos pesos"
+  return numLimpio + " pesos";
+}
+
+// Formatear número con puntos para mostrar en pantalla (no para TTS)
+function formatearPrecio(precioTexto) {
+  if (!precioTexto) return null;
+  const limpio = precioTexto.replace(/[~$]/g, "").replace(/\s*COP\s*/i, "").trim();
+  const num = parseInt(limpio.replace(/\./g, ""));
+  if (isNaN(num) || num < 1000) return null;
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function elegir(lista) {
@@ -92,10 +106,11 @@ function generarNarracionProducto(oferta, indice, total) {
 
   if (precio && oferta.descuento_pct) {
     // Calcular precio original para mencionarlo
-    const numActual = parseInt(precio.replace(/\./g, "").replace(" pesos", ""));
+    const numActual = parseInt(precio.replace(/\s*pesos/i, "").trim());
     const original = Math.round(numActual / (1 - oferta.descuento_pct / 100));
-    const originalFormateado = original.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " pesos";
-    frase += `, que costaba ${originalFormateado}, ahora por tan solo ${precio}, con ${oferta.descuento_pct} por ciento de descuento`;
+    // Formatear con puntos para que el TTS lea bien
+    const originalLimpio = original.toString();
+    frase += `, que costaba ${originalLimpio} pesos, ahora por tan solo ${precio}, con ${oferta.descuento_pct} por ciento de descuento`;
   } else if (precio) {
     frase += `, por tan solo ${precio}`;
   }

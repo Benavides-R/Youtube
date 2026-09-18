@@ -107,10 +107,9 @@ function intentarGenerarCard(opts) {
   // 1. Fondo base oscuro
   f.push(`color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
 
-  // 2. Degradado radial central (luz suave)
-  f.push(`color=c=${glow}:s=${ANCHO}x${ALTO}:d=1,format=rgba,
-    geq=lum='p(X,Y)':a='if(lt(abs(X-${ANCHO}/2),300)*lt(abs(Y-${ALTO}/2-100),400),40,0)'[glow]`);
-  f.push(`[base][glow]overlay=0:0[con_glow]`);
+  // 2. Glow sutil centrado (rectángulo semitransparente)
+  f.push(`color=c=${glow}:s=600x600:d=1,format=rgba,colorchannelmixer=aa=0.15[glow]`);
+  f.push(`[base][glow]overlay=(W-w)/2:(H-h)/2-100[con_glow]`);
 
   // 3. Líneas decorativas sutiles
   f.push(`[con_glow]drawbox=x=50:y=250:w=100:h=2:color=${acento}@0.15:t=fill,
