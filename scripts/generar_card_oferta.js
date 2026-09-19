@@ -77,7 +77,7 @@ function extraerPrecio(txt) {
 // Calcular precio original a partir del precio actual y el descuento
 // Si el precio actual es 165.900 y el descuento es 30%, el original era ~237.000
 function calcularPrecioOriginal(precioActual, descuentoPct) {
-  if (!precioActual || !descuentoPct) return null;
+  if (!precioActual || !descuentoPct || descuentoPct < 5 || descuentoPct > 85) return null;
   const numActual = parseInt(precioActual.replace(/\./g, ""));
   const original = Math.round(numActual / (1 - descuentoPct / 100));
   // Formatear con puntos como separador de miles

@@ -97,7 +97,7 @@ async function descargarImagen(url, destino) {
     process.exit(1);
   }
 
-  const elegidas = disponibles;
+  const elegidas = [...disponibles].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
   console.log(`✅ ${elegidas.length} ofertas para este lote: ${elegidas.map((o) => o.titulo).join(" | ")}`);
 
   // 1. guion.json

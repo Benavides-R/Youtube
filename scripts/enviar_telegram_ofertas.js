@@ -142,7 +142,9 @@ async function enviarMensaje(texto) {
     `- Muestra las cards en el orden que aparecen\n` +
     `- Estas ofertas ya quedaron marcadas como usadas (desde que se enviaron aquí)`;
 
-  await enviarMensaje(mensajeFinal);
+  for (let i = 0; i < mensajeFinal.length; i += 4000) {
+    await enviarMensaje(mensajeFinal.slice(i, i + 4000));
+  }
   console.log("  ✅ Guión + links enviados");
 
   console.log(`\n✅ Todo enviado en 2 mensajes (${cards.length} cards + guión)`);
