@@ -36,10 +36,18 @@ if (!OFERTAS_JSON_URL) {
   process.exit(1);
 }
 
+const DIAS_BLOQUEO_REPETIDO = 3; // pasado esto, una oferta se puede volver a generar en video
+
 function cargarProcesadas() {
   if (!fs.existsSync(PROCESADAS_PATH)) return [];
   try {
-    return JSON.parse(fs.readFileSync(PROCESADAS_PATH, "utf-8"));
+    const datos = JSON.parse(fs.readFileSync(PROCESADAS_PATH, "utf-8"));
+    const corte = Date.now() - DIAS_BLOQUEO_REPETIDO * 24 * 3600 * 1000;
+    // Compatible con el formato viejo (solo strings, sin fecha) -- esos se
+    // tratan como ya vencidos, para no dejar nada bloqueado para siempre.
+    return datos
+      .filter((d) => typeof d === "object" && d.fecha && new Date(d.fecha).getTime() > corte)
+      .map((d) => d.link);
   } catch {
     return [];
   }
