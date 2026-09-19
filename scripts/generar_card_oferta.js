@@ -266,7 +266,8 @@ async function generarCardOferta(oferta, indice, total) {
       console.log(`  ✅ card_${numeroImagen}.jpg — ${oferta.titulo.slice(0, 40)}...`);
       return cardPath;
     } catch (err) {
-      const errMsg = err.stderr ? err.stderr.toString().slice(0, 150) : err.message;
+      const salida = err.stderr ? err.stderr.toString() : err.message;
+      const errMsg = salida.slice(-400); // el error real queda al final, no al principio (ahí solo sale el banner de versión de ffmpeg)
       if (intento < MAX_RETRIES) {
         console.log(`  ⚠️  Intento ${intento}/${MAX_RETRIES} falló, reintentando...`);
       } else {

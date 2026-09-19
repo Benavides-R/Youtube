@@ -59,41 +59,10 @@ function precioParaVoz(precioTexto) {
   return precioTexto.replace(/[~$]/g, "").replace(/\s*COP\s*/i, "").trim() + " pesos";
 }
 
-// Frases variadas para que no suene siempre igual (plantilla robótica) --
-// se elige una al azar en cada corrida, tono colombiano y casual.
-const GANCHOS_INICIO = [
-  "Ojo con esto que les traigo hoy, están buenísimas:",
-  "Miren lo que me encontré hoy, no se las pueden perder:",
-  "Esto sí que está para aprovechar, atentos:",
-  "Les traigo las ofertas de hoy y están que arden:",
-];
-const CONECTORES_MEDIO = ["Ahí les va otra:", "Y esta también está buena:", "Sigamos con esta:", "Miren esta también:"];
-const CONECTORES_FINAL = ["Y para cerrar, esta no se las pueden perder:", "Y la última de hoy:"];
-const CIERRES = [
-  "Ahí las tienen. El link de cada una está en la descripción, y si quieren ver más ofertas como estas todos los días, únanse a nuestro canal de Telegram.",
-  "Esas son las de hoy. Encuentran el link de cada una abajo en la descripción, y para no perderse ninguna oferta, síganos en Telegram.",
-];
-
-function elegir(lista) {
-  return lista[Math.floor(Math.random() * lista.length)];
-}
-
 function armarGuion(ofertas) {
-  const gancho = elegir(GANCHOS_INICIO);
-
-  const cuerpo = ofertas.map((o, i) => {
-    let conector;
-    if (i === 0) conector = "";
-    else if (i === ofertas.length - 1) conector = elegir(CONECTORES_FINAL) + " ";
-    else conector = elegir(CONECTORES_MEDIO) + " ";
-    const descuento = o.descuento_pct ? `, con ${o.descuento_pct} por ciento de descuento` : "";
-    const cupon = o.tiene_cupon ? ", y trae cupón especial, míralo en la descripción" : "";
-    return `${conector}${acortarParaVoz(o.titulo)}, por ${precioParaVoz(o.precio)}${descuento}${cupon}.`;
-  }).join(" ");
-
-  const cierre = elegir(CIERRES);
-
-  return `${gancho} ${cuerpo} ${cierre}`;
+  const cuerpo = ofertas.map((o) => `Miren esta: ${acortarParaVoz(o.titulo)}.`).join(" ");
+  return `Les traemos las mejores ofertas de hoy. ${cuerpo} Recuerden que los links están en los comentarios. `
+    + `Estas fueron las mejores ofertas de Amazon de hoy.`;
 }
 
 async function descargarImagen(url, destino) {
@@ -133,9 +102,6 @@ async function descargarImagen(url, destino) {
     descripcion: elegidas.map((o) => `• ${o.titulo} - ${o.precio}`).join("\n") +
       "\n\n👉 Todas las ofertas del día en nuestro Telegram.",
     tags: ["ofertas", "descuentos", "amazon", "tecnologia"],
-    voz: VOZ,
-    formato: "vertical",
-    subtitulos_abajo: true,
   };
   fs.mkdirSync(path.dirname(GUION_PATH), { recursive: true });
   fs.writeFileSync(GUION_PATH, JSON.stringify(guionData, null, 2));
