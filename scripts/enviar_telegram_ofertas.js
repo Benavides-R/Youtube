@@ -108,23 +108,10 @@ async function enviarMensaje(texto) {
     }
   }
 
-  // 1. Preparar caption detallado para la PRIMERA card (Telegram solo muestra el primero)
-  const primerLink = linksElegidos[0];
-  const primeraOferta = datosOfertas.find((o) => o.link === primerLink);
-
-  let captionPrincipal = `🔥 OFERTAS DEL DÍA — ${cards.length} productos\n\n`;
-  cards.forEach((card, i) => {
-    const link = linksElegidos[i];
-    const oferta = datosOfertas.find((o) => o.link === link);
-    if (oferta) {
-      captionPrincipal += `${i + 1}. ${oferta.titulo.slice(0, 40)}`;
-      captionPrincipal += `\n   💰 ${oferta.precio}`;
-      if (oferta.descuento_pct) captionPrincipal += ` (-${oferta.descuento_pct}%)`;
-      if (oferta.tiene_cupon) captionPrincipal += ` | Cupón`;
-      captionPrincipal += `\n   🔗 ${oferta.link}\n\n`;
-    }
-  });
-  captionPrincipal += `👇 Guión para tu voz más abajo`;
+  // 1. Caption corto para la PRIMERA card (el detalle completo va después,
+  // en un mensaje de texto aparte, que no tiene el límite de 1024
+  // caracteres que sí tienen los captions de fotos en Telegram)
+  const captionPrincipal = `🔥 OFERTAS DEL DÍA — ${cards.length} productos\n\n👇 Detalle, guión y links más abajo`;
 
   // 2. Enviar album (primera card con caption, las demás sin caption)
   const captions = [captionPrincipal, ...Array(cards.length - 1).fill("")];

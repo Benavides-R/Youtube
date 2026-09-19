@@ -228,6 +228,14 @@ async function generarCardOferta(oferta, indice, total) {
     return null;
   }
 
+  try {
+    execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "${imagenPath}"`,
+      { stdio: "pipe", timeout: 10000 });
+  } catch {
+    console.error(`  ⚠️  escena_${numeroImagen}.jpg está corrupta o vacía (descarga falló), saltando esta oferta...`);
+    return null;
+  }
+
   const fontPath = process.platform === "win32"
     ? "C:/Windows/Fonts/arial.ttf"
     : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
