@@ -42,7 +42,7 @@ jobs:
           git config user.email "actions@github.com"
           git add historial/
           git commit -m "Actualizar historial de citas bíblicas" || echo "Sin cambios que guardar"
-          git pull --rebase origin main || true
+          git pull --rebase --autostash origin main || true
           git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
 
       - name: Generar la tarjeta visual
