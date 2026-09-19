@@ -104,11 +104,21 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     fs.writeFileSync(REF_TEMP_PATH, `— ${cita.referencia}`, "utf-8");
     const refPathEscapado = REF_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
+    // La referencia va justo debajo del verso, con separación fija -- se
+    // calcula en JS (no se puede leer el text_h de OTRO drawtext desde
+    // ffmpeg) según cuántas líneas ocupó el verso, para que no se encimen
+    // ni queden muy separados con versos cortos.
+    const FONTSIZE_VERSO = 54, LINE_SPACING_VERSO = 20, MARGEN_REFERENCIA = 55;
+    const numLineasVerso = versoTexto.split("\n").length;
+    const altoVersoEstimado = numLineasVerso * FONTSIZE_VERSO + (numLineasVerso - 1) * LINE_SPACING_VERSO;
+    const yVersoTop = (ALTO - altoVersoEstimado) / 2 - 60;
+    const yReferencia = Math.min(Math.round(yVersoTop + altoVersoEstimado + MARGEN_REFERENCIA), ALTO - 140);
+
     let filtro = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.35:t=fill`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=54:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=20:borderw=2:bordercolor=black@0.6:expansion=none`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${refPathEscapado}':fontcolor=white:fontsize=34:x=max(60\\, (w-text_w)/2):y=(h/2)+180:borderw=2:bordercolor=black@0.6:expansion=none`,
+      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=${FONTSIZE_VERSO}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=${LINE_SPACING_VERSO}:borderw=2:bordercolor=black@0.6:expansion=none`,
+      `drawtext=fontfile='${fontPathEscapado}':textfile='${refPathEscapado}':fontcolor=white:fontsize=34:x=max(60\\, (w-text_w)/2):y=${yReferencia}:borderw=2:bordercolor=black@0.6:expansion=none`,
     ];
 
     let inputs = `-i "${FONDO_PATH}"`;

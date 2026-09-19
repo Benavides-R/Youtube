@@ -91,11 +91,20 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     const hayLogo = fs.existsSync(LOGO_PATH);
     const inputs = hayLogo ? `-i "${FONDO_PATH}" -i "${LOGO_PATH}"` : `-i "${FONDO_PATH}"`;
 
+    // El autor va justo debajo de la frase -- se calcula en JS según
+    // cuántas líneas ocupó la frase, para que no se encimen con frases
+    // largas ni queden muy separados con frases cortas.
+    const FONTSIZE_FRASE = 52, LINE_SPACING_FRASE = 18, MARGEN_AUTOR = 50;
+    const numLineasFrase = textoFrase.split("\n").length;
+    const altoFraseEstimado = numLineasFrase * FONTSIZE_FRASE + (numLineasFrase - 1) * LINE_SPACING_FRASE;
+    const yFraseTop = (ALTO - altoFraseEstimado) / 2 - 70;
+    const yAutor = Math.min(Math.round(yFraseTop + altoFraseEstimado + MARGEN_AUTOR), ALTO - 140);
+
     const filtroBase = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.40:t=fill`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=52:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=18:borderw=2:bordercolor=black@0.7:expansion=none`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${autorEsc}':fontcolor=#f0c060:fontsize=34:x=max(60\\, (w-text_w)/2):y=(h/2)+160:borderw=2:bordercolor=black@0.7:expansion=none`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.7:expansion=none`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${autorEsc}':fontcolor=#f0c060:fontsize=34:x=max(60\\, (w-text_w)/2):y=${yAutor}:borderw=2:bordercolor=black@0.7:expansion=none`,
     ].join(",");
 
     let cmd;
