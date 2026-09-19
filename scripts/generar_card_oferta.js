@@ -40,7 +40,7 @@ const PALETA = [
 
 // ─── Helpers ──────────────────────────────────────────────
 
-function envolverTexto(texto, maxChars = 30) {
+function envolverTexto(texto, maxChars = 30, maxLineas = 2) {
   const palabras = texto.split(" ");
   const lineas = [];
   let actual = "";
@@ -54,6 +54,14 @@ function envolverTexto(texto, maxChars = 30) {
     }
   }
   if (actual) lineas.push(actual);
+
+  if (lineas.length > maxLineas) {
+    const limitadas = lineas.slice(0, maxLineas);
+    let ultima = limitadas[maxLineas - 1];
+    if (ultima.length > maxChars - 3) ultima = ultima.slice(0, maxChars - 3);
+    limitadas[maxLineas - 1] = ultima.replace(/\s+$/, "") + "...";
+    return limitadas.join("\n");
+  }
   return lineas.join("\n");
 }
 
@@ -100,8 +108,8 @@ function intentarGenerarCard(opts) {
   const { oferta, imagenPath, cardPath, paleta, tempFiles, fontPath } = opts;
   const { fondo, acento, glow } = paleta;
 
-  const tituloCorto = oferta.titulo.slice(0, 55);
-  const tituloEnvuelto = envolverTexto(tituloCorto, 26);
+  const tituloCorto = oferta.titulo.slice(0, 44);
+  const tituloEnvuelto = envolverTexto(tituloCorto, 22); // máx. 2 líneas garantizado
   const precio = extraerPrecio(oferta.precio || "");
   const tieneDescuento = !!oferta.descuento_pct && precio;
 
@@ -115,60 +123,78 @@ function intentarGenerarCard(opts) {
   // 1. Fondo base oscuro
   f.push(`color=c=${fondo}:s=${ANCHO}x${ALTO}:d=1[base]`);
 
-  // 2. Glow sutil centrado (rectángulo semitransparente)
-  f.push(`color=c=${glow}:s=600x600:d=1,format=rgba,colorchannelmixer=aa=0.15[glow]`);
-  f.push(`[base][glow]overlay=(W-w)/2:(H-h)/2-100[con_glow]`);
+  // 2. Glow real detrás del producto (caja de color + desenfoque gaussiano
+  // fuerte = efecto de luz radial suave, mucho más premium que un
+  // rectángulo translúcido plano)
+  f.push(`color=c=${glow}:s=680x680:d=1,format=rgba,colorchannelmixer=aa=0.5,gblur=sigma=60[glow]`);
+  f.push(`[base][glow]overlay=(W-w)/2:220[con_glow]`);
 
-  // 3. Líneas decorativas sutiles
-  f.push(`[con_glow]drawbox=x=50:y=250:w=100:h=2:color=${acento}@0.15:t=fill,
-    drawbox=x=930:y=250:w=100:h=2:color=${acento}@0.15:t=fill,
-    drawbox=x=50:y=1650:w=100:h=2:color=${acento}@0.15:t=fill,
-    drawbox=x=930:y=1650:w=100:h=2:color=${acento}@0.15:t=fill[con_lineas]`);
+  // 3. Esquinas tipo "premium/tech" (marcas en L en las 4 esquinas de la
+  // zona del producto, look de visor/scanner en vez de líneas planas)
+  const gx1 = 80, gx2 = 920, gy1 = 260, gy2 = 1140, largo = 60, grosor = 4;
+  f.push(`[con_glow]drawbox=x=${gx1}:y=${gy1}:w=${largo}:h=${grosor}:color=${acento}:t=fill,
+    drawbox=x=${gx1}:y=${gy1}:w=${grosor}:h=${largo}:color=${acento}:t=fill,
+    drawbox=x=${gx2 - largo}:y=${gy1}:w=${largo}:h=${grosor}:color=${acento}:t=fill,
+    drawbox=x=${gx2 - grosor}:y=${gy1}:w=${grosor}:h=${largo}:color=${acento}:t=fill,
+    drawbox=x=${gx1}:y=${gy2}:w=${largo}:h=${grosor}:color=${acento}:t=fill,
+    drawbox=x=${gx1}:y=${gy2 - largo}:w=${grosor}:h=${largo}:color=${acento}:t=fill,
+    drawbox=x=${gx2 - largo}:y=${gy2}:w=${largo}:h=${grosor}:color=${acento}:t=fill,
+    drawbox=x=${gx2 - grosor}:y=${gy2 - largo}:w=${grosor}:h=${largo}:color=${acento}:t=fill[con_esquinas]`);
 
-  // 4. Producto GRANDE (750px = ~70% del ancho)
-  f.push(`[1:v]scale=750:-1:force_original_aspect_ratio=decrease,
-    pad=770:770:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
+  // 4. Producto GRANDE (820px = ~76% del ancho del canvas)
+  f.push(`[1:v]scale=800:-1:force_original_aspect_ratio=decrease,
+    pad=820:820:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
 
   // 5. Borde blanco alrededor del producto
-  f.push(`[producto]drawbox=x=0:y=0:w=770:h=770:color=white@0.9:t=3[con_marco]`);
+  f.push(`[producto]drawbox=x=0:y=0:w=820:h=820:color=white@0.9:t=3[con_marco]`);
 
   // 6. Superponer producto centrado
-  f.push(`[con_lineas][con_marco]overlay=(W-w)/2:320[con_producto]`);
+  f.push(`[con_esquinas][con_marco]overlay=(W-w)/2:280[con_producto]`);
 
   // 7. Badge rojo GRANDE
-  f.push(`[con_producto]drawbox=x=240:y=80:w=600:h=80:color=0xdc2626:t=fill[con_badge_bg]`);
-  f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=93:borderw=2:bordercolor=black@0.3[con_badge]`);
+  f.push(`[con_producto]drawbox=x=210:y=70:w=660:h=90:color=0xdc2626:t=fill[con_badge_bg]`);
+  f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=58:x=(w-text_w)/2:y=88:borderw=2:bordercolor=black@0.3[con_badge]`);
 
-  // 8. Nombre del producto centrado
-  f.push(`[con_badge]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=1150:line_spacing=16:borderw=2:bordercolor=black@0.7[con_titulo]`);
+  // 8. Nombre del producto centrado (máx. 2 líneas garantizado arriba)
+  f.push(`[con_badge]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=1140:line_spacing=14:borderw=2:bordercolor=black@0.7[con_titulo]`);
 
   // 9. Bloque de precio
   if (tieneDescuento) {
     const precioOriginal = calcularPrecioOriginal(precio, oferta.descuento_pct);
+    const rutaDescuento = tempFiles.descuento.replace(/\\/g, "/").replace(/:/g, "\\:");
+    fs.writeFileSync(tempFiles.descuento, `-${oferta.descuento_pct}%`, "utf-8");
     if (precioOriginal) {
       // Precio original tachado (gris) -- ffmpeg no tiene "strikethrough" real
       // en drawtext, se simula con una línea (drawbox) encima del texto.
       const textoTachado = `$${precioOriginal}`;
-      const anchoLinea = Math.round(textoTachado.length * 42 * 0.56);
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='${textoTachado}':fontcolor=0x6b7280:fontsize=42:x=(w-text_w)/2:y=1320[con_ptachado_txt]`);
-      f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLinea})/2:y=1320+21:w=${anchoLinea}:h=3:color=0x6b7280:t=fill[con_ptachado]`);
-      // Precio con descuento (amarillo grande)
-      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}\\%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1400:borderw=3:bordercolor=black@0.5[con_precio]`);
+      const anchoLinea = Math.round(textoTachado.length * 40 * 0.56);
+      const rutaTachado = tempFiles.tachado.replace(/\\/g, "/").replace(/:/g, "\\:");
+      fs.writeFileSync(tempFiles.tachado, textoTachado, "utf-8");
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${rutaTachado}':fontcolor=0x6b7280:fontsize=40:x=(w-text_w)/2:y=1290[con_ptachado_txt]`);
+      f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLinea})/2:y=1290+20:w=${anchoLinea}:h=3:color=0x6b7280:t=fill[con_ptachado]`);
+      // Precio con descuento (amarillo grande) + "% de descuento" aparte
+      const rutaPrecio = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
+      fs.writeFileSync(tempFiles.precio, `$${precio}`, "utf-8");
+      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=0xfbbf24:fontsize=62:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio_txt]`);
+      f.push(`[con_precio_txt]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=0xfbbf24:fontsize=38:x=(w-text_w)/2:y=1440:borderw=2:bordercolor=black@0.5[con_precio]`);
     } else {
       // Sin precio original calculable, solo mostrar precio actual
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio} (-${oferta.descuento_pct}\\%)':fontcolor=0xfbbf24:fontsize=64:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
+      const rutaPrecio = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
+      fs.writeFileSync(tempFiles.precio, `$${precio}`, "utf-8");
+      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=0xfbbf24:fontsize=62:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.5[con_precio_txt]`);
+      f.push(`[con_precio_txt]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=0xfbbf24:fontsize=38:x=(w-text_w)/2:y=1400:borderw=2:bordercolor=black@0.5[con_precio]`);
     }
   } else if (precio) {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=80:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=76:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.5[con_precio]`);
   } else {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=56:x=(w-text_w)/2:y=1380:borderw=2:bordercolor=black@0.4[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=54:x=(w-text_w)/2:y=1340:borderw=2:bordercolor=black@0.4[con_precio]`);
   }
 
   // 10. Línea de acento
-  f.push(`[con_precio]drawbox=x=290:y=1580:w=500:h=4:color=${acento}:t=fill[con_linea_final]`);
+  f.push(`[con_precio]drawbox=x=290:y=1560:w=500:h=4:color=${acento}:t=fill[con_linea_final]`);
 
   // 11. CTA
-  f.push(`[con_linea_final]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.8:fontsize=38:x=(w-text_w)/2:y=1620:borderw=1:bordercolor=black@0.3[con_cta]`);
+  f.push(`[con_linea_final]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.8:fontsize=36:x=(w-text_w)/2:y=1600:borderw=1:bordercolor=black@0.3[con_cta]`);
 
   // 12. Logo centrado abajo
   let mapaFinal;
@@ -208,6 +234,9 @@ async function generarCardOferta(oferta, indice, total) {
 
   const tempFiles = {
     titulo: path.join(BASE_DIR, "output", `_card_titulo_${numeroImagen}.txt`),
+    tachado: path.join(BASE_DIR, "output", `_card_tachado_${numeroImagen}.txt`),
+    precio: path.join(BASE_DIR, "output", `_card_precio_${numeroImagen}.txt`),
+    descuento: path.join(BASE_DIR, "output", `_card_descuento_${numeroImagen}.txt`),
   };
 
   const paletaBase = PALETA[indice % PALETA.length];
