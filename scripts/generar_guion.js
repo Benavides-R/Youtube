@@ -251,7 +251,9 @@ Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titul
   });
 
   if (!response.ok) {
-    console.log("⚠️  No se pudo revisar el paquete de texto, se usa la versión original");
+    let detalle = "";
+    try { detalle = (await response.text()).slice(0, 300); } catch {}
+    console.log(`⚠️  No se pudo revisar el paquete de texto (HTTP ${response.status}): ${detalle} -- se usa la versión original`);
     return resultado;
   }
 
