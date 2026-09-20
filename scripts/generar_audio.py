@@ -68,6 +68,27 @@ def normalizar_numeros(texto: str) -> str:
     return re.sub(r"\d+", reemplazar, texto)
 
 
+# La voz en español lee mal varios términos técnicos en inglés (los
+# "traga" o los pronuncia irreconocibles). Se reemplazan por una forma que
+# suena bien en español, solo antes de generar el audio -- el texto que se
+# muestra en pantalla (subtítulos) no se toca, solo lo que se sintetiza.
+PRONUNCIACION_TECNICA = {
+    r"\bWi-?Fi\b": "guaifai",
+    r"\brouter\b": "ráuter",
+    r"\bBluetooth\b": "blutut",
+    r"\bsmartphone\b": "esmartfon",
+    r"\bsoftware\b": "sofguer",
+    r"\bhardware\b": "jarguer",
+    r"\bemail\b": "imeil",
+}
+
+
+def normalizar_pronunciacion(texto: str) -> str:
+    for patron, reemplazo in PRONUNCIACION_TECNICA.items():
+        texto = re.sub(patron, reemplazo, texto, flags=re.IGNORECASE)
+    return texto
+
+
 def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion: int) -> str:
     """
     El encabezado .ass declara la resolución (PlayResX/PlayResY) de forma
@@ -157,6 +178,7 @@ async def generar_audio():
     texto = re.sub(r"[*_#`~]", "", texto)
     texto = re.sub(r"\s+", " ", texto).strip()
     texto = normalizar_numeros(texto)
+    texto = normalizar_pronunciacion(texto)
 
     async def generar_y_transcribir_audio():
         """Genera el audio con edge-tts y lo transcribe con Whisper.
