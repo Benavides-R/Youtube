@@ -94,7 +94,9 @@ async function descargarImagen(url, destino) {
 
   if (disponibles.length < MIN_OFERTAS_POR_VIDEO) {
     console.log(`ℹ️  Solo hay ${disponibles.length} oferta(s) nueva(s), se necesitan al menos ${MIN_OFERTAS_POR_VIDEO}. No hay ofertas para procesar.`);
-    process.exit(1);
+    fs.mkdirSync(path.join(BASE_DIR, "output"), { recursive: true });
+    fs.writeFileSync(path.join(BASE_DIR, "output", "elegidas.json"), "[]");
+    process.exit(0); // no es un error, es un estado normal -- no hay nada nuevo que elegir todavía
   }
 
   const elegidas = [...disponibles].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));

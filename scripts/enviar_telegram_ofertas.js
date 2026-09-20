@@ -92,8 +92,8 @@ async function enviarMensaje(texto) {
     .map((f) => path.join(CARDS_DIR, f));
 
   if (cards.length === 0) {
-    console.error("❌ No hay cards en output/cards/");
-    process.exit(1);
+    console.log("ℹ️  No hay cards para enviar hoy.");
+    process.exit(0);
   }
 
   // Cargar datos de ofertas
