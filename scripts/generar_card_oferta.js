@@ -142,7 +142,7 @@ function intentarGenerarCard(opts) {
     drawbox=x=${gx2 - grosor}:y=${gy2 - largo}:w=${grosor}:h=${largo}:color=${acento}:t=fill[con_esquinas]`);
 
   // 4. Producto GRANDE (820px = ~76% del ancho del canvas)
-  f.push(`[1:v]scale=800:-1:force_original_aspect_ratio=decrease,
+  f.push(`[1:v]format=rgba,scale=800:-1:force_original_aspect_ratio=decrease,
     pad=820:820:(ow-iw)/2:(oh-ih)/2:color=${fondo}[producto]`);
 
   // 5. Borde blanco alrededor del producto
@@ -313,8 +313,12 @@ async function generarCardOferta(oferta, indice, total) {
     process.exit(1);
   }
   const todasLasOfertas = await respuesta.json();
-  const linksSet = new Set(elegidas);
-  const ofertasConDatos = todasLasOfertas.filter((o) => linksSet.has(o.link));
+  const mapaOfertas = new Map(todasLasOfertas.map((o) => [o.link, o]));
+  // OJO: el orden importa -- tiene que ser el mismo orden de "elegidas"
+  // (el que usó obtener_ofertas.js para guardar escena_01.jpg,
+  // escena_02.jpg...). Si se reordena distinto aquí, la card N termina
+  // con el título/precio de una oferta y la foto de otra.
+  const ofertasConDatos = elegidas.map((link) => mapaOfertas.get(link)).filter(Boolean);
 
   if (ofertasConDatos.length === 0) {
     console.error("❌ No se encontraron datos de las ofertas elegidas");
