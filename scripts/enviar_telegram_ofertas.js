@@ -84,70 +84,66 @@ async function enviarMensaje(texto) {
   return await response.json();
 }
 
+// Frases variadas para que el guion no suene repetitivo con muchos productos
+const CONECTORES = ["Miren esta", "También esta", "Y esta", "Ahí va otra", "Miren esta también"];
+
+function armarGuion(ofertas) {
+  const cuerpo = ofertas.map((o, i) =>
+    `${CONECTORES[i % CONECTORES.length]}: ${o.titulo.split(/\s+/).slice(0, 10).join(" ")}.`
+  ).join(" ");
+  return `Les traemos las mejores ofertas de hoy. ${cuerpo} Recuerden que los links están en los comentarios. `
+    + `Estas fueron las mejores ofertas de Amazon de hoy.`;
+}
+
+function armarDescripcion(ofertas) {
+  const lineas = ofertas.map((o) => `• ${o.titulo} - ${o.precio}`);
+  return lineas.join("\n") + "\n\n👉 Todas las ofertas del día en nuestro Telegram.";
+}
+
 (async () => {
   console.log("📱 Enviando ofertas a Telegram...");
 
-  const guion = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
+  const OFERTAS_EXITOSAS_PATH = path.join(BASE_DIR, "output", "ofertas_exitosas.json");
+  if (!fs.existsSync(OFERTAS_EXITOSAS_PATH)) {
+    console.error("❌ No existe output/ofertas_exitosas.json. Corre primero generar_card_oferta.js");
+    process.exit(1);
+  }
+  const ofertasExitosas = JSON.parse(fs.readFileSync(OFERTAS_EXITOSAS_PATH, "utf-8"));
+
   const cards = fs.readdirSync(CARDS_DIR).filter((f) => f.startsWith("card_") && f.endsWith(".jpg")).sort()
     .map((f) => path.join(CARDS_DIR, f));
 
-  if (cards.length === 0) {
+  if (cards.length === 0 || ofertasExitosas.length === 0) {
     console.log("ℹ️  No hay cards para enviar hoy.");
     process.exit(0);
   }
 
-  // Cargar datos de ofertas
-  const linksElegidos = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
-  const OFERTAS_JSON_URL = process.env.OFERTAS_JSON_URL;
-
-  let datosOfertas = [];
-  if (OFERTAS_JSON_URL) {
-    const respuesta = await fetch(OFERTAS_JSON_URL);
-    if (respuesta.ok) {
-      datosOfertas = await respuesta.json();
-    }
-  }
-
-  // 1. Caption corto para la PRIMERA card (el detalle completo va después,
-  // en un mensaje de texto aparte, que no tiene el límite de 1024
-  // caracteres que sí tienen los captions de fotos en Telegram)
-  const captionPrincipal = `🔥 OFERTAS DEL DÍA — ${cards.length} productos\n\n👇 Detalle, guión y links más abajo`;
-
-  // 2. Enviar album (primera card con caption, las demás sin caption)
+  // 1. Álbum de fotos, caption corto (el detalle va en mensajes aparte)
+  const captionPrincipal = `🔥 OFERTAS DEL DÍA — ${cards.length} productos\n\n👇 Guión, descripción y links en los próximos mensajes`;
   const captions = [captionPrincipal, ...Array(cards.length - 1).fill("")];
 
   console.log(`  📸 Enviando album de ${cards.length} cards...`);
   await enviarAlbum(cards, captions);
   console.log(`  ✅ Album enviado`);
 
-  // 4. Enviar guión + links + descripción (un solo mensaje)
-  const linksTexto = linksElegidos.map((link, i) => {
-    const oferta = datosOfertas.find((o) => o.link === link);
-    const nombre = oferta ? oferta.titulo.slice(0, 40) : `Producto ${i + 1}`;
-    return `${i + 1}. ${nombre}\n   ${link}`;
-  }).join("\n\n");
+  // 2. Guión (para tu voz) -- construido SOLO con las ofertas que sí
+  // tienen card (si alguna falló, no aparece mencionada aquí)
+  await enviarMensaje(`🎙️ GUIÓN PARA TU VOZ:\n\n${armarGuion(ofertasExitosas)}`);
+  console.log("  ✅ Guión enviado");
 
-  const mensajeFinal =
-    `🎙️ GUIÓN PARA TU VOZ:\n\n` +
-    `---\n` +
-    `${guion.guion}\n` +
-    `---\n\n` +
-    `📋 DESCRIPCIÓN PARA FACEBOOK:\n\n` +
-    `${guion.descripcion}\n\n` +
-    `🔗 LINKS DE PRODUCTOS:\n\n` +
-    `${linksTexto}\n\n` +
-    `🏷️ Tags: ${guion.tags.join(", ")}\n\n` +
-    `💡 Tips:\n` +
-    `- Graba en lugar tranquilo, con energía\n` +
-    `- Muestra las cards en el orden que aparecen\n` +
-    `- Estas ofertas ya quedaron marcadas como usadas (desde que se enviaron aquí)`;
+  // 3. Descripción para Facebook, en su propio mensaje para copiar y pegar
+  await enviarMensaje(`📋 DESCRIPCIÓN PARA FACEBOOK:\n\n${armarDescripcion(ofertasExitosas)}`);
+  console.log("  ✅ Descripción enviada");
 
-  for (let i = 0; i < mensajeFinal.length; i += 4000) {
-    await enviarMensaje(mensajeFinal.slice(i, i + 4000));
+  // 4. Links, en su propio mensaje para copiar y pegar
+  const linksTexto = ofertasExitosas.map((o, i) => `${i + 1}. ${o.titulo.slice(0, 40)}\n   ${o.link}`).join("\n\n");
+  const mensajeLinks = `🔗 LINKS DE PRODUCTOS:\n\n${linksTexto}`;
+  for (let i = 0; i < mensajeLinks.length; i += 4000) {
+    await enviarMensaje(mensajeLinks.slice(i, i + 4000));
   }
-  console.log("  ✅ Guión + links enviados");
+  console.log("  ✅ Links enviados");
 
-  console.log(`\n✅ Todo enviado en 2 mensajes (${cards.length} cards + guión)`);
+  console.log(`\n✅ Todo enviado (${cards.length} cards + guión + descripción + links, en mensajes separados)`);
 })().catch((err) => {
   console.error("❌ Error enviando ofertas a Telegram:", err.message);
   process.exit(1);

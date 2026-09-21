@@ -156,42 +156,33 @@ function intentarGenerarCard(opts) {
   f.push(`[con_badge_bg]drawtext=fontfile='${fontEsc}':text='OFERTA DEL DIA':fontcolor=white:fontsize=58:x=(w-text_w)/2:y=88:borderw=2:bordercolor=black@0.3[con_badge]`);
 
   // 8. Nombre del producto centrado (máx. 2 líneas garantizado arriba)
-  f.push(`[con_badge]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=1140:line_spacing=14:borderw=2:bordercolor=black@0.7[con_titulo]`);
+  f.push(`[con_badge]drawtext=fontfile='${fontEsc}':textfile='${tituloEsc}':fontcolor=white:fontsize=50:x=(w-text_w)/2:y=1130:line_spacing=14:borderw=2:bordercolor=black@0.7[con_titulo]`);
 
-  // 9. Bloque de precio
-  if (tieneDescuento) {
-    const precioOriginal = calcularPrecioOriginal(precio, oferta.descuento_pct);
+  // 9. Bloque de precio -- fondo blanco, letras negras (mismo estilo del
+  // badge rojo del título), solo el precio final, sin tachado
+  const FONTSIZE_PRECIO = 72;
+  if (tieneDescuento || precio) {
     const rutaDescuento = tempFiles.descuento.replace(/\\/g, "/").replace(/:/g, "\\:");
-    fs.writeFileSync(tempFiles.descuento, `-${oferta.descuento_pct}%`, "utf-8");
-    if (precioOriginal) {
-      // Precio original tachado (gris) -- ffmpeg no tiene "strikethrough" real
-      // en drawtext, se simula con una línea (drawbox) encima del texto.
-      const textoTachado = `$${precioOriginal}`;
-      const anchoLinea = Math.round(textoTachado.length * 40 * 0.56);
-      const rutaTachado = tempFiles.tachado.replace(/\\/g, "/").replace(/:/g, "\\:");
-      fs.writeFileSync(tempFiles.tachado, textoTachado, "utf-8");
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${rutaTachado}':fontcolor=0x6b7280:fontsize=40:x=(w-text_w)/2:y=1290[con_ptachado_txt]`);
-      f.push(`[con_ptachado_txt]drawbox=x=(iw-${anchoLinea})/2:y=1290+20:w=${anchoLinea}:h=3:color=0x6b7280:t=fill[con_ptachado]`);
-      // Precio con descuento (amarillo grande) + "% de descuento" aparte
-      const rutaPrecio = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
-      fs.writeFileSync(tempFiles.precio, `$${precio}`, "utf-8");
-      f.push(`[con_ptachado]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=0xfbbf24:fontsize=62:x=(w-text_w)/2:y=1360:borderw=3:bordercolor=black@0.5[con_precio_txt]`);
-      f.push(`[con_precio_txt]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=0xfbbf24:fontsize=38:x=(w-text_w)/2:y=1440:borderw=2:bordercolor=black@0.5[con_precio]`);
+    if (tieneDescuento) fs.writeFileSync(tempFiles.descuento, `-${oferta.descuento_pct}\\%`, "utf-8");
+    const rutaPrecio = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
+    fs.writeFileSync(tempFiles.precio, `$${precio}`, "utf-8");
+    const textoPrecio = `$${precio}`;
+    const anchoBadge = Math.round(textoPrecio.length * FONTSIZE_PRECIO * 0.62) + 60;
+    f.push(`[con_titulo]drawbox=x=(iw-${anchoBadge})/2:y=1305:w=${anchoBadge}:h=110:color=white:t=fill[con_precio_bg]`);
+    f.push(`[con_precio_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=black:fontsize=${FONTSIZE_PRECIO}:x=(w-text_w)/2:y=1330[con_precio]`);
+    if (tieneDescuento) {
+      // Etiqueta roja de descuento en la esquina de la foto
+      f.push(`[con_precio]drawbox=x=${gx1 - 10}:y=${gy1 + 30}:w=140:h=70:color=0xdc2626:t=fill[con_badge2_bg]`);
+      f.push(`[con_badge2_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=white:fontsize=34:x=${gx1 - 10 + 12}:y=${gy1 + 48}:borderw=1:bordercolor=black@0.3[con_precio_final]`);
     } else {
-      // Sin precio original calculable, solo mostrar precio actual
-      const rutaPrecio = tempFiles.precio.replace(/\\/g, "/").replace(/:/g, "\\:");
-      fs.writeFileSync(tempFiles.precio, `$${precio}`, "utf-8");
-      f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=0xfbbf24:fontsize=62:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.5[con_precio_txt]`);
-      f.push(`[con_precio_txt]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=0xfbbf24:fontsize=38:x=(w-text_w)/2:y=1400:borderw=2:bordercolor=black@0.5[con_precio]`);
+      f.push(`[con_precio]null[con_precio_final]`);
     }
-  } else if (precio) {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='$${precio}':fontcolor=0x22c55e:fontsize=76:x=(w-text_w)/2:y=1320:borderw=3:bordercolor=black@0.5[con_precio]`);
   } else {
-    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=54:x=(w-text_w)/2:y=1340:borderw=2:bordercolor=black@0.4[con_precio]`);
+    f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=54:x=(w-text_w)/2:y=1340:borderw=2:bordercolor=black@0.4[con_precio_final]`);
   }
 
   // 10. Línea de acento
-  f.push(`[con_precio]drawbox=x=290:y=1560:w=500:h=4:color=${acento}:t=fill[con_linea_final]`);
+  f.push(`[con_precio_final]drawbox=x=290:y=1560:w=500:h=4:color=${acento}:t=fill[con_linea_final]`);
 
   // 11. CTA
   f.push(`[con_linea_final]drawtext=fontfile='${fontEsc}':text='Link en comentarios':fontcolor=white@0.8:fontsize=36:x=(w-text_w)/2:y=1600:borderw=1:bordercolor=black@0.3[con_cta]`);
@@ -321,8 +312,8 @@ async function generarCardOferta(oferta, indice, total) {
   const ofertasConDatos = elegidas.map((link) => mapaOfertas.get(link)).filter(Boolean);
 
   if (ofertasConDatos.length === 0) {
-    console.error("❌ No se encontraron datos de las ofertas elegidas");
-    process.exit(1);
+    console.log("ℹ️  No hay ofertas para procesar hoy, nada que generar.");
+    process.exit(0);
   }
 
   console.log(`📋 ${ofertasConDatos.length} ofertas para generar cards\n`);
@@ -330,10 +321,18 @@ async function generarCardOferta(oferta, indice, total) {
   fs.mkdirSync(CARDS_DIR, { recursive: true });
 
   const cardsGeneradas = [];
+  const ofertasExitosas = [];
   for (let i = 0; i < ofertasConDatos.length; i++) {
     const card = await generarCardOferta(ofertasConDatos[i], i, ofertasConDatos.length);
-    if (card) cardsGeneradas.push(card);
+    if (card) {
+      cardsGeneradas.push(card);
+      ofertasExitosas.push(ofertasConDatos[i]);
+    }
   }
+  fs.writeFileSync(
+    path.join(BASE_DIR, "output", "ofertas_exitosas.json"),
+    JSON.stringify(ofertasExitosas, null, 2)
+  );
 
   if (cardsGeneradas.length === 0) {
     console.error("\n❌ No se generó ninguna card — no hay con qué armar el video");
