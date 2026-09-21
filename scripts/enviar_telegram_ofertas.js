@@ -96,8 +96,12 @@ function armarGuion(ofertas) {
 }
 
 function armarDescripcion(ofertas) {
-  const lineas = ofertas.map((o) => `• ${o.titulo} - ${o.precio}`);
-  return lineas.join("\n") + "\n\n👉 Todas las ofertas del día en nuestro Telegram.";
+  const gancho = "🔥 Estas son las ofertas del día — ¡no se las pierdan!";
+  const lineas = ofertas.map((o) => {
+    const desc = o.descuento_pct ? ` (-${o.descuento_pct}%)` : "";
+    return `• ${o.titulo} - ${o.precio}${desc}`;
+  });
+  return `${gancho}\n\n${lineas.join("\n")}\n\n👉 Síguenos para no perderte las promociones de cada día.`;
 }
 
 (async () => {
