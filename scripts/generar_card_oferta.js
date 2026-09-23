@@ -170,12 +170,22 @@ function intentarGenerarCard(opts) {
     const anchoBadge = Math.round(textoPrecio.length * FONTSIZE_PRECIO * 0.62) + 60;
     f.push(`[con_titulo]drawbox=x=(iw-${anchoBadge})/2:y=1305:w=${anchoBadge}:h=110:color=white:t=fill[con_precio_bg]`);
     f.push(`[con_precio_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaPrecio}':fontcolor=black:fontsize=${FONTSIZE_PRECIO}:x=(w-text_w)/2:y=1330[con_precio]`);
+    let salidaPrecio = "con_precio";
     if (tieneDescuento) {
-      // Etiqueta roja de descuento en la esquina de la foto
-      f.push(`[con_precio]drawbox=x=${gx1 - 10}:y=${gy1 + 30}:w=140:h=70:color=0xdc2626:t=fill[con_badge2_bg]`);
-      f.push(`[con_badge2_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=white:fontsize=34:x=${gx1 - 10 + 12}:y=${gy1 + 48}:borderw=1:bordercolor=black@0.3[con_precio_final]`);
+      // Etiqueta roja de descuento en la esquina de la foto -- más grande
+      f.push(`[con_precio]drawbox=x=${gx1 - 15}:y=${gy1 + 25}:w=165:h=85:color=0xdc2626:t=fill[con_badge2_bg]`);
+      f.push(`[con_badge2_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaDescuento}':fontcolor=white:fontsize=44:x=${gx1 - 15 + 14}:y=${gy1 + 42}:borderw=1:bordercolor=black@0.3[con_con_desc]`);
+      salidaPrecio = "con_con_desc";
+    }
+    // Badge de cupón, debajo del precio -- solo si la oferta trae uno
+    if (oferta.cupon) {
+      const rutaCupon = tempFiles.cupon.replace(/\\/g, "/").replace(/:/g, "\\:");
+      fs.writeFileSync(tempFiles.cupon, `Cupon: ${oferta.cupon}`, "utf-8");
+      const anchoCupon = Math.round((oferta.cupon.length + 7) * 30 * 0.58) + 50;
+      f.push(`[${salidaPrecio}]drawbox=x=(iw-${anchoCupon})/2:y=1440:w=${anchoCupon}:h=64:color=0x16a34a:t=fill[con_cupon_bg]`);
+      f.push(`[con_cupon_bg]drawtext=fontfile='${fontEsc}':textfile='${rutaCupon}':fontcolor=white:fontsize=30:x=(w-text_w)/2:y=1458:borderw=1:bordercolor=black@0.3[con_precio_final]`);
     } else {
-      f.push(`[con_precio]null[con_precio_final]`);
+      f.push(`[${salidaPrecio}]null[con_precio_final]`);
     }
   } else {
     f.push(`[con_titulo]drawtext=fontfile='${fontEsc}':text='VER OFERTA':fontcolor=${acento}:fontsize=54:x=(w-text_w)/2:y=1340:borderw=2:bordercolor=black@0.4[con_precio_final]`);
@@ -236,6 +246,7 @@ async function generarCardOferta(oferta, indice, total) {
     tachado: path.join(BASE_DIR, "output", `_card_tachado_${numeroImagen}.txt`),
     precio: path.join(BASE_DIR, "output", `_card_precio_${numeroImagen}.txt`),
     descuento: path.join(BASE_DIR, "output", `_card_descuento_${numeroImagen}.txt`),
+    cupon: path.join(BASE_DIR, "output", `_card_cupon_${numeroImagen}.txt`),
   };
 
   const paletaBase = PALETA[indice % PALETA.length];

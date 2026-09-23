@@ -99,7 +99,8 @@ function armarDescripcion(ofertas) {
   const gancho = "🔥 Estas son las ofertas del día — ¡no se las pierdan!";
   const lineas = ofertas.map((o) => {
     const desc = o.descuento_pct ? ` (-${o.descuento_pct}%)` : "";
-    return `• ${o.titulo} - ${o.precio}${desc}`;
+    const cup = o.cupon ? ` [Cupón: ${o.cupon}]` : "";
+    return `• ${o.titulo} - ${o.precio}${desc}${cup}`;
   });
   return `${gancho}\n\n${lineas.join("\n")}\n\n👉 Síguenos para no perderte las promociones de cada día.`;
 }
@@ -140,7 +141,10 @@ function armarDescripcion(ofertas) {
   console.log("  ✅ Descripción enviada");
 
   // 4. Links, en su propio mensaje para copiar y pegar
-  const linksTexto = ofertasExitosas.map((o, i) => `${i + 1}. ${o.titulo.slice(0, 40)}\n   ${o.link}`).join("\n\n");
+  const linksTexto = ofertasExitosas.map((o, i) => {
+    const lineaCupon = o.cupon ? `\n   🎫 Cupón: ${o.cupon}` : "";
+    return `${i + 1}. ${o.titulo.slice(0, 40)}${lineaCupon}\n   ${o.link}`;
+  }).join("\n\n");
   const mensajeLinks = `🔗 LINKS DE PRODUCTOS:\n\n${linksTexto}`;
   for (let i = 0; i < mensajeLinks.length; i += 4000) {
     await enviarMensaje(mensajeLinks.slice(i, i + 4000));
