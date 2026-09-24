@@ -157,10 +157,9 @@ def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion
     alineacion: 5 = centrado en pantalla (shorts), 2 = abajo centrado (largos)
 
     Estilo nuevo: fuente Bebas Neue (mayúsculas, condensada, look de
-    reel/short profesional en vez de fuente de sistema), caja de fondo
-    semitransparente en vez de solo contorno (BorderStyle=3, más legible
-    sobre fotos claras), y acento dorado en la palabra que se está
-    pronunciando en vez de amarillo plano.
+    reel/short profesional en vez de fuente de sistema), sin caja de
+    fondo (solo contorno grueso, como antes), y acento dorado en la
+    palabra que se está pronunciando en vez de amarillo plano.
 
     Requiere que BebasNeue-Regular.ttf esté en la carpeta que se le pase
     a ffmpeg como fontsdir (ver ensamblar_video.js).
@@ -170,7 +169,6 @@ def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion
     primary = "&H000AD6FF"    # dorado (palabra ya pronunciada / activa)
     secondary = "&H00FFFFFF"  # blanco (palabra aún no pronunciada)
     outline = "&H00101010"    # casi negro
-    back = "&HC0000000"       # negro semitransparente (la "caja")
 
     return f"""[Script Info]
 ScriptType: v4.00+
@@ -180,7 +178,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{fuente},{tamano_fuente},{primary},{secondary},{outline},{back},0,0,0,0,100,100,1,0,3,2,0,{alineacion},40,40,60,1
+Style: Default,{fuente},{tamano_fuente},{primary},{secondary},{outline},&H00000000,0,0,0,0,100,100,1,0,1,4,2,{alineacion},40,40,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -193,9 +191,7 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
     Agrupa palabras en líneas cortas y arma el archivo .ass completo, con
     tags de karaoke \\k por palabra -- cada palabra se resalta en dorado
     justo cuando se pronuncia, en vez de mostrar toda la línea de un solo
-    color de principio a fin. Además, la palabra activa recibe un pequeño
-    "pop" de escala (crece y vuelve a su tamaño) -- el efecto típico de
-    reels/shorts, en vez de solo cambiar de color.
+    color de principio a fin.
 
     La duración de cada \\k se calcula contra el INICIO de la siguiente
     palabra (no contra su propio fin) para que los silencios cortos entre
@@ -218,15 +214,8 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
             else:
                 duracion_cs = round((palabra["fin"] - palabra["inicio"]) * 100)
             duracion_cs = max(duracion_cs, 1)  # nunca 0 o negativo, rompería el tag
-
-            duracion_ms = duracion_cs * 10
-            mitad_ms = max(duracion_ms // 2, 40)
-            # \t con tiempos relativos al inicio de este \k -- crece los
-            # primeros ~40% del tiempo que dura resaltada la palabra y
-            # vuelve a su tamaño normal en el resto. Sutil a propósito.
-            pop = f"\\t(0,{mitad_ms},\\fscx125\\fscy125)\\t({mitad_ms},{duracion_ms},\\fscx100\\fscy100)"
             texto_palabra = palabra["text"].upper()
-            partes.append(f"{{\\k{duracion_cs}{pop}}}{texto_palabra}")
+            partes.append(f"{{\\k{duracion_cs}}}{texto_palabra}")
 
         texto = " ".join(partes)
         contenido += f"Dialogue: 0,{inicio},{fin},Default,,0,0,0,,{texto}\n"
@@ -349,7 +338,7 @@ async def generar_audio():
     if mejor_palabras:
         ANCHO = 1080 if es_short else 1920
         ALTO = 1920 if es_short else 1080
-        TAMANO_FUENTE = 68 if es_short else 50
+        TAMANO_FUENTE = 84 if es_short else 58
         PALABRAS_POR_LINEA = 3 if es_short else 6
         ALINEACION = 2 if subtitulos_abajo else (5 if es_short else 2)  # 5=centrado (shorts), 2=abajo centrado
 
