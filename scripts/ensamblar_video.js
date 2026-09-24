@@ -245,10 +245,14 @@ console.log("🎙️  Agregando audio final...");
 let filtroSubtitulos = "";
 if (haySubtitulos) {
   const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+  // El estilo nuevo usa la fuente Bebas Neue -- va empacada en el repo
+  // (assets/fonts/BebasNeue-Regular.ttf), fontsdir le dice a libass dónde
+  // buscarla en vez de depender de que esté instalada en el runner.
+  const fontsDir = path.join(BASE_DIR, "assets", "fonts").replace(/\\/g, "/").replace(/:/g, "\\:");
   // El archivo .ass ya trae su propia resolución (PlayResX/PlayResY) y
   // estilo declarados en el encabezado — no necesita force_style ni
   // original_size, eso es justo lo que evita el bug de tamaño anterior.
-  filtroSubtitulos = `-vf "subtitles='${srtEscapado}'"`;
+  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':fontsdir='${fontsDir}'"`;
 }
 
 const cmdFinal = [

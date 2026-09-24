@@ -22,6 +22,7 @@ Output:
 import asyncio
 import json
 import os
+import random
 import re
 import sys
 
@@ -32,8 +33,32 @@ GUION_PATH = os.path.join(BASE_DIR, "output", "guion.json")
 AUDIO_PATH = os.path.join(BASE_DIR, "output", "audio.mp3")
 ASS_PATH = os.path.join(BASE_DIR, "output", "subtitulos.ass")
 
-RATE = "-18%"
-PITCH = "+0Hz"
+# Antes eran valores fijos ("-18%", "+0Hz") -- ahora se sortea un valor
+# distinto en cada corrida dentro de un rango natural, para que no todos
+# los videos suenen exactamente igual de ritmo/tono.
+RATE_MIN, RATE_MAX = -21, -14        # % (negativo = más lento que el default de la voz)
+PITCH_MIN, PITCH_MAX = -3, 3         # Hz
+
+RATE = f"{random.randint(RATE_MIN, RATE_MAX)}%"
+PITCH = f"{random.randint(PITCH_MIN, PITCH_MAX):+d}Hz"
+
+# Voces "hermanas" para rotar cuando el canal no fuerza una sola. Se
+# agrupan por acento/tono para no saltar de una voz muy distinta a otra
+# de un video a otro (rompería la identidad del canal).
+VOCES_ALTERNAS = {
+    "es-CO-GonzaloNeural": ["es-CO-GonzaloNeural", "es-MX-JorgeNeural"],
+    "es-MX-JorgeNeural": ["es-MX-JorgeNeural", "es-CO-GonzaloNeural"],
+    "es-MX-DaliaNeural": ["es-MX-DaliaNeural", "es-CO-SalomeNeural"],
+    "es-CO-SalomeNeural": ["es-CO-SalomeNeural", "es-MX-DaliaNeural"],
+}
+
+
+def elegir_voz(voz_configurada: str) -> str:
+    """Si el canal_config.json trae "voz_fija": true, no rota -- se
+    respeta la voz tal cual. Si no, rota entre las alternas conocidas
+    (o se queda con la misma si no hay alternas registradas)."""
+    opciones = VOCES_ALTERNAS.get(voz_configurada, [voz_configurada])
+    return random.choice(opciones)
 
 
 def segundos_a_timestamp_ass(segundos: float) -> str:
@@ -50,7 +75,7 @@ def normalizar_numeros(texto: str) -> str:
     Convierte números a palabras en español ANTES de la síntesis de voz
     (ej. "23:4" -> "veintitrés cuatro", "2024" -> "dos mil veinticuatro").
     Esto evita que Whisper transcriba mal referencias con números (el
-    problema real detrás de los avisos de baja calidad de audio) — tanto
+    problema real detrás de los avisos de baja calidad de audio) -- tanto
     la voz como la transcripción trabajan sobre el mismo texto claro.
     """
     try:
@@ -89,15 +114,63 @@ def normalizar_pronunciacion(texto: str) -> str:
     return texto
 
 
+# Palabras/frases de transición donde una pausa breve suena natural (como
+# tomar aire antes de un contraste o una revelación). Si ya hay una coma
+# justo antes, no se toca -- solo se agrega donde faltaba.
+PALABRAS_PAUSA_BREVE = [
+    "pero", "sin embargo", "resulta que", "lo más loco es que",
+    "y lo peor", "aunque", "eso sí",
+]
+
+
+def agregar_pausas_naturales(texto: str) -> str:
+    """
+    Inserta pausas ligeras (comas y puntos suspensivos) en puntos donde un
+    narrador humano tomaría aire -- edge-tts/Azure respeta la puntuación
+    para el ritmo, así que esto cambia el timbre sin tocar ffmpeg ni pagar
+    nada extra.
+
+    1) Si la primera frase (el gancho) es corta, se le agrega un ".." en
+       vez de "." -- un silencio un poco más largo antes de continuar,
+       como dejando que la pregunta/dato "aterrice" antes de seguir.
+    2) Antes de conectores de contraste (pero, sin embargo...) se agrega
+       una coma si no la había -- una pausa breve de respiración.
+    """
+    frases = re.split(r"(?<=[.!?])\s+", texto.strip())
+    if frases and len(frases[0].split()) <= 12:
+        frases[0] = re.sub(r"[.!?]+$", "..", frases[0])
+    texto = " ".join(frases)
+
+    for conector in PALABRAS_PAUSA_BREVE:
+        # Solo si el conector no tiene ya una coma justo antes
+        patron = re.compile(rf"(?<!,)(?<!^)\s+({re.escape(conector)})\b", re.IGNORECASE)
+        texto = patron.sub(r", \1", texto, count=1)
+
+    return texto
+
+
 def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion: int) -> str:
     """
     El encabezado .ass declara la resolución (PlayResX/PlayResY) de forma
-    explícita — esto es lo que evita el bug de texto gigante que teníamos
+    explícita -- esto es lo que evita el bug de texto gigante que teníamos
     con .srt (que no declara resolución y a veces se escala mal).
     alineacion: 5 = centrado en pantalla (shorts), 2 = abajo centrado (largos)
+
+    Estilo nuevo: fuente Bebas Neue (mayúsculas, condensada, look de
+    reel/short profesional en vez de fuente de sistema), caja de fondo
+    semitransparente en vez de solo contorno (BorderStyle=3, más legible
+    sobre fotos claras), y acento dorado en la palabra que se está
+    pronunciando en vez de amarillo plano.
+
+    Requiere que BebasNeue-Regular.ttf esté en la carpeta que se le pase
+    a ffmpeg como fontsdir (ver ensamblar_video.js).
     """
-    import platform
-    fuente = "Arial" if platform.system() == "Windows" else "DejaVu Sans"
+    fuente = "Bebas Neue"
+
+    primary = "&H000AD6FF"    # dorado (palabra ya pronunciada / activa)
+    secondary = "&H00FFFFFF"  # blanco (palabra aún no pronunciada)
+    outline = "&H00101010"    # casi negro
+    back = "&HC0000000"       # negro semitransparente (la "caja")
 
     return f"""[Script Info]
 ScriptType: v4.00+
@@ -107,7 +180,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{fuente},{tamano_fuente},&H0000FFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,3,0,{alineacion},10,10,60,1
+Style: Default,{fuente},{tamano_fuente},{primary},{secondary},{outline},{back},0,0,0,0,100,100,1,0,3,2,0,{alineacion},40,40,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -118,9 +191,11 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
     """
     palabras_con_tiempo: lista de dicts con 'text', 'inicio', 'fin' (en segundos)
     Agrupa palabras en líneas cortas y arma el archivo .ass completo, con
-    tags de karaoke \\k por palabra -- cada palabra se resalta en amarillo
-    justo cuando se pronuncia (el estilo típico de reels/shorts), en vez de
-    mostrar toda la línea de un solo color de principio a fin.
+    tags de karaoke \\k por palabra -- cada palabra se resalta en dorado
+    justo cuando se pronuncia, en vez de mostrar toda la línea de un solo
+    color de principio a fin. Además, la palabra activa recibe un pequeño
+    "pop" de escala (crece y vuelve a su tamaño) -- el efecto típico de
+    reels/shorts, en vez de solo cambiar de color.
 
     La duración de cada \\k se calcula contra el INICIO de la siguiente
     palabra (no contra su propio fin) para que los silencios cortos entre
@@ -143,7 +218,15 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
             else:
                 duracion_cs = round((palabra["fin"] - palabra["inicio"]) * 100)
             duracion_cs = max(duracion_cs, 1)  # nunca 0 o negativo, rompería el tag
-            partes.append(f"{{\\k{duracion_cs}}}{palabra['text']}")
+
+            duracion_ms = duracion_cs * 10
+            mitad_ms = max(duracion_ms // 2, 40)
+            # \t con tiempos relativos al inicio de este \k -- crece los
+            # primeros ~40% del tiempo que dura resaltada la palabra y
+            # vuelve a su tamaño normal en el resto. Sutil a propósito.
+            pop = f"\\t(0,{mitad_ms},\\fscx125\\fscy125)\\t({mitad_ms},{duracion_ms},\\fscx100\\fscy100)"
+            texto_palabra = palabra["text"].upper()
+            partes.append(f"{{\\k{duracion_cs}{pop}}}{texto_palabra}")
 
         texto = " ".join(partes)
         contenido += f"Dialogue: 0,{inicio},{fin},Default,,0,0,0,,{texto}\n"
@@ -160,7 +243,8 @@ async def generar_audio():
         data = json.load(f)
 
     texto = data.get("guion")
-    voz = data.get("voz", "es-CO-GonzaloNeural")
+    voz_configurada = data.get("voz", "es-CO-GonzaloNeural")
+    voz = voz_configurada if data.get("voz_fija") else elegir_voz(voz_configurada)
     formato = data.get("formato", "horizontal")
     es_short = formato == "vertical"
     # Por defecto los shorts llevan subtítulos centrados -- pero si el
@@ -179,6 +263,7 @@ async def generar_audio():
     texto = re.sub(r"\s+", " ", texto).strip()
     texto = normalizar_numeros(texto)
     texto = normalizar_pronunciacion(texto)
+    texto = agregar_pausas_naturales(texto)
 
     async def generar_y_transcribir_audio():
         """Genera el audio con edge-tts y lo transcribe con Whisper.
@@ -219,7 +304,7 @@ async def generar_audio():
         )
         return palabras_con_tiempo, coincidencia
 
-    print(f"🎙️  Generando audio con voz: {voz}")
+    print(f"🎙️  Generando audio con voz: {voz} (rate={RATE}, pitch={PITCH})")
     print(f"📝 Texto: {len(texto.split())} palabras")
 
     mejor_palabras, mejor_coincidencia = None, -1.0
@@ -264,8 +349,8 @@ async def generar_audio():
     if mejor_palabras:
         ANCHO = 1080 if es_short else 1920
         ALTO = 1920 if es_short else 1080
-        TAMANO_FUENTE = 64 if es_short else 46
-        PALABRAS_POR_LINEA = 4 if es_short else 7
+        TAMANO_FUENTE = 68 if es_short else 50
+        PALABRAS_POR_LINEA = 3 if es_short else 6
         ALINEACION = 2 if subtitulos_abajo else (5 if es_short else 2)  # 5=centrado (shorts), 2=abajo centrado
 
         contenido_ass = generar_ass_desde_palabras(
@@ -279,10 +364,10 @@ async def generar_audio():
             aviso_path = os.path.join(BASE_DIR, "output", "aviso_calidad_audio.txt")
             with open(aviso_path, "w", encoding="utf-8") as f:
                 f.write(
-                    f"Coincidencia audio-texto de solo {mejor_coincidencia*100:.0f}% (tras reintentar) — "
+                    f"Coincidencia audio-texto de solo {mejor_coincidencia*100:.0f}% (tras reintentar) -- "
                     f"posible problema de pronunciación, revisa este video antes de publicarlo."
                 )
-            print("⚠️  Coincidencia sigue baja tras reintentar — se dejó un aviso para la notificación de Telegram")
+            print("⚠️  Coincidencia sigue baja tras reintentar -- se dejó un aviso para la notificación de Telegram")
     else:
         print("⚠️  No se pudieron generar subtítulos con Whisper. El video se genera igual, sin subtítulos.")
 
