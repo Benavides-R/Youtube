@@ -299,18 +299,35 @@ const videosUsadosSet = new Set(historialMedios.videos || []);
     }
 
     let i = 1;
+    let fallidas = 0;
     for (const escena of escenas) {
       const numero = String(i).padStart(2, "0");
-      if (escena.tipo === "video") {
-        const destino = path.join(IMAGENES_DIR, `escena_${numero}.mp4`);
-        await descargarVideo(escena.url, destino);
-        console.log(`  ✅ escena_${numero}.mp4 (video) descargada`);
-      } else {
-        const destino = path.join(IMAGENES_DIR, `escena_${numero}.jpg`);
-        await descargarImagen(escena.url, destino);
-        console.log(`  ✅ escena_${numero}.jpg (foto) descargada`);
+      try {
+        if (escena.tipo === "video") {
+          const destino = path.join(IMAGENES_DIR, `escena_${numero}.mp4`);
+          await descargarVideo(escena.url, destino);
+          console.log(`  ✅ escena_${numero}.mp4 (video) descargada`);
+        } else {
+          const destino = path.join(IMAGENES_DIR, `escena_${numero}.jpg`);
+          await descargarImagen(escena.url, destino);
+          console.log(`  ✅ escena_${numero}.jpg (foto) descargada`);
+        }
+      } catch (err) {
+        // No se deja que UNA escena rota tumbe todo el video -- se salta
+        // y sigue con las demás (antes esto perdía hasta las que ya se
+        // habían descargado bien en la misma corrida).
+        fallidas++;
+        console.error(`  ⚠️  No se pudo descargar escena_${numero} (${escena.tipo}), saltando: ${err.message}`);
       }
       i++;
+    }
+
+    if (fallidas > 0) {
+      console.log(`\n⚠️  ${fallidas}/${escenas.length} escenas fallaron, se continúa con las que sí se descargaron.`);
+    }
+    if (fallidas === escenas.length) {
+      console.error("❌ Ninguna escena se pudo descargar, no hay con qué armar el video.");
+      process.exit(1);
     }
 
     // Guardamos qué fotos/videos se usaron en esta corrida, sumados al
