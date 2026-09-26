@@ -1,15 +1,16 @@
 /**
  * enviar_telegram_ofertas.js
  * ------------------------------------------------------------
- * Envía las cards de ofertas generadas a Telegram en UN solo
- * mensaje (album) junto con el guión para que el usuario
- * grabe su voz y suba el video.
+ * Envía las FOTOS ORIGINALES de los productos (sin procesar, tal
+ * cual las descargó obtener_ofertas.js) a Telegram en UN solo
+ * mensaje (album) junto con el guión para que el usuario arme el
+ * video a mano, como prefiera.
  *
  * Uso:
  *   TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=xxx node scripts/enviar_telegram_ofertas.js
  *
- * Requiere que generar_card_oferta.js haya corrido primero
- * (necesita output/cards/ y output/guion.json).
+ * Requiere que obtener_ofertas.js haya corrido primero (necesita
+ * output/imagenes/ y output/elegidas.json).
  * ------------------------------------------------------------
  */
 
@@ -25,17 +26,22 @@ if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
 }
 
 const BASE_DIR = path.join(__dirname, "..");
-const CARDS_DIR = path.join(BASE_DIR, "output", "cards");
-const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
+const IMAGENES_DIR = path.join(BASE_DIR, "output", "imagenes");
 const ELEGIDAS_PATH = path.join(BASE_DIR, "output", "elegidas.json");
+const OFERTAS_JSON_URL = process.env.OFERTAS_JSON_URL;
 
-if (!fs.existsSync(CARDS_DIR)) {
-  console.error("❌ No existe output/cards/. Corre primero generar_card_oferta.js");
+if (!fs.existsSync(IMAGENES_DIR)) {
+  console.error("❌ No existe output/imagenes/. Corre primero obtener_ofertas.js");
   process.exit(1);
 }
 
-if (!fs.existsSync(GUION_PATH)) {
-  console.error("❌ No existe output/guion.json. Corre primero obtener_ofertas.js");
+if (!fs.existsSync(ELEGIDAS_PATH)) {
+  console.error("❌ No existe output/elegidas.json. Corre primero obtener_ofertas.js");
+  process.exit(1);
+}
+
+if (!OFERTAS_JSON_URL) {
+  console.error("❌ Falta OFERTAS_JSON_URL");
   process.exit(1);
 }
 
@@ -108,27 +114,45 @@ function armarDescripcion(ofertas) {
 (async () => {
   console.log("📱 Enviando ofertas a Telegram...");
 
-  const OFERTAS_EXITOSAS_PATH = path.join(BASE_DIR, "output", "ofertas_exitosas.json");
-  if (!fs.existsSync(OFERTAS_EXITOSAS_PATH)) {
-    console.error("❌ No existe output/ofertas_exitosas.json. Corre primero generar_card_oferta.js");
+  // Links en el orden que armó obtener_ofertas.js (más recientes primero)
+  const links = JSON.parse(fs.readFileSync(ELEGIDAS_PATH, "utf-8"));
+
+  const respuestaOfertas = await fetch(OFERTAS_JSON_URL);
+  if (!respuestaOfertas.ok) {
+    console.error(`❌ No se pudo descargar seleccion_video.json (HTTP ${respuestaOfertas.status})`);
     process.exit(1);
   }
-  const ofertasExitosas = JSON.parse(fs.readFileSync(OFERTAS_EXITOSAS_PATH, "utf-8"));
+  const todasLasOfertas = await respuestaOfertas.json();
+  const mapaOfertas = new Map(todasLasOfertas.map((o) => [o.link, o]));
 
-  const cards = fs.readdirSync(CARDS_DIR).filter((f) => f.startsWith("card_") && f.endsWith(".jpg")).sort()
-    .map((f) => path.join(CARDS_DIR, f));
+  // Solo se manda lo que SÍ tiene foto descargada -- obtener_ofertas.js ya
+  // salta silenciosamente las que fallaron al descargar (escena_XX
+  // faltante), aquí se detecta cuáles quedaron disponibles de verdad.
+  const fotos = [];
+  const ofertasExitosas = [];
+  links.forEach((link, i) => {
+    const numero = String(i + 1).padStart(2, "0");
+    const ruta = path.join(IMAGENES_DIR, `escena_${numero}.jpg`);
+    const oferta = mapaOfertas.get(link);
+    if (fs.existsSync(ruta) && oferta) {
+      fotos.push(ruta);
+      ofertasExitosas.push(oferta);
+    }
+  });
 
-  if (cards.length === 0 || ofertasExitosas.length === 0) {
-    console.log("ℹ️  No hay cards para enviar hoy.");
+  if (fotos.length === 0) {
+    console.log("ℹ️  No hay fotos para enviar hoy.");
     process.exit(0);
   }
 
   // 1. Álbum de fotos, caption corto (el detalle va en mensajes aparte)
-  const captionPrincipal = `🔥 OFERTAS DEL DÍA — ${cards.length} productos\n\n👇 Guión, descripción y links en los próximos mensajes`;
-  const captions = [captionPrincipal, ...Array(cards.length - 1).fill("")];
+  const captionPrincipal = `🔥 OFERTAS DEL DÍA — ${fotos.length} productos\n\n👇 Guión, descripción y links en los próximos mensajes`;
+  const captions = [captionPrincipal, ...Array(fotos.length - 1).fill("")];
 
-  console.log(`  📸 Enviando album de ${cards.length} cards...`);
-  await enviarAlbum(cards, captions);
+  console.log(`  📸 Enviando album de ${fotos.length} fotos...`);
+  for (let i = 0; i < fotos.length; i += 10) {
+    await enviarAlbum(fotos.slice(i, i + 10), captions.slice(i, i + 10));
+  }
   console.log(`  ✅ Album enviado`);
 
   // 2. Guión (para tu voz) -- construido SOLO con las ofertas que sí
@@ -151,7 +175,7 @@ function armarDescripcion(ofertas) {
   }
   console.log("  ✅ Links enviados");
 
-  console.log(`\n✅ Todo enviado (${cards.length} cards + guión + descripción + links, en mensajes separados)`);
+  console.log(`\n✅ Todo enviado (${fotos.length} fotos + guión + descripción + links, en mensajes separados)`);
 })().catch((err) => {
   console.error("❌ Error enviando ofertas a Telegram:", err.message);
   process.exit(1);
