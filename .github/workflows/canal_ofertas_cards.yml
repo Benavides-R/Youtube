@@ -1,4 +1,4 @@
-name: Canal Ofertas - Cards + Telegram
+name: Canal Ofertas - Fotos + Telegram
 
 permissions:
   contents: write
@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Instalar FFmpeg y fuentes
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
-
       - name: Instalar dependencias de Node
         run: npm install
 
@@ -32,12 +29,7 @@ jobs:
           OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
         run: node scripts/obtener_ofertas.js
 
-      - name: Generar cards de ofertas
-        env:
-          OFERTAS_JSON_URL: ${{ vars.OFERTAS_JSON_URL }}
-        run: node scripts/generar_card_oferta.js
-
-      - name: Enviar cards y guión a Telegram
+      - name: Enviar fotos y guión a Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
