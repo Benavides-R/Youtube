@@ -139,6 +139,7 @@ const systemPrompt = `Eres guionista experto en contenido viral de YouTube en es
 Escribes guiones para narración en voz colombiana, estilo: ${canalConfig.estilo}.
 ${instruccionesFormato}${instruccionPromocion}${instruccionAngulos}
 Tu guion debe:
+- Desarrollar ESTRICTAMENTE el tema asignado ("Tema:" abajo), no un tema genérico relacionado. Si el tema es amplio, elige un ángulo concreto y específico DENTRO de él (un dato, un ejemplo, una historia puntual) -- no te vayas a lo más obvio o más hablado del campo general solo porque es "terreno seguro". Evita por defecto caer siempre en los mismos ángulos manidos (ej. desbloqueo de pantalla, duración de batería) salvo que el tema asignado sea literalmente ese
 - Enganchar en la primera frase (sin saludos tipo "hola a todos"). VARÍA el tipo de gancho cada vez: a veces una pregunta directa, a veces un dato impactante, a veces una afirmación polémica, a veces una historia corta — NUNCA uses la misma fórmula de apertura en cada guion
 - Ir directo al contenido, sin relleno
 - Tener ritmo natural para ser leído en voz alta
