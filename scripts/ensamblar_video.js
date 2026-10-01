@@ -62,12 +62,14 @@ const LOGO_MARGEN = 30;
 
 // Validación del logo ANTES de ensamblar: decode COMPLETO con ffmpeg
 // (ffprobe solo lee el header y no basta — un PNG con basura pasa ffprobe
-// pero revienta al decodificar). Si falla, descartamos el logo aquí y el
-// video se arma sin marca de agua en vez de tumbar el pipeline al final.
+// pero revienta al decodificar). SIN -xerror ffmpeg devuelve exit 0 aunque
+// haya errores de decode, así que es OBLIGATORIO para que el catch dispare.
+// Si falla, descartamos el logo aquí y el video se arma sin marca de agua
+// en vez de tumbar el pipeline al final.
 let logoValido = false;
 if (LOGO_PATH) {
   try {
-    execSync(`ffmpeg -v error -i "${LOGO_PATH}" -f null -`, { stdio: "pipe" });
+    execSync(`ffmpeg -v error -xerror -i "${LOGO_PATH}" -f null -`, { stdio: "pipe" });
     logoValido = true;
   } catch {
     console.log(`⚠️  El logo ${path.basename(LOGO_PATH)} está corrupto — video sin marca de agua`);
