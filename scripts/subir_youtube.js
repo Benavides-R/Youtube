@@ -82,29 +82,82 @@ function agregarCapitulos(descripcion) {
 }
 
 // ------------------------------------------------------------
-// 2. Subir el video
+// 2.5. Tags seguros para la API de YouTube
+// ------------------------------------------------------------
+// La API responde "invalidTags" si un tag tiene caracteres riesgosos
+// (", \, <, >, {, }, |), si el total se pasa del límite real (YouTube
+// cuenta los espacios con sobrecarga, así que 500 exactos se rechaza),
+// o si la IA devolvió los tags como string en vez de array.
+function sanitizarTags(bruto) {
+  let lista = Array.isArray(bruto) ? bruto : typeof bruto === "string" ? bruto.split(",") : [];
+  const limpio = [];
+  for (let t of lista) {
+    if (typeof t !== "string") t = String(t ?? "");
+    t = t
+      .replace(/["\\<>{}|]/g, "") // caracteres que YouTube rechaza
+      .replace(/[\u0000-\u001F\u007F]/g, "") // caracteres de control
+      .replace(/\s+/g, " ")
+      .trim();
+    if (t && !limpio.includes(t)) limpio.push(t);
+  }
+  // Margen de 450 (no 500): los espacios cuentan con sobrecarga del lado
+  // de YouTube y 495 "nuestros" pueden ser >500 para ellos.
+  let total = limpio.join(",").length;
+  while (limpio.length > 1 && total > 450) {
+    limpio.pop();
+    total = limpio.join(",").length;
+  }
+  if (total > 450 && limpio.length > 0) {
+    limpio.splice(1);
+    limpio[0] = limpio[0].slice(0, 449);
+  }
+  console.log(`🏷️  Tags listos: ${limpio.length} (${limpio.join(",").length}/450 caracteres)`);
+  return limpio;
+}
+
+// ------------------------------------------------------------
+// 3. Subir el video
 // ------------------------------------------------------------
 async function subirVideo() {
   console.log(`📤 Subiendo: "${guionData.titulo}"...`);
 
-  const response = await youtube.videos.insert({
-    part: ["snippet", "status"],
-    requestBody: {
-      snippet: {
-        title: guionData.titulo,
-        description: agregarCapitulos(guionData.descripcion),
-        tags: guionData.tags,
-        categoryId: "28", // "Science & Technology" — cámbialo según el canal
-      },
-      status: {
-        privacyStatus: "private", // por seguridad: empieza en privado
-        selfDeclaredMadeForKids: false,
-      },
+  const tags = sanitizarTags(guionData.tags);
+  const descripcion = agregarCapitulos(guionData.descripcion);
+
+  const armarBody = (tagsFinales) => ({
+    snippet: {
+      title: guionData.titulo,
+      description: descripcion,
+      tags: tagsFinales,
+      categoryId: "28", // "Science & Technology" — cámbialo según el canal
     },
-    media: {
-      body: fs.createReadStream(VIDEO_PATH),
+    status: {
+      privacyStatus: "private", // por seguridad: empieza en privado
+      selfDeclaredMadeForKids: false,
     },
   });
+
+  // Cada intento necesita su propio stream (el anterior queda consumido)
+  const intentar = (tagsFinales) =>
+    youtube.videos.insert({
+      part: ["snippet", "status"],
+      requestBody: armarBody(tagsFinales),
+      media: { body: fs.createReadStream(VIDEO_PATH) },
+    });
+
+  let response;
+  try {
+    response = await intentar(tags);
+  } catch (err) {
+    const motivo = `${err.message} ${JSON.stringify(err.errors || "")}`;
+    if (/invalidTags/i.test(motivo) && tags.length > 0) {
+      // El video NO se pierde por los tags: último reintento sin ellos.
+      console.log("⚠️  YouTube rechazó los tags (invalidTags) — reintentando SIN tags...");
+      response = await intentar([]);
+    } else {
+      throw err;
+    }
+  }
 
   const videoId = response.data.id;
 
