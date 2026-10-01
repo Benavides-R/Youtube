@@ -145,14 +145,15 @@ Tu guion debe:
 - Tener ritmo natural para ser leído en voz alta
 - VARÍA también el cierre: a veces una reflexión, a veces una pregunta al oyente, a veces un dato final sorprendente — no repitas siempre la misma frase de despedida
 - Longitud objetivo: ${palabrasObjetivo} palabras. ${esShort ? "No te pases de esta cantidad, un short debe ser corto y directo." : `ESTO ES IMPORTANTE: nunca entregues menos de ${Math.round(palabrasObjetivo * 0.9)} palabras, desarrolla el tema con ejemplos y contexto suficiente para llegar a la longitud pedida, no lo resumas de forma corta.`}
-- NUNCA uses markdown ni símbolos especiales (nada de *, #, _, guiones para listas, etc). Es texto plano que se va a leer en voz alta palabra por palabra, cualquier símbolo se escucharía literal.
+- NUNCA uses markdown ni símbolos especiales (nada de *, #, _, guiones para listas, etc). Es texto plano que se va a leer en voz alta palabra por palabra, cualquier símbolo se escucharía literal.${esShort ? "" : `\n- Divide el guion en secciones naturales marcándolas con [SECCION: título corto] en la primera línea de cada sección, separadas por doble salto de línea. Usa entre 3 y 6 secciones según la duración. Estos marcadores se eliminan antes de generar el audio (NO se leen en voz alta), son solo para organizar capítulos de YouTube.`}
 
 Responde ÚNICAMENTE en formato JSON válido, sin texto adicional, sin markdown, con esta estructura exacta:
 {
   "titulo": "título llamativo, máx 60 caracteres, con gancho${esShort ? ", incluye la palabra Shorts o #Shorts al final" : ""}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "descripción para YouTube/Facebook escrita EXACTAMENTE como si tú mismo (el dueño del canal, una persona real) la hubieras tecleado a mano ahora mismo — nada de sonar a IA ni a plantilla. Cuenta algo personal y breve conectado al tema (una opinión tuya, una reflexión, por qué te llamó la atención), 2-3 líneas, lenguaje simple y cotidiano, como le escribirías a un amigo. NUNCA uses llamados a la acción específicos de una sola plataforma (nada de 'suscríbete' o 'dale like', son de YouTube) — si invitas a seguir, algo neutral tipo 'sígueme para más'${esShort ? " (puedes incluir #Shorts)" : ""}${promo && promo.activa ? `. Al final agrega UNA sola línea corta invitando a ver los comentarios, algo como: '👇 El link de ofertas está en los comentarios' — sin URLs ni nombres de canal en la descripción` : ""}. Cierra con SOLO 2-3 hashtags (no más), específicos al tema real del video, nunca genéricos como #video o #viral.",
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "descripcion": "descripción para YouTube/Facebook escrita EXACTAMENTE como si tú mismo (el dueño del canal, una persona real) la hubieras tecleado a mano ahora mismo — nada de sonar a IA ni a plantilla. Cuenta algo personal y breve conectado al tema (una opinión tuya, una reflexión, por qué te llamó la atención), 2-3 líneas, lenguaje simple y cotidiano, como le escribirías a un amigo. NUNCA uses llamados a la acción específicos de una sola plataforma (nada de 'suscríbete' o 'dale like', son de YouTube) — si invitas a seguir, algo neutral tipo 'sígueme para más'${esShort ? " (puedes incluir #Shorts)" : ""}${promo && promo.activa ? `. Después de tu texto personal, deja una línea en blanco y escribe EXACTAMENTE esta línea: 👇 Más ofertas y cupones en Telegram: ${promo.link_telegram}` : ""}. Cierra con SOLO 2-3 hashtags (no más), específicos al tema real del video, nunca genéricos como #video o #viral. Los hashtags van AL FINAL, después del link de Telegram si existe.",
+  "tags": ["15 a 25 tags de búsqueda en español, variaciones y sinónimos del tema que la gente podría buscar en YouTube, sin repetir el título exacto"],${esShort ? "" : `
+  "capitulos": ["título de la sección 1", "título de la sección 2", "título de la sección 3"], (array con los MISMOS títulos y orden que los marcadores [SECCION: ...] del guion, entre 3 y 6 elementos),`}
   "texto_miniatura": "SOLO 3 A 5 PALABRAS en mayúsculas, muy impactante y corto, tipo miniatura de YouTube (ej: 'EL ERROR QUE NADIE VE', 'ESTO CAMBIA TODO'). Debe generar curiosidad extrema, distinto al título completo",
   "palabras_clave_imagenes": ["6 a 10 palabras o frases cortas EN INGLÉS para buscar fotos de stock. Estilo de imágenes para este canal: ${estiloImagenes}"]
 }`;
@@ -205,6 +206,44 @@ async function generarGuion() {
     }
   }
 
+  // YouTube limita el campo tags a 500 caracteres en total
+  // (incluyendo las comas). Si la IA se pasó, recortamos la lista
+  // desde el final hasta que quepa.
+  if (Array.isArray(parsed.tags)) {
+    const normalizar = (t) => (typeof t === "string" ? t.trim() : String(t).trim()).replace(/^,|,$/g, "");
+    parsed.tags = parsed.tags.map(normalizar).filter(Boolean);
+    let total = parsed.tags.join(",").length;
+    while (parsed.tags.length > 1 && total > 500) {
+      parsed.tags.pop();
+      total = parsed.tags.join(",").length;
+    }
+    if (total > 500) parsed.tags = [parsed.tags[0].slice(0, 499)];
+    console.log(`🏷️  Tags: ${parsed.tags.length} (${total}/500 caracteres)`);
+  }
+
+  // Capítulos solo existen para videos largos con marcadores [SECCION: ...]
+  if (esShort) {
+    delete parsed.capitulos;
+  } else if (Array.isArray(parsed.capitulos)) {
+    const marcas = [...parsed.guion.matchAll(/\[SECCION:\s*(.+?)\s*\]/gi)].map((m) => m[1].trim());
+    // Si no hay marcadores en el guion, los capítulos no sirven (no
+    // habrá timestamps) — mejor descartarlos que subirlos vacíos.
+    if (marcas.length < 3) {
+      console.log(`⚠️  Se encontraron ${marcas.length} marcadores [SECCION] (mínimo 3) — se omiten capítulos`);
+      delete parsed.capitulos;
+    } else {
+      // Alinear la lista de capítulos con los marcadores reales del
+      // guion (la IA a veces inventa títulos distintos).
+      parsed.capitulos = marcas;
+    }
+  } else {
+    // Vino sin el campo capitulos (o vino mal): derivarlo de los
+    // marcadores reales del guion si hay suficientes.
+    const marcas = [...parsed.guion.matchAll(/\[SECCION:\s*(.+?)\s*\]/gi)].map((m) => m[1].trim());
+    if (marcas.length >= 3) parsed.capitulos = marcas;
+    else if (parsed.capitulos !== undefined) delete parsed.capitulos;
+  }
+
   return parsed;
 }
 
@@ -240,7 +279,7 @@ async function revisarPaqueteCompleto(resultado) {
 - Frases que suenen artificiales, repetitivas o "genéricas de IA" cuando se leen en voz alta (el guion se narra, debe sonar natural)
 - Que el título y la descripción realmente correspondan al contenido del guion
 
-NO cambies el largo del guion de forma significativa, NO agregues ni quites el tema principal, NO uses markdown ni símbolos especiales en el guion. Si un campo ya está bien, déjalo igual.
+NO cambies el largo del guion de forma significativa, NO agregues ni quites el tema principal, NO uses markdown ni símbolos especiales en el guion.${esShort ? "" : " PRESERVA los marcadores [SECCION: ...] exactamente donde estaban (o colócalos en cambios de tema si los quitaste por error) — organizan los capítulos del video y no se leen en voz alta."} Si un campo ya está bien, déjalo igual.
 Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titulo, guion, descripcion), sin texto adicional.`,
         },
         { role: "user", content: JSON.stringify(paquete) },
@@ -309,6 +348,14 @@ Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titul
       console.log("⚠️  La versión revisada se ve incompleta, se usa el guion original sin revisar");
     } else {
       resultado = resultadoRevisado;
+    }
+
+    // El editor reescribió el guion: re-alinear los capítulos con los
+    // marcadores [SECCION] que realmente quedaron en la versión final.
+    if (!esShort) {
+      const marcas = [...resultado.guion.matchAll(/\[SECCION:\s*(.+?)\s*\]/gi)].map((m) => m[1].trim());
+      if (marcas.length >= 3) resultado.capitulos = marcas;
+      else delete resultado.capitulos;
     }
 
     const outputDir = path.join(__dirname, "..", "output");

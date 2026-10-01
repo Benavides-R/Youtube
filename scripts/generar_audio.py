@@ -149,6 +149,88 @@ def agregar_pausas_naturales(texto: str) -> str:
     return texto
 
 
+def parse_secciones(guion_texto: str):
+    """
+    Extrae los marcadores [SECCION: título] que la IA puso en el guion
+    (solo videos largos) y devuelve una lista de {"titulo", "texto"}.
+    Los marcadores NUNCA se sintetizan en voz -- organizan los capítulos
+    de YouTube. Devuelve None si no hay marcadores.
+    """
+    marcas = list(re.finditer(r"\[SECCION:\s*(.+?)\s*\]", guion_texto, flags=re.IGNORECASE))
+    if not marcas:
+        return None
+
+    secciones = []
+    for i, m in enumerate(marcas):
+        inicio = m.end()
+        fin = marcas[i + 1].start() if i + 1 < len(marcas) else len(guion_texto)
+        cuerpo = guion_texto[inicio:fin].strip()
+        # Si la IA dejó texto ANTES del primer marcador (un intro suelta),
+        # se le pega a la primera sección -- así no se pierde contenido.
+        if i == 0:
+            preambulo = guion_texto[: m.start()].strip()
+            if preambulo:
+                cuerpo = f"{preambulo} {cuerpo}".strip()
+        secciones.append({"titulo": m.group(1).strip(), "texto": cuerpo})
+
+    # Si alguna sección quedó vacía, se descarta (no aporta capítulo)
+    secciones = [s for s in secciones if s["texto"]]
+    return secciones or None
+
+
+def procesar_texto(texto: str) -> str:
+    """Limpieza + normalización para TTS (el mismo flujo de siempre).
+    También elimina marcadores [SECCION: ...] por si llegaron de más —
+    nunca deben leerse en voz alta."""
+    texto = re.sub(r"\[SECCION:\s*.+?\s*\]", " ", texto, flags=re.IGNORECASE)
+    texto = re.sub(r"[*_#`~]", "", texto)
+    texto = re.sub(r"\s+", " ", texto).strip()
+    texto = normalizar_numeros(texto)
+    texto = normalizar_pronunciacion(texto)
+    texto = agregar_pausas_naturales(texto)
+    return texto
+
+
+def calcular_capitulos(secciones, palabras_con_tiempo, duracion_total):
+    """
+    Calcula los timestamps de cada sección y devuelve la lista lista para
+    YouTube ([{"titulo", "segundos"}]) o None si no cumple las reglas:
+    - video de 3+ minutos (YouTube no muestra capítulos en videos cortos)
+    - mínimo 3 capítulos
+    - primer capítulo en 0:00
+    - cada capítulo dura al menos 10 segundos
+
+    El corte se calcula de forma PROPORCIONAL al peso de palabras de cada
+    sección sobre la duración real del audio (medida por Whisper), que es
+    una aproximación muy fiel para capítulos de minutos de largo.
+    """
+    if duracion_total < 180 or len(secciones) < 3:
+        return None
+
+    conteos = [len(s["texto"].split()) for s in secciones]
+    total_palabras = sum(conteos)
+    if total_palabras <= 0:
+        return None
+
+    candidatos = [{"titulo": s["titulo"], "segundos": 0.0} for s in secciones]
+    acumulado = 0
+    for i in range(len(conteos) - 1):
+        acumulado += conteos[i]
+        candidatos[i + 1]["segundos"] = duracion_total * acumulado / total_palabras
+
+    # Enforce: mínimo 10s entre capítulos (regla de YouTube) y
+    # que ningún corte se pase del final.
+    validos = [candidatos[0]]
+    for c in candidatos[1:]:
+        if c["segundos"] - validos[-1]["segundos"] >= 10 and c["segundos"] < duracion_total - 5:
+            validos.append(c)
+
+    if len(validos) < 3:
+        return None
+    validos[0]["segundos"] = 0.0
+    return validos
+
+
 def generar_encabezado_ass(ancho: int, alto: int, tamano_fuente: int, alineacion: int) -> str:
     """
     El encabezado .ass declara la resolución (PlayResX/PlayResY) de forma
@@ -246,13 +328,24 @@ async def generar_audio():
         print("❌ El guion.json no tiene el campo 'guion'")
         sys.exit(1)
 
-    # Limpiamos símbolos que la IA a veces mete (markdown) y que la voz
-    # leería literal ("asterisco", "numeral", etc.)
-    texto = re.sub(r"[*_#`~]", "", texto)
-    texto = re.sub(r"\s+", " ", texto).strip()
-    texto = normalizar_numeros(texto)
-    texto = normalizar_pronunciacion(texto)
-    texto = agregar_pausas_naturales(texto)
+    # Videos largos: la IA marca secciones con [SECCION: título]. Se
+    # separan ANTES de limpiar (los marcadores se eliminan, no se leen
+    # en voz) y cada sección se procesa por separado para que las pausas
+    # naturales apliquen al inicio de cada una. Los títulos alimentan
+    # los capítulos de YouTube (output/capitulos.json).
+    secciones = parse_secciones(texto)
+    if secciones:
+        print(f"📑 Guion dividido en {len(secciones)} secciones: {', '.join(s['titulo'] for s in secciones)}")
+        texto = " ".join(procesar_texto(s["texto"]) for s in secciones)
+    else:
+        texto = procesar_texto(texto)
+
+    # Por si quedó un archivo de capítulos de una corrida anterior
+    # (shorts o video sin secciones), lo borramos para que subir_youtube.js
+    # no reutilice timestamps viejos.
+    capitulos_path = os.path.join(BASE_DIR, "output", "capitulos.json")
+    if os.path.exists(capitulos_path):
+        os.remove(capitulos_path)
 
     async def generar_y_transcribir_audio():
         """Genera el audio con edge-tts y lo transcribe con Whisper.
@@ -348,6 +441,20 @@ async def generar_audio():
         with open(ASS_PATH, "w", encoding="utf-8") as f:
             f.write(contenido_ass)
         print(f"✅ Subtítulos generados con timing real: {ASS_PATH}")
+
+        # Capítulos de YouTube para videos largos con secciones marcadas
+        if secciones and mejor_palabras:
+            duracion_total = max(p["fin"] for p in mejor_palabras)
+            capitulos = calcular_capitulos(secciones, mejor_palabras, duracion_total)
+            if capitulos:
+                with open(capitulos_path, "w", encoding="utf-8") as f:
+                    json.dump(
+                        {"duracion": round(duracion_total, 1), "capitulos": capitulos},
+                        f, ensure_ascii=False, indent=2,
+                    )
+                print(f"📑 Capítulos generados: {len(capitulos)} ({duracion_total:.0f}s de video)")
+            else:
+                print(f"ℹ️  Sin capítulos (video {duracion_total:.0f}s o secciones insuficientes para las reglas de YouTube)")
 
         if mejor_coincidencia < UMBRAL_AVISO:
             aviso_path = os.path.join(BASE_DIR, "output", "aviso_calidad_audio.txt")

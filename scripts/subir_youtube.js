@@ -46,6 +46,42 @@ oAuth2Client.setCredentials(token);
 const youtube = google.youtube({ version: "v3", auth: oAuth2Client });
 
 // ------------------------------------------------------------
+// 2. Capítulos (solo videos largos — ver generar_audio.py)
+// ------------------------------------------------------------
+function formatearTimestamp(segundos) {
+  const s = Math.max(0, Math.floor(segundos));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`
+    : `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function agregarCapitulos(descripcion) {
+  const capitulosPath = path.join(BASE_DIR, "output", "capitulos.json");
+  if (!fs.existsSync(capitulosPath)) return descripcion;
+
+  try {
+    const { capitulos } = JSON.parse(fs.readFileSync(capitulosPath, "utf-8"));
+    if (!Array.isArray(capitulos) || capitulos.length < 3) return descripcion;
+
+    const bloque = [
+      "⏱️ Momentos clave:",
+      ...capitulos.map((c) => `${formatearTimestamp(c.segundos)} ${c.titulo}`),
+    ].join("\n");
+
+    // YouTube exige el primer capítulo en 0:00 y los timestamps en la
+    // descripción — el bloque va al final, después de los hashtags.
+    console.log(`📑 Agregando ${capitulos.length} capítulos a la descripción`);
+    return `${descripcion.trim()}\n\n${bloque}`;
+  } catch (err) {
+    console.log(`⚠️  No se pudo leer capitulos.json (${err.message}) — se sube sin capítulos`);
+    return descripcion;
+  }
+}
+
+// ------------------------------------------------------------
 // 2. Subir el video
 // ------------------------------------------------------------
 async function subirVideo() {
@@ -56,7 +92,7 @@ async function subirVideo() {
     requestBody: {
       snippet: {
         title: guionData.titulo,
-        description: guionData.descripcion,
+        description: agregarCapitulos(guionData.descripcion),
         tags: guionData.tags,
         categoryId: "28", // "Science & Technology" — cámbialo según el canal
       },
