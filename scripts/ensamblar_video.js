@@ -60,6 +60,20 @@ const LOGO_PATH = resolverLogo(canalNombre);
 const LOGO_ALTO = esShort ? 120 : 84;
 const LOGO_MARGEN = 30;
 
+// Validación del logo ANTES de ensamblar: decode COMPLETO con ffmpeg
+// (ffprobe solo lee el header y no basta — un PNG con basura pasa ffprobe
+// pero revienta al decodificar). Si falla, descartamos el logo aquí y el
+// video se arma sin marca de agua en vez de tumbar el pipeline al final.
+let logoValido = false;
+if (LOGO_PATH) {
+  try {
+    execSync(`ffmpeg -v error -i "${LOGO_PATH}" -f null -`, { stdio: "pipe" });
+    logoValido = true;
+  } catch {
+    console.log(`⚠️  El logo ${path.basename(LOGO_PATH)} está corrupto — video sin marca de agua`);
+  }
+}
+
 const ANCHO = esShort ? 1080 : 1920;
 const ALTO = esShort ? 1920 : 1080;
 const FPS = 30;
@@ -278,9 +292,10 @@ const fontsDir = path.join(BASE_DIR, "assets", "fonts").replace(/\\/g, "/").repl
 // El logo va arriba-derecha en AMBOS formatos: los subtítulos van
 // abajo/centrados, esquina superior libre de colisiones y de la
 // watermark de YouTube (que aparece abajo-derecha en videos largos).
+const usarLogo = logoValido; // false => misma ruta que antes de tener logo
 let filtroVideo;
 let codificadoVideo = "-c:v copy";
-if (LOGO_PATH) {
+if (usarLogo) {
   const subs = haySubtitulos ? `subtitles='${srtEscapado}':fontsdir='${fontsDir}'` : null;
   const escalaLogo = `scale=-1:${LOGO_ALTO}`; // -1 conserva la proporción
   const overlay = `overlay=W-w-${LOGO_MARGEN}:${LOGO_MARGEN}`;
@@ -298,7 +313,7 @@ if (LOGO_PATH) {
 const inputsFinales = [
   `-i "${videoSinAudioPath}"`,
   `-i "${audioFinalPath}"`,
-  LOGO_PATH ? `-i "${LOGO_PATH}"` : "",
+  usarLogo ? `-i "${LOGO_PATH}"` : "",
 ].filter(Boolean).join(" ");
 
 const cmdFinal = [
@@ -314,10 +329,35 @@ const cmdFinal = [
   `"${OUTPUT_PATH}"`,
 ].filter(Boolean).join(" ");
 
-execSync(cmdFinal, { stdio: "ignore" });
+// Si algo relacionado al logo revienta ffmpeg (aunque lo hayamos validado),
+// UN último reintento SIN logo: el video se publica sin marca de agua en
+// vez de perder la corrida entera. Cualquier otro fallo sí propaga.
+let videoGenerado = false;
+try {
+  execSync(cmdFinal, { stdio: "ignore" });
+  videoGenerado = true;
+} catch (err) {
+  if (usarLogo) {
+    console.log("⚠️  ffmpeg falló con el logo — reintentando SIN logo...");
+    const cmdSinLogo = [
+      "ffmpeg -y",
+      `-i "${videoSinAudioPath}"`,
+      `-i "${audioFinalPath}"`,
+      haySubtitulos ? `-vf "subtitles='${srtEscapado}':fontsdir='${fontsDir}'"` : "-c:v copy",
+      haySubtitulos ? "-c:v libx264 -pix_fmt yuv420p" : "",
+      '-af "loudnorm=I=-16:TP=-1.5:LRA=11"',
+      "-c:a aac -shortest",
+      `"${OUTPUT_PATH}"`,
+    ].filter(Boolean).join(" ");
+    execSync(cmdSinLogo, { stdio: "ignore" }); // si esto falla sí, es otro problema y propaga
+    console.log("✅ Video generado sin logo (el logo falló)");
+  } else {
+    throw err; // sin logo de por medio: el fallo es real, corta como antes
+  }
+}
 
-if (LOGO_PATH) console.log(`🏷️  Logo aplicado: ${path.basename(LOGO_PATH)} (alto ${LOGO_ALTO}px, arriba-derecha)`);
-else console.log("ℹ️  Sin logo para este canal — video sin marca de agua");
+if (usarLogo && videoGenerado) console.log(`🏷️  Logo aplicado: ${path.basename(LOGO_PATH)} (alto ${LOGO_ALTO}px, arriba-derecha)`);
+else if (!usarLogo) console.log("ℹ️  Sin logo para este canal — video sin marca de agua");
 
 // ------------------------------------------------------------
 // 7. Limpiar
