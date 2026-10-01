@@ -28,14 +28,37 @@ const TEMP_DIR = path.join(BASE_DIR, "output", "_temp");
 
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
 let esShort = false;
+let canalNombre = "";
 if (fs.existsSync(GUION_PATH)) {
   try {
     const guionData = JSON.parse(fs.readFileSync(GUION_PATH, "utf-8"));
     esShort = guionData.formato === "vertical";
+    canalNombre = guionData.canal || "";
   } catch {
     esShort = false;
   }
 }
+
+// ------------------------------------------------------------
+// Logo de marca de agua — uno por canal (assets/). Si el canal no
+// tiene logo asignado o el archivo no existe, el video se arma sin
+// overlay (opcional, nunca tumba el pipeline).
+// ------------------------------------------------------------
+function resolverLogo(nombreCanal) {
+  const n = (nombreCanal || "").toLowerCase();
+  let archivo;
+  if (n.includes("superate")) archivo = "logo_superate.png";
+  else if (n.includes("cristian") || n.includes("android") || n.includes("tecnolog")) archivo = "logo_tecnologia.png";
+  else if (n.includes("biblia") || n.includes("sabidur")) archivo = "logo.png";
+  else return null;
+  const ruta = path.join(BASE_DIR, "assets", archivo);
+  return fs.existsSync(ruta) ? ruta : null;
+}
+
+const LOGO_PATH = resolverLogo(canalNombre);
+// Tamaño por alto (mantiene la proporción aunque el logo no sea cuadrado)
+const LOGO_ALTO = esShort ? 120 : 84;
+const LOGO_MARGEN = 30;
 
 const ANCHO = esShort ? 1080 : 1920;
 const ALTO = esShort ? 1920 : 1080;
@@ -56,6 +79,7 @@ const DURACION_MIN = esShort ? 2 : 5;
 const DURACION_MAX = esShort ? 4 : 9;
 
 console.log(`📐 Formato: ${esShort ? "vertical (short)" : "horizontal"} — ${ANCHO}x${ALTO}`);
+console.log(`🏷️  Logo: ${LOGO_PATH ? path.basename(LOGO_PATH) : "ninguno"}`);
 
 // ------------------------------------------------------------
 // 1. Validaciones
@@ -242,34 +266,58 @@ if (hayMusica) {
 // ------------------------------------------------------------
 console.log("🎙️  Agregando audio final...");
 
-let filtroSubtitulos = "";
-if (haySubtitulos) {
-  const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
-  // El estilo nuevo usa la fuente Bebas Neue -- va empacada en el repo
-  // (assets/fonts/BebasNeue-Regular.ttf), fontsdir le dice a libass dónde
-  // buscarla en vez de depender de que esté instalada en el runner.
-  const fontsDir = path.join(BASE_DIR, "assets", "fonts").replace(/\\/g, "/").replace(/:/g, "\\:");
-  // El archivo .ass ya trae su propia resolución (PlayResX/PlayResY) y
-  // estilo declarados en el encabezado — no necesita force_style ni
-  // original_size, eso es justo lo que evita el bug de tamaño anterior.
-  filtroSubtitulos = `-vf "subtitles='${srtEscapado}':fontsdir='${fontsDir}'"`;
+const srtEscapado = SRT_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+// El estilo nuevo usa la fuente Bebas Neue -- va empacada en el repo
+// (assets/fonts/BebasNeue-Regular.ttf), fontsdir le dice a libass dónde
+// buscarla en vez de depender de que esté instalada en el runner.
+const fontsDir = path.join(BASE_DIR, "assets", "fonts").replace(/\\/g, "/").replace(/:/g, "\\:");
+// El archivo .ass ya trae su propia resolución (PlayResX/PlayResY) y
+// estilo declarados en el encabezado — no necesita force_style ni
+// original_size, eso es justo lo que evita el bug de tamaño anterior.
+
+// El logo va arriba-derecha en AMBOS formatos: los subtítulos van
+// abajo/centrados, esquina superior libre de colisiones y de la
+// watermark de YouTube (que aparece abajo-derecha en videos largos).
+let filtroVideo;
+let codificadoVideo = "-c:v copy";
+if (LOGO_PATH) {
+  const subs = haySubtitulos ? `subtitles='${srtEscapado}':fontsdir='${fontsDir}'` : null;
+  const escalaLogo = `scale=-1:${LOGO_ALTO}`; // -1 conserva la proporción
+  const overlay = `overlay=W-w-${LOGO_MARGEN}:${LOGO_MARGEN}`;
+  filtroVideo = subs
+    ? `-filter_complex "[0:v]${subs}[vsub];[2:v]${escalaLogo}[logo];[vsub][logo]${overlay}[vout]" -map "[vout]" -map 1:a`
+    : `-filter_complex "[2:v]${escalaLogo}[logo];[0:v][logo]${overlay}[vout]" -map "[vout]" -map 1:a`;
+  codificadoVideo = "-c:v libx264 -pix_fmt yuv420p";
+} else if (haySubtitulos) {
+  filtroVideo = `-vf "subtitles='${srtEscapado}':fontsdir='${fontsDir}'"`;
+  codificadoVideo = "-c:v libx264 -pix_fmt yuv420p";
+} else {
+  filtroVideo = "";
 }
+
+const inputsFinales = [
+  `-i "${videoSinAudioPath}"`,
+  `-i "${audioFinalPath}"`,
+  LOGO_PATH ? `-i "${LOGO_PATH}"` : "",
+].filter(Boolean).join(" ");
 
 const cmdFinal = [
   "ffmpeg -y",
-  `-i "${videoSinAudioPath}"`,
-  `-i "${audioFinalPath}"`,
-  filtroSubtitulos,
-  filtroSubtitulos ? "-c:v libx264 -pix_fmt yuv420p" : "-c:v copy",
+  inputsFinales,
+  filtroVideo,
+  codificadoVideo,
   // loudnorm normaliza el volumen a un estándar de streaming (-16 LUFS,
   // el que usa YouTube/Spotify) — así todos los videos suenan parejo,
   // sin importar si uno quedó más bajito o más fuerte que otro
   '-af "loudnorm=I=-16:TP=-1.5:LRA=11"',
   "-c:a aac -shortest",
   `"${OUTPUT_PATH}"`,
-].join(" ");
+].filter(Boolean).join(" ");
 
 execSync(cmdFinal, { stdio: "ignore" });
+
+if (LOGO_PATH) console.log(`🏷️  Logo aplicado: ${path.basename(LOGO_PATH)} (alto ${LOGO_ALTO}px, arriba-derecha)`);
+else console.log("ℹ️  Sin logo para este canal — video sin marca de agua");
 
 // ------------------------------------------------------------
 // 7. Limpiar
