@@ -191,7 +191,7 @@ def procesar_texto(texto: str) -> str:
     return texto
 
 
-def calcular_capitulos(secciones, palabras_con_tiempo, duracion_total):
+def calcular_capitulos(secciones, duracion_total):
     """
     Calcula los timestamps de cada sección y devuelve la lista lista para
     YouTube ([{"titulo", "segundos"}]) o None si no cumple las reglas:
@@ -445,7 +445,7 @@ async def generar_audio():
         # Capítulos de YouTube para videos largos con secciones marcadas
         if secciones and mejor_palabras:
             duracion_total = max(p["fin"] for p in mejor_palabras)
-            capitulos = calcular_capitulos(secciones, mejor_palabras, duracion_total)
+            capitulos = calcular_capitulos(secciones, duracion_total)
             if capitulos:
                 with open(capitulos_path, "w", encoding="utf-8") as f:
                     json.dump(
