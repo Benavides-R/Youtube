@@ -81,6 +81,10 @@ jobs:
       - name: Subir a YouTube
         id: subir_youtube
         continue-on-error: true
+        env:
+          # Franjas propias de ESTE canal (único canal de tecnología).
+          # 22:45 como último recurso: la última corrida puede terminar 22:22
+          PUBLISH_FRANJAS: "19:30,22:45"
         run: node scripts/subir_youtube.js
 
       - name: Enviar video de respaldo a Telegram (si falló YouTube)

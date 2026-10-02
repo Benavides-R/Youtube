@@ -236,7 +236,7 @@ con 30 por ciento de descuento."
 
 1. **Sin límite de ofertas**: El pipeline procesa todas las ofertas disponibles en el JSON
 2. **Fotos de Amazon no se usan en cards**: Las cards usan las fotos descargadas pero sobre fondo profesional
-3. **YouTube publica solo**: sube privado con `publishAt` a la siguiente franja pico (12:30 / 18:30 / 21:00 hora Colombia, mínimo 20 min en el futuro). Si YouTube rechaza la programación (o los tags), reintenta degradando hasta subir igual. `PUBLISH_AUTO=false` lo deja privado como antes. La fecha se guarda en `resultado_subida.json` (`publicado_en`) y se avisa por Telegram
+3. **YouTube publica solo**: sube privado con `publishAt` a la siguiente franja pico y se hace público solo. Cada workflow tiene sus PROPIAS franjas (`PUBLISH_FRANJAS` en el YAML) para que ningún dos videos publiquen a la misma hora ni en horarios malos (todo cae 12:30–22:45 hora Colombia): biblia am 12:30/15:00 · biblia pm 14:00 (día siguiente) · biblia largo 18:30/21:30 · súpérate am 13:30 · súpérate pm 17:00/22:00 · súpérate largo 19:00/20:30 · tecnología 19:30/22:45. `PUBLISH_AUTO=false` lo deja privado como antes. La fecha se guarda en `resultado_subida.json` (`publicado_en`) y se avisa por Telegram. Simulación de choques: `_test_horarios.js` (borrar tras cada cambio)
 4. **Facebook sube como Reel**: Solo funciona con formato vertical
 5. **Telegram es respaldo**: Solo se envía si YouTube Y Facebook fallan
 6. **Ofertas se marcan después**: Solo se marcan como usadas si la subida fue exitosa

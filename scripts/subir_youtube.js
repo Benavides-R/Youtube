@@ -141,11 +141,17 @@ function siguienteFranja() {
   if (process.env.PUBLISH_AUTO === "false" || FRANJAS_PICO_COLOMBIA.length === 0) return null;
   const ahora = Date.now();
   const margenMs = 20 * 60 * 1000;
+  // "Hoy" en hora Colombia (UTC-5): al restarle 5h al instante, los campos
+  // UTC del Date pasan a representar la fecha/hora de Colombia. Sin esto,
+  // después de las 7pm CO la fecha UTC ya es "mañana" y se perdían los
+  // slots de esa misma noche (el video se atrasaba hasta el día siguiente).
+  const hoyCO = new Date(ahora - 5 * 3600e3);
   for (let dias = 0; dias <= 2; dias++) {
-    const base = new Date(ahora + dias * 86400000);
+    const diaCO = new Date(hoyCO.getTime() + dias * 86400000);
     for (const f of FRANJAS_PICO_COLOMBIA) {
-      // hora Colombia = UTC-5 → UTC = colombia + 5 (Date.UTC desborda solo)
-      const ts = Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), f.h + 5, f.m);
+      // slot = fecha CO + hora CO, expresado como instante UTC real
+      const ts =
+        Date.UTC(diaCO.getUTCFullYear(), diaCO.getUTCMonth(), diaCO.getUTCDate(), f.h, f.m) + 5 * 3600e3;
       if (ts >= ahora + margenMs) return new Date(ts).toISOString();
     }
   }

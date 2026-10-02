@@ -81,6 +81,9 @@ jobs:
       - name: Subir a YouTube
         id: subir_youtube
         continue-on-error: true
+        env:
+          # Franjas propias de ESTE canal (evita chocar con los shorts: 12:30/14:00/15:00)
+          PUBLISH_FRANJAS: "18:30,21:30"
         run: node scripts/subir_youtube.js
 
       - name: Enviar video de respaldo a Telegram (si falló YouTube)

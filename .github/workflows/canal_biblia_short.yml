@@ -82,6 +82,11 @@ jobs:
       - name: Subir a YouTube
         id: subir_youtube
         continue-on-error: true
+        env:
+          # Corrida de mañana (13:22 UTC) → 12:30/15:00; corrida de noche
+          # (01:47 UTC) → termina tarde, usa 14:00 del día siguiente.
+          # Nunca comparten hora entre las dos corridas ni con el largo (18:30/21:30)
+          PUBLISH_FRANJAS: ${{ github.event.schedule == '47 1 * * *' && '14:00,16:30' || '12:30,15:00' }}
         run: node scripts/subir_youtube.js
 
       - name: Enviar video de respaldo a Telegram (si falló YouTube)
