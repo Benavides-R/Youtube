@@ -17,13 +17,6 @@ jobs:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
 
-      - name: Esperar un tiempo random (solo en corridas automáticas, no al probar manual)
-        if: github.event_name == 'schedule'
-        run: |
-          MINUTOS=$((RANDOM % 180))
-          echo "Esperando $MINUTOS minutos antes de empezar..."
-          sleep "${MINUTOS}m"
-
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
