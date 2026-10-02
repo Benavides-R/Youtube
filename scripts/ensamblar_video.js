@@ -56,8 +56,11 @@ function resolverLogo(nombreCanal) {
 }
 
 const LOGO_PATH = resolverLogo(canalNombre);
-// Tamaño por alto (mantiene la proporción aunque el logo no sea cuadrado)
-const LOGO_ALTO = esShort ? 120 : 84;
+// Tamaño por ALTO (mantiene la proporción aunque el logo no sea cuadrado).
+// Los assets ya vienen recortados sin padding transparente, así que este
+// alto es el tamaño visible real: 160 en short (~15% del ancho, tamaño
+// típico de watermark) y 120 en largo (~6% del ancho de 1920).
+const LOGO_ALTO = esShort ? 160 : 120;
 const LOGO_MARGEN = 30;
 
 // Validación del logo ANTES de ensamblar: decode COMPLETO con ffmpeg
