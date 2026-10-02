@@ -61,7 +61,10 @@ const LOGO_PATH = resolverLogo(canalNombre);
 // alto es el tamaño visible real: 160 en short (~15% del ancho, tamaño
 // típico de watermark) y 120 en largo (~6% del ancho de 1920).
 const LOGO_ALTO = esShort ? 160 : 120;
-const LOGO_MARGEN = 30;
+// Margen generoso: 30px se veía pegado al borde (los logos circulares
+// llenan su marco y no "esconden" el borde como los de esquinas
+// transparentes). 48px deja aire visible en ambas orillas.
+const LOGO_MARGEN = 48;
 
 // Validación del logo ANTES de ensamblar: decode COMPLETO con ffmpeg
 // (ffprobe solo lee el header y no basta — un PNG con basura pasa ffprobe
