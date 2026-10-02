@@ -42,7 +42,6 @@ const ALTO = esShort ? 1280 : 720;
 const CAJA_Y = esShort ? Math.round(ALTO * 0.68) : 470;
 const CAJA_ALTO = esShort ? Math.round(ALTO * 0.22) : 250;
 const TEXTO_Y = CAJA_Y + Math.round(CAJA_ALTO * 0.15);
-const TAMANO_FUENTE = esShort ? 55 : 70;
 
 // Fuente según sistema operativo
 const fontPathRaw =
@@ -54,11 +53,28 @@ const fontPath = fontPathRaw.replace(/:/g, "\\:");
 
 // Texto corto para miniatura (generado específico por la IA), con respaldo
 // al título completo si un guion viejo no lo trae
-let titulo = (guionData.texto_miniatura || guionData.titulo).toUpperCase().slice(0, 35);
+let titulo = (guionData.texto_miniatura || guionData.titulo).toUpperCase();
+// Corta en límite de PALABRA (antes un slice a secas podía partir "NADIE" en "NAD")
+if (titulo.length > 35) {
+  titulo = titulo.slice(0, 35);
+  const ultimoEspacio = titulo.lastIndexOf(" ");
+  if (ultimoEspacio > 10) titulo = titulo.slice(0, ultimoEspacio);
+}
 const palabras = titulo.split(" ");
 const mitad = Math.ceil(palabras.length / 2);
 const linea1 = palabras.slice(0, mitad).join(" ");
 const linea2 = palabras.slice(mitad).join(" ");
+
+// Fuente más grande que antes (62/78), pero si el texto es largo se reduce
+// proporcionalmente para que NUNCA se salga del ancho de la imagen
+let TAMANO_FUENTE = esShort ? 62 : 78;
+const maxLineaChars = Math.max(linea1.length, linea2.length, 1);
+const anchoEstimado = maxLineaChars * TAMANO_FUENTE * 0.62; // mayúsculas Arial Bold ≈0.62
+const anchoMax = ANCHO - 60;
+if (anchoEstimado > anchoMax) {
+  TAMANO_FUENTE = Math.max(30, Math.floor((TAMANO_FUENTE * anchoMax) / anchoEstimado));
+  console.log(`ℹ️  Texto largo (${maxLineaChars} chars): fuente reducida a ${TAMANO_FUENTE}px para que quepa`);
+}
 
 // IMPORTANTE: el texto va en un ARCHIVO aparte, no directo en el comando.
 // Meter un salto de línea real dentro del comando rompe la terminal en
