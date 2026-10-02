@@ -116,6 +116,43 @@ function sanitizarTags(bruto) {
 }
 
 // ------------------------------------------------------------
+// 2.6. Publicación programada a hora pico
+// ------------------------------------------------------------
+// Antes los videos quedaban PRIVADOS para siempre si nadie los
+// publicaba a mano → no sumaban vistas ni subs. Ahora se agenda
+// con publishAt a la siguiente franja pico (hora Colombia, UTC-5):
+// el video sale solo sin intervención humana.
+// Desactiva con PUBLISH_AUTO=false (queda privado como antes).
+const FRANJAS_PICO_COLOMBIA = (process.env.PUBLISH_FRANJAS || "12:30,18:30,21:00")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean)
+  .map((s) => {
+    const [h, m] = s.split(":").map((n) => parseInt(n, 10));
+    return { h, m: isNaN(m) ? 0 : m };
+  })
+  .filter((f) => !isNaN(f.h))
+  .sort((a, b) => a.h - b.h || a.m - b.m);
+
+// Devuelve el timestamp ISO (UTC) de la siguiente franja pico, o null.
+// Mínimo 20 minutos en el futuro: le da tiempo a YouTube a procesar
+// el video antes de la hora de publicación.
+function siguienteFranja() {
+  if (process.env.PUBLISH_AUTO === "false" || FRANJAS_PICO_COLOMBIA.length === 0) return null;
+  const ahora = Date.now();
+  const margenMs = 20 * 60 * 1000;
+  for (let dias = 0; dias <= 2; dias++) {
+    const base = new Date(ahora + dias * 86400000);
+    for (const f of FRANJAS_PICO_COLOMBIA) {
+      // hora Colombia = UTC-5 → UTC = colombia + 5 (Date.UTC desborda solo)
+      const ts = Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), f.h + 5, f.m);
+      if (ts >= ahora + margenMs) return new Date(ts).toISOString();
+    }
+  }
+  return null;
+}
+
+// ------------------------------------------------------------
 // 3. Subir el video
 // ------------------------------------------------------------
 async function subirVideo() {
@@ -123,8 +160,14 @@ async function subirVideo() {
 
   const tags = sanitizarTags(guionData.tags);
   const descripcion = agregarCapitulos(guionData.descripcion);
+  const publishAt = siguienteFranja();
+  if (publishAt) {
+    console.log(`🗓️  Publicación programada: ${new Date(publishAt).toLocaleString("es-CO", { timeZone: "America/Bogota", weekday: "long", hour: "2-digit", minute: "2-digit" })} (hora Colombia)`);
+  } else {
+    console.log("🔒  Sin programación — quedará privado (publica desde YouTube Studio)");
+  }
 
-  const armarBody = (tagsFinales) => ({
+  const armarBody = (tagsFinales, programado) => ({
     snippet: {
       title: guionData.titulo,
       description: descripcion,
@@ -132,34 +175,44 @@ async function subirVideo() {
       categoryId: "28", // "Science & Technology" — cámbialo según el canal
     },
     status: {
-      privacyStatus: "private", // por seguridad: empieza en privado
+      privacyStatus: "private", // con publishAt DEBE ser private (YouTube lo hace público solo)
       selfDeclaredMadeForKids: false,
+      ...(programado ? { publishAt } : {}),
     },
   });
 
   // Cada intento necesita su propio stream (el anterior queda consumido)
-  const intentar = (tagsFinales) =>
+  const intentar = (tagsFinales, programado) =>
     youtube.videos.insert({
       part: ["snippet", "status"],
-      requestBody: armarBody(tagsFinales),
+      requestBody: armarBody(tagsFinales, programado),
       media: { body: fs.createReadStream(VIDEO_PATH) },
     });
 
-  let response;
-  try {
-    response = await intentar(tags);
-  } catch (err) {
-    const motivo = `${err.message} ${JSON.stringify(err.errors || "")}`;
-    if (/invalidTags/i.test(motivo) && tags.length > 0) {
-      // El video NO se pierde por los tags: último reintento sin ellos.
-      console.log("⚠️  YouTube rechazó los tags (invalidTags) — reintentando SIN tags...");
-      response = await intentar([]);
-    } else {
-      throw err;
+  // Degradación en escalera: tags+programado → sin tags → sin programación.
+  // El video NUNCA se pierde por metadatos rechazados.
+  let response = null;
+  let quedanTags = tags.length > 0;
+  let programado = publishAt !== null;
+  for (let intento = 1; intento <= 3 && !response; intento++) {
+    try {
+      response = await intentar(quedanTags ? tags : [], programado);
+    } catch (err) {
+      const motivo = `${err.message} ${JSON.stringify(err.errors || "")}`;
+      if (quedanTags && /invalidTags/i.test(motivo)) {
+        console.log("⚠️  YouTube rechazó los tags (invalidTags) — reintentando SIN tags...");
+        quedanTags = false;
+      } else if (programado && /publishAt|publish_at|invalid.*schedul/i.test(motivo)) {
+        console.log("⚠️  YouTube rechazó la publicación programada — subiendo privado...");
+        programado = false;
+      } else {
+        throw err;
+      }
     }
   }
 
   const videoId = response.data.id;
+  const enHorario = Boolean(publishAt && programado);
 
   const resultadoPath = path.join(BASE_DIR, "output", "resultado_subida.json");
   fs.writeFileSync(
@@ -170,6 +223,7 @@ async function subirVideo() {
         titulo: guionData.titulo,
         canal: guionData.canal,
         fecha: new Date().toISOString(),
+        publicado_en: enHorario ? publishAt : null,
       },
       null,
       2
@@ -178,7 +232,11 @@ async function subirVideo() {
 
   console.log(`\n✅ Video subido con éxito`);
   console.log(`🔗 https://youtube.com/watch?v=${videoId}`);
-  console.log(`⚠️  Está en modo PRIVADO. Cámbialo a público desde YouTube Studio cuando lo revises.`);
+  if (enHorario) {
+    console.log(`🗓️  Se hará público solo el ${new Date(publishAt).toLocaleString("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })} (hora Colombia).`);
+  } else {
+    console.log(`⚠️  Está en modo PRIVADO. Publícalo desde YouTube Studio cuando lo revises.`);
+  }
 
   const miniaturaPath = path.join(BASE_DIR, "output", "miniatura.jpg");
   if (fs.existsSync(miniaturaPath)) {

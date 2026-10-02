@@ -35,7 +35,10 @@ if (hayResultadoYoutube || hayResultadoFacebook) {
 
   if (hayResultadoYoutube) {
     const r = JSON.parse(fs.readFileSync(RESULTADO_PATH, "utf-8"));
-    partes.push(`✅ YouTube: subido (privado)\n🔗 https://youtube.com/watch?v=${r.videoId}\n📹 ${r.titulo}\n📢 Canal: ${r.canal}`);
+    const lineaYouTube = r.publicado_en
+      ? `✅ YouTube: programado para ${new Date(r.publicado_en).toLocaleString("es-CO", { timeZone: "America/Bogota", weekday: "long", hour: "2-digit", minute: "2-digit" })} (hora Colombia)`
+      : "✅ YouTube: subido (privado)";
+    partes.push(`${lineaYouTube}\n🔗 https://youtube.com/watch?v=${r.videoId}\n📹 ${r.titulo}\n📢 Canal: ${r.canal}`);
   } else {
     partes.push("❌ YouTube: falló la subida, revisa el log en GitHub Actions");
   }
