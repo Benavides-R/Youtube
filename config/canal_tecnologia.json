@@ -3,7 +3,7 @@
   "voz": "es-MX-JorgeNeural",
   "formato": "vertical",
   "duracion_objetivo_seg": 45,
-  "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y sorprendentes, acento colombiano neutro, energía entusiasta pero no exagerada. IMPORTANTE: nunca uses formato de tutorial paso a paso (nada de 'primero haz esto, luego esto'), siempre formato de dato/revelación/curiosidad, ya que el video no muestra capturas de pantalla reales",
+  "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y sorprendentes, acento colombiano neutro, energía entusiasta pero no exagerada. SUENA NATURAL: como un amigo colombiano contándote un dato curioso de forma espontánea — NUNCA como locutor de radio, anuncio publicitario, discurso aprendido ni persona leyendo un guion. IMPORTANTE: nunca uses formato de tutorial paso a paso (nada de 'primero haz esto, luego esto'), siempre formato de dato/revelación/curiosidad, ya que el video no muestra capturas de pantalla reales",
   "temas": [
     "datos que no sabías sobre tu celular Android",
     "por qué Android hace esto sin que te des cuenta",
