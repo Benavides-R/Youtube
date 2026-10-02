@@ -19,8 +19,9 @@ generar_narracion_ofertas.js → Genera narración TTS con fallback si falla
 copiar cards → imagenes/    → Prepara escenas para ensamblar
 generar_audio.py            → TTS con voz colombiana + subtítulos Whisper
 ensamblar_video.js          → Ensambla: cards + audio + música + subtítulos
-subir_youtube.js            → Sube a YouTube (privado)
+subir_youtube.js            → Sube a YouTube y agenda publicación a la siguiente franja pico (hora Colombia)
 subir_facebook.js           → Sube a Facebook Reels (continue-on-error)
+reporte_semanal.js          → Reporte semanal de subs/vistas por Telegram (lunes 8am CO)
 notificar_telegram.js       → Notifica resultado por Telegram (continue-on-error)
 enviar_telegram_respaldo.js → Envía video a Telegram si falla YouTube
 marcar_ofertas_usadas.js    → Marca ofertas procesadas
@@ -235,7 +236,7 @@ con 30 por ciento de descuento."
 
 1. **Sin límite de ofertas**: El pipeline procesa todas las ofertas disponibles en el JSON
 2. **Fotos de Amazon no se usan en cards**: Las cards usan las fotos descargadas pero sobre fondo profesional
-3. **YouTube sube en privado**: Siempre sube como privado, revisar antes de hacer público
+3. **YouTube publica solo**: sube privado con `publishAt` a la siguiente franja pico (12:30 / 18:30 / 21:00 hora Colombia, mínimo 20 min en el futuro). Si YouTube rechaza la programación (o los tags), reintenta degradando hasta subir igual. `PUBLISH_AUTO=false` lo deja privado como antes. La fecha se guarda en `resultado_subida.json` (`publicado_en`) y se avisa por Telegram
 4. **Facebook sube como Reel**: Solo funciona con formato vertical
 5. **Telegram es respaldo**: Solo se envía si YouTube Y Facebook fallan
 6. **Ofertas se marcan después**: Solo se marcan como usadas si la subida fue exitosa
