@@ -1,0 +1,28 @@
+{
+  "canales": [
+    {
+      "nombre": "Sabiduría Bíblica Oficial",
+      "handle": null,
+      "channel_id": null,
+      "activo": true
+    },
+    {
+      "nombre": "Superate777",
+      "handle": null,
+      "channel_id": null,
+      "activo": true
+    },
+    {
+      "nombre": "Cristian David Benavides - Android Apps y Trucos",
+      "handle": null,
+      "channel_id": null,
+      "activo": true
+    },
+    {
+      "nombre": "Datos Curiosos",
+      "handle": null,
+      "channel_id": null,
+      "activo": false
+    }
+  ]
+}
