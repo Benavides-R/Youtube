@@ -17,13 +17,6 @@ jobs:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
 
-      - name: Esperar un tiempo random (solo en corridas automáticas, no al probar manual)
-        if: github.event_name == 'schedule'
-        run: |
-          MINUTOS=$((RANDOM % 180))
-          echo "Esperando $MINUTOS minutos antes de empezar..."
-          sleep "${MINUTOS}m"
-
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
@@ -83,8 +76,8 @@ jobs:
         continue-on-error: true
         env:
           # Franjas propias de ESTE canal (único canal de tecnología).
-          # 22:45 como último recurso: la última corrida puede terminar 22:22
-          PUBLISH_FRANJAS: "19:30,22:45"
+          # 21:00 pasa intermedio: si la generación se alarga, evita caer a 22:45
+          PUBLISH_FRANJAS: "19:30,21:00,22:45"
         run: node scripts/subir_youtube.js
 
       - name: Enviar video de respaldo a Telegram (si falló YouTube)

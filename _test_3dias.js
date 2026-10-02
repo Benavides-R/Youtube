@@ -1,5 +1,5 @@
-// Test 3 días: simula los 7 workflows con esperas aleatorias reales
-// (0-180 min) + generación (40-90 min), imprime la línea de tiempo
+// Test 3 días: simula los 7 workflows SIN espera random (eliminada):
+// cron → generación (40-90 min) → subida. Imprime la línea de tiempo
 // día por día y VERIFICA:
 //   A) Ninguna publicación de YouTube comparte fecha+hora (ni mismo canal ni cruzado)
 //   B) Ninguna publicación cae en horario malo (antes de 12:00 o desde 23:00)
@@ -18,7 +18,7 @@ const WFS = [
   { n: "Short biblia (mañana)", corto: "S.bib-am", cronCO: 8 + 22 / 60, fr: "12:30,15:00", fb: true },
   { n: "Súpérate largo", corto: "S.largo", cronCO: 14 + 33 / 60, fr: "19:00,20:30", fb: false },
   { n: "Biblia largo", corto: "B.largo", cronCO: 16 + 37 / 60, fr: "18:30,21:30", fb: false },
-  { n: "Tecnología", corto: "Tec", cronCO: 17 + 52 / 60, fr: "19:30,22:45", fb: true },
+  { n: "Tecnología", corto: "Tec", cronCO: 17 + 52 / 60, fr: "19:30,21:00,22:45", fb: true },
   { n: "Short súpérate (noche)", corto: "S.süp-pm", cronCO: 18 + 42 / 60, fr: "17:00,22:00", fb: true },
   { n: "Short biblia (noche)", corto: "S.bib-pm", cronCO: 20 + 47 / 60, fr: "14:00,16:30", fb: true },
 ];
@@ -44,7 +44,7 @@ const COhora = (utcMs) => {
 // ============================================================
 // PARTE 1: línea de tiempo de 3 días con esperas aleatorias
 // ============================================================
-console.log("════════ LÍNEA DE TIEMPO 3 DÍAS (espera aleatoria 0-180 min) ════════\n");
+console.log("════════ LÍNEA DE TIEMPO 3 DÍAS (cron → generación 40-90 min → subida) ════════\n");
 
 const publicaciones = []; // {wf, canal, iso, co}
 for (let dia = 0; dia < 3; dia++) {
@@ -54,9 +54,8 @@ for (let dia = 0; dia < 3; dia++) {
     const sig = crearSig(w.fr);
     const baseCO = Date.UTC(2026, 9, 5 + dia, 5, 0); // 00:00 CO
     const cron = baseCO + w.cronCO * 3600e3;
-    const espera = Math.round(rnd(0, 180));
     const gen = Math.round(rnd(40, 90));
-    const inicio = cron + espera * 60e3;
+    const inicio = cron;
     const fin = inicio + gen * 60e3;
 
     const realNow = Date.now;
@@ -67,7 +66,7 @@ for (let dia = 0; dia < 3; dia++) {
 
     publicaciones.push({ wf: w.corto, canal: w.n, iso: isoYt, co: fmt(Date.parse(isoYt)) });
     eventos.push(
-      `  ${w.n.padEnd(24)} cron ${fmt(cron).slice(5)} +${espera}min → arranca ${fmt(inicio).slice(5)}, lista ${fmt(fin).slice(5)}` +
+      `  ${w.n.padEnd(24)} arranca ${fmt(inicio).slice(5)}, lista +${gen}min → ${fmt(fin).slice(5)}` +
         (w.fb ? ` → FB: ${fmt(fin).slice(5)}` : "") +
         `\n  ${"".padEnd(24)}    ⮑ YouTube PUBLICA: ${fmt(Date.parse(isoYt))}`
     );
@@ -108,7 +107,7 @@ for (let dia = 0; dia < 3; dia++) {
     const sig = crearSig(w.fr);
     const baseCO = Date.UTC(2026, 9, 5 + dia, 5, 0);
     const start = baseCO + w.cronCO * 3600e3;
-    for (let min = 40; min <= 270; min += 5) {
+    for (let min = 40; min <= 90; min += 5) {
       const fin = start + min * 60e3;
       const realNow = Date.now;
       Date.now = () => fin;
@@ -127,7 +126,7 @@ let choquesExh = 0;
 for (const [hora, prods] of productores) {
   if (prods.size > 1) { console.log(`CHOQUE EXHAUSTIVO: ${hora} → ${[...prods].join(" + ")}`); choquesExh++; }
 }
-console.log(`C) Barrido exhaustivo (${WFS.length} workflows × 47 horarios × 3 días): choques=${choquesExh === 0 ? "ninguno ✓" : choquesExh + " ✗"}, sin franja=${sinFranja === 0 ? "0 ✓" : sinFranja + " ✗"}${malos.length === 0 ? ", horas malas=0 ✓" : ""}`);
+console.log(`C) Barrido exhaustivo (${WFS.length} workflows × 11 horarios × 3 días): choques=${choquesExh === 0 ? "ninguno ✓" : choquesExh + " ✗"}, sin franja=${sinFranja === 0 ? "0 ✓" : sinFranja + " ✗"}${malos.length === 0 ? ", horas malas=0 ✓" : ""}`);
 
 const ok = choques === 0 && choquesExh === 0 && sinFranja === 0 && malos.length === 0;
 console.log(`\n${ok ? "✅ TEST 3 DÍAS: TODO OK" : "❌ TEST FALLÓ"}`);
