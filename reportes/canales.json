@@ -19,6 +19,12 @@
       "activo": true
     },
     {
+      "nombre": "El Punto Ciego",
+      "handle": "@Punto.Ciego.01",
+      "channel_id": "UCig6AIXaiK3dOw_bbRu2mZA",
+      "activo": true
+    },
+    {
       "nombre": "Datos Curiosos",
       "handle": null,
       "channel_id": null,
