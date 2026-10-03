@@ -102,15 +102,25 @@ async function obtenerDatos(canal) {
   const stats = item.statistics;
 
   const uploads = item.contentDetails.relatedPlaylists.uploads;
-  const lista = await api("playlistItems", { part: "contentDetails,snippet", playlistId: uploads, maxResults: "25" });
-  const desde = Date.now() - DIAS * 86400000;
-  const recientes = (lista.items || [])
-    .map((i) => ({
-      id: i.contentDetails.videoId,
-      fecha: Date.parse(i.contentDetails.videoPublishedAt || i.snippet.publishedAt),
-      titulo: i.snippet.title,
-    }))
-    .filter((v) => v.fecha >= desde);
+  let recientes = [];
+  let aviso = null;
+  if (!uploads) {
+    aviso = "el canal no expone su playlist de uploads — no pude revisar videos de la semana";
+  } else {
+    try {
+      const lista = await api("playlistItems", { part: "contentDetails,snippet", playlistId: uploads, maxResults: "25" });
+      const desde = Date.now() - DIAS * 86400000;
+      recientes = (lista.items || [])
+        .map((i) => ({
+          id: i.contentDetails.videoId,
+          fecha: Date.parse(i.contentDetails.videoPublishedAt || i.snippet.publishedAt),
+          titulo: i.snippet.title,
+        }))
+        .filter((v) => v.fecha >= desde);
+    } catch (err) {
+      aviso = `no pude leer los videos de la semana (${err.message})`;
+    }
+  }
 
   let vistasSemana = 0;
   let likesSemana = 0;
@@ -137,6 +147,7 @@ async function obtenerDatos(canal) {
     vistasSemana,
     likesSemana,
     top,
+    aviso,
   };
 }
 
@@ -205,6 +216,7 @@ function delta(actual, previo) {
       const t = r.top.titulo.length > 58 ? r.top.titulo.slice(0, 58) + "…" : r.top.titulo;
       lineas.push(`  🔥 Top: "${t}" — ${num.format(r.top.views)} vistas`);
     }
+    if (r.aviso) lineas.push(`  ⚠️ ${r.aviso}`);
     lineas.push("");
   }
 
