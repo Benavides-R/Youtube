@@ -70,15 +70,27 @@ async function resolverCanal(canal) {
       return canal.channel_id;
     }
   }
-  const r = await api("search", { part: "snippet", type: "channel", maxResults: "5", q: canal.nombre });
-  const items = r.items || [];
+  let r = await api("search", { part: "snippet", type: "channel", maxResults: "5", q: canal.nombre });
+  let items = r.items || [];
+  if (!items.length) {
+    // Reintenta sin el sufijo después de " - " (ej: "... - Android Apps y Trucos")
+    const corto = canal.nombre.replace(/\s+[-–—|].*$/, "").trim();
+    if (corto && corto !== canal.nombre) {
+      console.warn(`⚠️  Sin resultados con "${canal.nombre}"; reintento con "${corto}"`);
+      r = await api("search", { part: "snippet", type: "channel", maxResults: "5", q: corto });
+      items = r.items || [];
+    }
+  }
   if (!items.length) throw new Error(`No encontré el canal "${canal.nombre}"`);
   const exacto = items.find((i) => norm(i.snippet.title) === norm(canal.nombre));
   const elegido = exacto || items[0];
   if (!exacto) {
     console.warn(`⚠️  "${canal.nombre}" no coincide exacto; elegí "${elegido.snippet.title}" — verifica reportes/canales.json`);
   }
-  canal.channel_id = elegido.channelId;
+  // En search de canales el ID viene en id.channelId (NO en snippet)
+  const cid = elegido.id?.channelId || elegido.snippet?.channelId;
+  if (!cid) throw new Error(`La búsqueda de "${canal.nombre}" no devolvió channel_id`);
+  canal.channel_id = cid;
   return canal.channel_id;
 }
 
