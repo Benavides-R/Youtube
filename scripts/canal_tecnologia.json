@@ -103,6 +103,7 @@
   "promocion": {
     "activa": true,
     "link_telegram": "https://t.me/Benatechs_Descuentos",
+    "link_sitio": "https://oferta-radar.com",
     "estilo": "cierre directo y simple, SIN sarcasmo (la IA no lo maneja bien). Ejemplo de tono a seguir: 'Si vas a comprar en Amazon, ahorra plata con nuestros cupones y ofertas diarias en Telegram'. Debe ser claro, útil, sin rodeos ni intentos de gracia — informativo y directo"
   }
 }
