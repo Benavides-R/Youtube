@@ -183,6 +183,7 @@ async function subirVideo() {
     status: {
       privacyStatus: "private", // con publishAt DEBE ser private (YouTube lo hace público solo)
       selfDeclaredMadeForKids: false,
+      containsSyntheticMedia: true, // etiqueta "Contenido alterado o sintético" (voz IA + fotos stock); no afecta alcance ni monetización
       ...(programado ? { publishAt } : {}),
     },
   });
