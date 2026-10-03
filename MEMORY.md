@@ -13,11 +13,19 @@
 | `a37c01e` | **Etiqueta IA automática**: `subir_youtube.js` envía `status.containsSyntheticMedia: true` en cada `videos.insert` → YouTube muestra "Contenido alterado o sintético" en la descripción. No afecta alcance ni monetización (FAQ oficial de YouTube) |
 | `2f6540a` `d9cf72c` | **Espera random 0-180 min ELIMINADA** de los 5 workflows de video (arraancan en el minuto del cron); tecnología gana franja intermedia 21:00; `_test_3dias.js` actualizado (0 choques, 0 horas malas, barrido 7×11×3) |
 
-### Estado del reporte semanal (P0)
-- Secret **`YOUTUBE_API_KEY`** creado el 3 oct por el usuario (Clave de API restringida a YouTube Data API v3; UNA sola clave sirve para los3 canales porque lee datos públicos)
-- **PENDIENTE**: primera ejecución manual → Actions → `reporte_semanal` → Run workflow (verificar verde); luego corre SOLO lunes 8am CO
-- `reportes/canales.json`:3 canales activos (Sabiduría Bíblica, Superate777, Cristian David Benavides); Datos Curiosos inactivo
-- El usuario tiene3 proyectos en Google Cloud (uno por Gmail/canal) — NO hace falta1 key por proyecto
+### Reporte semanal — ESTADO: ✅ FUNCIONANDO (3 oct 2026)
+- Secret `YOUTUBE_API_KEY` creado y verificado (Clave de API restringida a YouTube Data API v3; UNA sola clave sirve para todos los canales — datos públicos)
+- Corre SOLO lunes 8am CO (`reporte_semanal.yml`); primer test manual exitoso, reporte llega por Telegram
+- Bugs corregidos en primera corrida: `channel_id` venía en `elegido.id.channelId` (no `elegido.channelId`), retry de search sin sufijo " - ", y error de playlist NO rompe el canal (reporta subs/vistas + ⚠️)
+- **Canales oficiales en `reportes/canales.json`** (handles verificados contra YouTube, no por search):
+  - Sabiduria Biblica — `@SabiduriaBiblicaOficial` / `UCaZ5OzCizFnGps5zRnMH68w` (27.3K subs) — OJO: existe OTRO canal "Sabiduría Bíblica - Oficial" `UC1yj...` (9K) que NO es el oficial del reporte
+  - Cristian David Benavides — `@cristiandavidbenavides87` / `UCCPWlhftxHwK8Om26nfx98A` (14.7K) — el handle SIN el87 (`@cristiandavidbenavides`) es un canal VACÍO de 2023, no usar
+  - Superate 777 — `@Superate-777` / `UChm5wHCLE25YfCN-A9wB_DQ` (0 subs — real, confirmado 2 corridas)
+  - El Punto Ciego — `@Punto.Ciego.01` / `UCig6AIXaiK3dOw_bbRu2mZA` (script externo)
+  - Datos Curiosos — inactivo
+- Los `channel_id` quedan cacheados en `canales.json` (el workflow los commitea); deltas ± aparecen la2da semana
+- **Dato del1er reporte**: biblia solo publicó +1 video/semana con 27.3K subs → posible falla del pipeline de shorts (historial se actualiza con `continue-on-error` ANTES de generar video, así que commits diarios ≠ video publicado); el usuario dijo que hasta el2 oct subía videos A MANO con pereza
+- Pendiente Facebook: usuario dijo "por el momento dejemos así" (no agregar sección FB al reporte pese a tener FB_ACCESS_TOKEN)
 
 ---
 
