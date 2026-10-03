@@ -1,6 +1,23 @@
 # MEMORY.md - Historial de Cambios del Pipeline de Ofertas
 
-## Fecha: 18 de Septiembre 2026 (última actualización)
+## Fecha: 3 de Octubre 2026 (última actualización)
+
+---
+
+## Cambios Recientes (1–3 Octubre 2026)
+
+| Commit | Cambio |
+|--------|--------|
+| `f99af7b` | **Miniatura con dato concreto**: prompt de `texto_miniatura` ahora OBLIGA número/porcentaje/precio/beneficio medible ("-50%", "3 ERRORES") y PROHÍBE palabras vacías (INCREÍBLE, IMPRESIONANTE, FINAL, LO MEJOR, DESCUBRIMIENTO). **Sinergia Oferta-Radar**: `canal_tecnologia.json` → `promocion.link_sitio = https://oferta-radar.com`; la descripción del canal tecnología EMPIEZA con ese link visible (aparece sin abrir "mostrar más") |
+| `b2f3d4b` | **Logo tecnología reparado**: la "S" final de BENATECH'S venía cortada (el PNG estaba recortado a 0px de padding, contenido tocaba los 4 bordes). Reemplazado `assets/logo_tecnologia.png` con el original completo del usuario (`logo_tecnologia_original.png`, 2560x2560) recortado al contenido + **60px de margen en los 4 lados**. El original traía 416 bytes corruptos tras el chunk IEND (ffmpeg fallaba al decodificar) — limpiados. Verificación: análisis de píxeles confirma que nada toca los bordes |
+| `a37c01e` | **Etiqueta IA automática**: `subir_youtube.js` envía `status.containsSyntheticMedia: true` en cada `videos.insert` → YouTube muestra "Contenido alterado o sintético" en la descripción. No afecta alcance ni monetización (FAQ oficial de YouTube) |
+| `2f6540a` `d9cf72c` | **Espera random 0-180 min ELIMINADA** de los 5 workflows de video (arraancan en el minuto del cron); tecnología gana franja intermedia 21:00; `_test_3dias.js` actualizado (0 choques, 0 horas malas, barrido 7×11×3) |
+
+### Estado del reporte semanal (P0)
+- Secret **`YOUTUBE_API_KEY`** creado el 3 oct por el usuario (Clave de API restringida a YouTube Data API v3; UNA sola clave sirve para los3 canales porque lee datos públicos)
+- **PENDIENTE**: primera ejecución manual → Actions → `reporte_semanal` → Run workflow (verificar verde); luego corre SOLO lunes 8am CO
+- `reportes/canales.json`:3 canales activos (Sabiduría Bíblica, Superate777, Cristian David Benavides); Datos Curiosos inactivo
+- El usuario tiene3 proyectos en Google Cloud (uno por Gmail/canal) — NO hace falta1 key por proyecto
 
 ---
 
@@ -170,6 +187,7 @@ con 30 por ciento de descuento."
 |--------|-----|
 | `YT_CREDENTIALS_JSON` | OAuth YouTube (canal tecnología) |
 | `YT_TOKEN_JSON` | Token OAuth YouTube |
+| `YOUTUBE_API_KEY` | Reporte semanal (YouTube Data API v3 — leer subs/vistas; NO es OAuth, no confundir) |
 | `FB_PAGE_ID_TECNOLOGIA` | Facebook Page ID |
 | `FB_ACCESS_TOKEN_TECNOLOGIA` | Facebook Access Token |
 | `TELEGRAM_BOT_TOKEN` | Token bot Telegram |
@@ -228,6 +246,8 @@ con 30 por ciento de descuento."
 |---------|-------|
 | `assets/logo.png` | Sabiduria Biblica |
 | `assets/logo_superate.png` | Superate777 |
+| `assets/logo_tecnologia.png` | Tecnología (procesado: recortado + 60px margen, S completa) |
+| `assets/logo_tecnologia_original.png` | Fuente del de tecnología (NO editar; subió el usuario) |
 | `assets/logo_ofertas.png` | Ofertas |
 
 ---
@@ -240,3 +260,7 @@ con 30 por ciento de descuento."
 4. **Facebook sube como Reel**: Solo funciona con formato vertical
 5. **Telegram es respaldo**: Solo se envía si YouTube Y Facebook fallan
 6. **Ofertas se marcan después**: Solo se marcan como usadas si la subida fue exitosa
+7. **Etiqueta IA en cada subida**: `subir_youtube.js` manda `containsSyntheticMedia: true` (etiqueta "Contenido alterado o sintético" de YouTube). Confirmado por docs oficiales: declararlo NO limita alcance ni monetización; no declararlo puede traer penalización
+8. **Regla de logos**: si un logo nuevo "se corta", es que el PNG tiene 0px de padding — verificar con análisis de píxeles (ningún contenido debe tocar x=0/x=W-1/y=0/y=H-1) y dejar 60px de margen. Probar con frame renderizado: `ffmpeg -f lavfi -i color=... -i logo.png -filter_complex "[1:v]scale=-1:120[l];[0:v][l]overlay=W-w-30:30"`
+9. **Miniatura = anuncio del video**: el texto debe comunicar dato concreto en 0.5s; "DESCUBRIMIENTO INCREÍBLE FINAL" es clickbait vacío que YouTube distribuye peor (CTR bajo). Test & Compare (A/B de miniaturas) es manual en YouTube Studio — no hay API
+10. **Sinergia oferta-radar**: descripciones del canal tecnología arrancan con `👉 Ofertas de gadgets: https://oferta-radar.com` (via `promocion.link_sitio`) — monetización por afiliados que NO depende de YPP. Solo aplica al canal tecnología (los otros canales no tienen `link_sitio`)
