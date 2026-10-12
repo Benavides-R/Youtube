@@ -1,21 +1,25 @@
 {
-  "fecha": "2026-10-03T17:34:43.337Z",
+  "fecha": "2026-10-12T21:32:24.091Z",
   "canales": {
     "UC1yjAMY3a_YWfdpwwhBhU3A": {
       "subs": 9070,
       "vistas": 1038409
     },
     "UChm5wHCLE25YfCN-A9wB_DQ": {
-      "subs": 0,
-      "vistas": 644
+      "subs": 6,
+      "vistas": 2046
     },
     "UCaZ5OzCizFnGps5zRnMH68w": {
       "subs": 27300,
-      "vistas": 1825626
+      "vistas": 1838045
     },
     "UCCPWlhftxHwK8Om26nfx98A": {
-      "subs": 14700,
-      "vistas": 5224241
+      "subs": 14800,
+      "vistas": 5296536
+    },
+    "UCig6AIXaiK3dOw_bbRu2mZA": {
+      "subs": 1,
+      "vistas": 46
     }
   }
 }
