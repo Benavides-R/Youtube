@@ -75,5 +75,15 @@
     "fecha": "2026-10-13",
     "idea_id": "bi-01",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-13",
+    "titulo": "Salmo 23: confianza cuando la muerte parece cerca #Shorts",
+    "tema_clave": "miedo",
+    "sub_nicho": "paz",
+    "formula": null,
+    "idea_id": "bi-02",
+    "pasaje": "Salmo 23:1-4",
+    "fuente": "conocimiento_estable"
   }
 ]
