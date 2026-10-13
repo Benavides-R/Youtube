@@ -1,0 +1,19 @@
+Fuente de config/biblia_rv1909.json
+====================================
+
+Texto: Reina-Valera 1909 (RV1909)
+Licencia: Dominio público (la RV1909 se publicó en 1909; su texto es de dominio público en todo el mundo)
+
+Fuente de los datos:
+  https://github.com/aruljohn/Reina-Valera
+  - Formato: un archivo JSON por libro
+  - Código del repositorio: licencia MIT (Copyright 2024 Arul John)
+  - Texto bíblico: Reina-Valera 1909, de dominio público
+  - Convertido desde USFM (Unified Standard Format Markers)
+
+Fecha de extracción: 2026-10-13
+Script de extracción: scripts/_extraer_versiculos.js (un solo uso)
+
+Nota: el texto usa "Jehová" en el Antiguo Testamento; la función
+adaptarTexto() de scripts/banco.js lo reemplaza por "el Señor"
+antes de usarlo en los canales.
