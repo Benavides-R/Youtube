@@ -111,11 +111,12 @@ async function generarCita() {
         resultado = await generarCita();
         break;
       } catch (err) {
-        const esLimiteDeTasa = err.message.includes("rate_limit_exceeded");
+        const esLimiteDeTasa = /rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(err.message);
         const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
         if ((esLimiteDeTasa || esFaltaDeEspacio) && intento < MAX_INTENTOS) {
-          const espera = esLimiteDeTasa ? 20000 : 3000 * intento;
-          console.log(`⚠️  Intento ${intento} falló, esperando ${espera / 1000}s y reintentando...`);
+          const m = err.message.match(/try again in (\d+(?:\.\d+)?)s/i);
+          const espera = esLimiteDeTasa ? Math.max(20000, Math.ceil(parseFloat(m ? m[1] : 20) * 1000) + 5000) : 3000 * intento;
+          console.log(`⚠️  Intento ${intento} falló, esperando ${Math.round(espera / 1000)}s y reintentando...`);
           await new Promise((r) => setTimeout(r, espera));
         } else {
           throw err;

@@ -40,11 +40,15 @@ async function llamarGroqJSON(system, user, temperature) {
       return JSON.parse(data.choices[0].message.content);
     } catch (e) {
       const msg = String(e.message);
-      const limite = msg.includes("rate_limit_exceeded");
+      const limite = /rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(msg);
       const formato = msg.includes("json_validate_failed") || msg.includes("max completion tokens") || e instanceof SyntaxError;
       if ((limite || formato) && intento < MAX) {
-        console.log(`⚠️  Intento ${intento} falló (${limite ? "límite de tasa" : "formato"}), reintentando...`);
-        await dormir(limite ? 20000 : 3000 * intento);
+        // El 429 de Groq trae el tiempo sugerido ("Please try again in 10.5s");
+        // se usa ese tiempo con colchón, o 20s si no aparece.
+        const m = msg.match(/try again in (\d+(?:\.\d+)?)s/i);
+        const espera = limite ? Math.max(20000, Math.ceil(parseFloat(m ? m[1] : 20) * 1000) + 5000) : 3000 * intento;
+        console.log(`⚠️  Intento ${intento} falló (${limite ? "límite de tasa" : "formato"}), esperando ${Math.round(espera / 1000)}s y reintentando...`);
+        await dormir(espera);
         continue;
       }
       throw e;
@@ -260,6 +264,8 @@ async function ejecutar(cfg, nombreConfig) {
     try {
       salida = await guionVerificado(idea, cfg, p);
     } catch (e) {
+      // Un límite de tasa no es culpa de la idea: no quemarla, fallar y que reintente el workflow
+      if (/rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(String(e.message))) throw e;
       console.log(`⚠️  Falló la generación del guion: ${e.message}`);
     }
     if (!salida) {
