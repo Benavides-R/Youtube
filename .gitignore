@@ -3,3 +3,4 @@ output/
 config/credentials.json
 config/token.json
 *.log
+historial/pendiente_*.json

@@ -80,6 +80,21 @@ jobs:
           PUBLISH_FRANJAS: "19:30,21:00,22:45"
         run: node scripts/subir_youtube.js
 
+      - name: Confirmar tema usado
+        if: steps.subir_youtube.outcome == 'success'
+        run: node scripts/confirmar_meta.js canal_tecnologia
+
+      - name: Guardar historial meta
+        if: steps.subir_youtube.outcome == 'success'
+        continue-on-error: true
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add historial/
+          git commit -m "Historial meta: tema usado" || echo "Sin cambios que guardar"
+          git pull --rebase --autostash origin main || true
+          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
+
       - name: Enviar video de respaldo a Telegram (si falló YouTube)
         if: steps.subir_youtube.outcome == 'failure'
         continue-on-error: true

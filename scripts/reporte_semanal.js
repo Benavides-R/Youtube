@@ -151,6 +151,25 @@ async function obtenerDatos(canal) {
   };
 }
 
+async function videosDelCanal(channelId, key) {
+  const uploads = "UU" + channelId.slice(2);
+  const p = await (await fetch(
+    `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=50&playlistId=${uploads}&key=${key}`
+  )).json();
+  const ids = (p.items || []).map((i) => i.contentDetails.videoId).join(",");
+  if (!ids) return [];
+  const v = await (await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids}&key=${key}`
+  )).json();
+  return (v.items || []).map((x) => ({
+    id: x.id,
+    titulo: x.snippet.title,
+    fecha: x.snippet.publishedAt,
+    vistas: Number(x.statistics.viewCount) || 0,
+    likes: Number(x.statistics.likeCount) || 0,
+  }));
+}
+
 function delta(actual, previo) {
   if (previo === undefined || previo === null) return "n/a";
   const d = actual - previo;
@@ -184,6 +203,34 @@ function delta(actual, previo) {
   // Persiste los channel_id resueltos (el workflow los commitea)
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2) + "\n");
 
+  // Rendimiento por video del canal de tecnología (alimenta la ideación del guion v2)
+  let topTecno = [];
+  try {
+    const canalTecno = cfg.canales.find(
+      (c) => c.nombre === "Cristian David Benavides - Android Apps y Trucos" && c.channel_id
+    );
+    if (canalTecno) {
+      const videos = await videosDelCanal(canalTecno.channel_id, YOUTUBE_API_KEY);
+      const desde = Date.now() - 90 * 86400000;
+      const recientes = videos.filter((v) => Date.parse(v.fecha) >= desde);
+      const ordenados = [...recientes].sort((a, b) => b.vistas - a.vistas);
+      const rendimiento = {
+        actualizado: new Date().toISOString(),
+        mejores: ordenados.slice(0, 10).map((v) => ({ titulo: v.titulo, vistas: v.vistas, fecha: v.fecha })),
+        peores: ordenados.slice(-5).reverse().map((v) => ({ titulo: v.titulo, vistas: v.vistas, fecha: v.fecha })),
+      };
+      fs.mkdirSync(path.join(BASE_DIR, "historial"), { recursive: true });
+      fs.writeFileSync(
+        path.join(BASE_DIR, "historial", "rendimiento_tecnologia.json"),
+        JSON.stringify(rendimiento, null, 2) + "\n"
+      );
+      topTecno = ordenados.slice(0, 3);
+      console.log(`✅ Rendimiento tecnología: ${recientes.length} videos de los últimos 90 días`);
+    }
+  } catch (err) {
+    console.warn(`⚠️  No pude generar rendimiento_tecnologia.json: ${err.message}`);
+  }
+
   const fecha = (d) => d.toLocaleDateString("es-CO", { day: "numeric", month: "short" });
   const inicio = new Date(Date.now() - DIAS * 86400000);
   const lineas = [`📊 Reporte semanal YouTube — ${fecha(inicio)} al ${fecha(new Date())}`, ""];
@@ -215,6 +262,12 @@ function delta(actual, previo) {
     if (r.top) {
       const t = r.top.titulo.length > 58 ? r.top.titulo.slice(0, 58) + "…" : r.top.titulo;
       lineas.push(`  🔥 Top: "${t}" — ${num.format(r.top.views)} vistas`);
+    }
+    if (r.nombre === "Cristian David Benavides - Android Apps y Trucos" && topTecno.length) {
+      const t3 = topTecno
+        .map((v, i) => `${i + 1}. "${v.titulo.length > 40 ? v.titulo.slice(0, 40) + "…" : v.titulo}" (${num.format(v.vistas)})`)
+        .join(" · ");
+      lineas.push(`  🏆 Top 3 (90 días): ${t3}`);
     }
     if (r.aviso) lineas.push(`  ⚠️ ${r.aviso}`);
     lineas.push("");

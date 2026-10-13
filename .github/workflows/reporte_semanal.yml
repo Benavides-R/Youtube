@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "youtube-auto-bot"
           git config user.email "actions@github.com"
-          git add reportes/
+          git add reportes/ historial/rendimiento_tecnologia.json
           git commit -m "Actualizar snapshot del reporte semanal" || echo "Sin cambios que guardar"
           git pull --rebase --autostash origin main || true
           git push || echo "No se pudo guardar el snapshot esta vez, no es grave"

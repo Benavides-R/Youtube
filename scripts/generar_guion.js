@@ -50,6 +50,16 @@ const canalConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 // Historial: evita repetir tema hasta agotar toda la lista
 // ------------------------------------------------------------
 const nombreConfig = path.basename(configPath, ".json");
+if (canalConfig.flujo_v2 === true) {
+  require("./generar_guion_v2")
+    .ejecutar(canalConfig, nombreConfig)
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error("❌ Error generando el guion (flujo v2):", err.message);
+      process.exit(1);
+    });
+  return; // en CommonJS un return a nivel superior es válido; el flujo antiguo no se ejecuta
+}
 const HISTORIAL_DIR = path.join(__dirname, "..", "historial");
 const HISTORIAL_PATH = path.join(HISTORIAL_DIR, `${nombreConfig}.json`);
 
