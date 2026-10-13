@@ -329,7 +329,7 @@ Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titul
 (async () => {
   try {
     let resultado;
-    const MAX_INTENTOS = 3;
+    const MAX_INTENTOS = 5;
     for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
       try {
         resultado = await generarGuion();
@@ -339,7 +339,9 @@ Responde ÚNICAMENTE con el mismo JSON corregido, misma estructura exacta (titul
         const esFaltaDeEspacio = err.message.includes("max completion tokens") || err.message.includes("json_validate_failed");
         if ((esLimiteDeTasa || esFaltaDeEspacio) && intento < MAX_INTENTOS) {
           const m = err.message.match(/try again in (\d+(?:\.\d+)?)s/i);
-          const espera = esLimiteDeTasa ? Math.max(20000, Math.ceil(parseFloat(m ? m[1] : 20) * 1000) + 5000) : 3000 * intento;
+          const espera = esLimiteDeTasa
+            ? Math.max(30000, Math.ceil(parseFloat(m ? m[1] : 20) * 1000) + 10000) + (intento - 1) * 15000
+            : 3000 * intento;
           console.log(`⚠️  Intento ${intento} falló (${esLimiteDeTasa ? "límite de tasa" : "sin espacio"}), esperando ${Math.round(espera / 1000)}s y reintentando...`);
           await new Promise((r) => setTimeout(r, espera));
         } else {

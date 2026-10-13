@@ -18,7 +18,7 @@ const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Misma configuración de llamada que usa generar_guion.js (max_completion_tokens, json_object, reintento por límite de tasa).
 async function llamarGroqJSON(system, user, temperature) {
-  const MAX = 3;
+  const MAX = 5;
   for (let intento = 1; intento <= MAX; intento++) {
     try {
       const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -43,10 +43,13 @@ async function llamarGroqJSON(system, user, temperature) {
       const limite = /rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(msg);
       const formato = msg.includes("json_validate_failed") || msg.includes("max completion tokens") || e instanceof SyntaxError;
       if ((limite || formato) && intento < MAX) {
-        // El 429 de Groq trae el tiempo sugerido ("Please try again in 10.5s");
-        // se usa ese tiempo con colchón, o 20s si no aparece.
+        // TPM de Groq se mide por ventana de 60s: si el sugerido es corto,
+        // igual esperamos bastante para salir de la ventana; escala con el intento.
         const m = msg.match(/try again in (\d+(?:\.\d+)?)s/i);
-        const espera = limite ? Math.max(20000, Math.ceil(parseFloat(m ? m[1] : 20) * 1000) + 5000) : 3000 * intento;
+        const sugeridoMs = m ? Math.ceil(parseFloat(m[1]) * 1000) : 20000;
+        const espera = limite
+          ? Math.max(30000, sugeridoMs + 10000) + (intento - 1) * 15000
+          : 3000 * intento;
         console.log(`⚠️  Intento ${intento} falló (${limite ? "límite de tasa" : "formato"}), esperando ${Math.round(espera / 1000)}s y reintentando...`);
         await dormir(espera);
         continue;
@@ -191,7 +194,9 @@ async function guionVerificado(idea, cfg, p) {
     if (!salida[campo]) throw new Error(`Falta el campo "${campo}" en la respuesta de Groq`);
   }
   for (let intento = 0; intento < 2; intento++) {
-    await dormir(2000);
+    // Pausa entre llamadas: el TPM de Groq es por ventana de 60s, y el flujo
+    // hace guion + verificación; sin espacio se agota la cuota en ráfaga.
+    await dormir(15000);
     const v = await llamarGroqJSON(
       promptVerificacion(p),
       `DATO CENTRAL: ${idea.dato_central}\nENFOQUE: ${idea.enfoque || ""}\n${idea.pasaje ? `PASAJE: ${idea.pasaje}\n` : ""}MATERIAL PERMITIDO: ${idea.material_citado ? idea.material_citado.titulo + " | " + idea.material_citado.resumen : "ninguno"}\nGUION:\n${salida.guion}`,
