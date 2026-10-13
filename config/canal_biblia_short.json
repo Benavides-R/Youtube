@@ -26,5 +26,26 @@
     "una verdad bíblica sobre sanar heridas del pasado",
     "una reflexión corta sobre confiar en el tiempo de Dios",
     "un versículo sobre el valor de la familia"
+  ],
+  "flujo_v2": true,
+  "v2": {
+    "perfil": "biblia",
+    "banco": "config/banco_ideas_biblia_short.json",
+    "cooldown_dias": 3,
+    "cooldown_pasaje_dias": 45,
+    "plan_b": false,
+    "reciclar": true,
+    "linea_inicial": "📖 {pasaje}",
+    "hashtags_default": ["#Biblia", "#Fe"],
+    "cierre_facebook": "Sigue la página para recibir una enseñanza bíblica todos los días."
+  },
+  "sub_nichos": [
+    {"clave": "paz", "nombre": "Paz, ansiedad y consuelo", "usa_noticias": false},
+    {"clave": "fe", "nombre": "Fe, confianza y perseverancia", "usa_noticias": false},
+    {"clave": "amor", "nombre": "Amor, perdón y palabras", "usa_noticias": false},
+    {"clave": "caracter", "nombre": "Carácter: gratitud, humildad y sabiduría", "usa_noticias": false},
+    {"clave": "vida_practica", "nombre": "Vida práctica: dinero, trabajo, amistad y familia", "usa_noticias": false},
+    {"clave": "identidad", "nombre": "Identidad, nueva vida y esperanza", "usa_noticias": false},
+    {"clave": "historias", "nombre": "Historias y parábolas", "usa_noticias": false}
   ]
 }
