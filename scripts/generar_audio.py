@@ -24,6 +24,7 @@ import json
 import os
 import random
 import re
+import subprocess
 import sys
 
 import edge_tts
@@ -38,6 +39,11 @@ ASS_PATH = os.path.join(BASE_DIR, "output", "subtitulos.ass")
 # los videos suenen exactamente igual de ritmo/tono.
 RATE_MIN, RATE_MAX = -21, -14        # % (negativo = más lento que el default de la voz)
 PITCH_MIN, PITCH_MAX = -3, 3         # Hz
+
+# Cuántas veces se vuelve a pedir el audio a edge-tts si el stream llega
+# cortado (ver pedir_audio_a_edge_tts). No es lo mismo que el reintento
+# externo: ese repite TTS + Whisper cuando Whisper no transcribe bien.
+TTS_REINTENTOS = 3
 
 RATE = f"{random.randint(RATE_MIN, RATE_MAX)}%"
 PITCH = f"{random.randint(PITCH_MIN, PITCH_MAX):+d}Hz"
@@ -305,10 +311,103 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
     return contenido
 
 
+def duracion_audio(ruta: str):
+    """Segundos que REALMENTE se pueden decodificar, o None si el archivo
+    no se puede leer.
+
+    No sirve mirar format=duration de ffprobe: en mp3 ese valor viene del
+    header, así que un archivo cortado a mitad sigue declarando la duración
+    completa (probado: 20s de header con solo 0.2s de audio) y pasaría
+    cualquier chequeo por duración. Decodificar de verdad es lo único que
+    delata el corte.
+
+    edge-tts escribe el mp3 mientras recibe el stream: si la conexión se
+    corta queda un archivo a medias que AÚN EXISTE, así que solo comprobar
+    os.path.exists tampoco basta -- ensamblar_video.js después moría con un
+    ffprobe ilegible y tumbaba la corrida entera sin un error claro.
+    """
+    try:
+        proc = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-i", ruta, "-f", "null", "-"],
+            capture_output=True, text=True, timeout=120,
+        )
+    except Exception:
+        return None
+    # ffmpeg escribe el progreso (time=) en stderr aunque el archivo esté
+    # cortado: el último que reporte es hasta dónde llegó de verdad.
+    tiempos = re.findall(r"time=(\d+):(\d+):(\d+(?:\.\d+)?)", proc.stderr or "")
+    if not tiempos:
+        return None
+    horas, minutos, segundos = tiempos[-1]
+    return int(horas) * 3600 + int(minutos) * 60 + float(segundos)
+
+
+def duracion_declarada(ruta: str):
+    """Lo que el header del mp3 PROMETE (format=duration de ffprobe), o None.
+
+    Complemento de duracion_audio: si el header promete 60s y solo se
+    decodifican 40s, el archivo está cortado aunque ambas cifras parezcan
+    "plausibles" para el guion. Si no hay header, ffprobe estima la
+    duración a partir del tamaño y ambas cifras coinciden (no aporta).
+    """
+    try:
+        salida = subprocess.run(
+            [
+                "ffprobe", "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                ruta,
+            ],
+            capture_output=True, text=True, check=True, timeout=60,
+        ).stdout.strip()
+        duracion = float(salida)
+        return duracion if duracion > 0 else None
+    except Exception:
+        return None
+
+
+def duracion_minima_esperada(palabras: int) -> float:
+    """Piso de duración razonable para un audio completo.
+
+    Un narrador en español llega a ~2.5 palabras/segundo; exigir que dure
+    al menos palabras/5 solo se pasa si el audio va a más de 5 palabras
+    por segundo, ritmo que edge-tts no alcanza -- así que un audio bueno
+    NUNCA cae por debajo, pero uno cortado a la mitad sí.
+    """
+    return max(1.0, palabras / 5.0)
+
+
+def validar_audio(ruta: str, palabras: int):
+    """(motivo_de_fallo, duracion_real). motivo es None si el audio está
+    completo: legible, con una duración creíble para el guion y sin hueco
+    entre lo que promete el header y lo que realmente se decodifica."""
+    real = duracion_audio(ruta)
+    if real is None:
+        return "no se puede decodificar (corrupto, vacío o truncado desde el inicio)", None
+
+    minima = duracion_minima_esperada(palabras)
+    if real < minima:
+        return f"solo {real:.1f}s de audio real (mínimo {minima:.0f}s para {palabras} palabras)", real
+
+    declarada = duracion_declarada(ruta)
+    if declarada and real < declarada * 0.85:
+        return f"cortado: el header promete {declarada:.1f}s pero solo se decodifican {real:.1f}s", real
+
+    return None, real
+
+
 async def generar_audio():
     if not os.path.exists(GUION_PATH):
         print(f"❌ No se encontró {GUION_PATH}. Corre primero generar_guion.js")
         sys.exit(1)
+
+    # Restos de corridas anteriores: un .mejor o .tmp a medias (la corrida
+    # anterior murió a mitad de escritura) o un audio.mp3 viejo no deben
+    # contaminar la de hoy -- un audio anterior completo pasaría la
+    # validación final y se publicaría con la voz de otro guion.
+    for resto in (AUDIO_PATH, AUDIO_PATH + ".mejor", AUDIO_PATH + ".tmp"):
+        if os.path.exists(resto):
+            os.remove(resto)
 
     with open(GUION_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -347,14 +446,46 @@ async def generar_audio():
     if os.path.exists(capitulos_path):
         os.remove(capitulos_path)
 
+    async def pedir_audio_a_edge_tts():
+        """Escribe un audio.mp3 COMPLETO, reintentando el stream.
+
+        edge-tts NO avisa cuando Microsoft cierra el websocket a mitad de
+        la síntesis: si llegó aunque sea un trozo de audio, la función
+        termina normal (sin excepción) y devuelve el archivo cortado como
+        si estuviera bien. Es lo que empezó a fallar el 12 de oct: por eso
+        hay que medir el resultado y volver a pedirlo, no confiar en que
+        "no lanzó error" signifique "está completo".
+        """
+        temporal = AUDIO_PATH + ".tmp"
+        ultimo_problema = "sin intentos"
+        for intento_tts in range(1, TTS_REINTENTOS + 1):
+            try:
+                communicate = edge_tts.Communicate(texto, voz, rate=RATE, pitch=PITCH)
+                with open(temporal, "wb") as audio_file:
+                    async for chunk in communicate.stream():
+                        if chunk["type"] == "audio":
+                            audio_file.write(chunk["data"])
+                problema, _ = validar_audio(temporal, len(texto.split()))
+            except Exception as err:
+                problema = f"error al pedir el audio: {err}"
+
+            if problema is None:
+                os.replace(temporal, AUDIO_PATH)
+                return
+
+            ultimo_problema = problema
+            if os.path.exists(temporal):
+                os.remove(temporal)
+            print(f"⚠️  edge-tts incompleto (intento {intento_tts}/{TTS_REINTENTOS}): {problema}")
+            if intento_tts < TTS_REINTENTOS:
+                await asyncio.sleep(3 * intento_tts)
+
+        raise RuntimeError(f"edge-tts no devolvió audio completo tras {TTS_REINTENTOS} intentos: {ultimo_problema}")
+
     async def generar_y_transcribir_audio():
         """Genera el audio con edge-tts y lo transcribe con Whisper.
         Devuelve (palabras_con_tiempo, coincidencia) o (None, 0) si falla."""
-        communicate = edge_tts.Communicate(texto, voz, rate=RATE, pitch=PITCH)
-        with open(AUDIO_PATH, "wb") as audio_file:
-            async for chunk in communicate.stream():
-                if chunk["type"] == "audio":
-                    audio_file.write(chunk["data"])
+        await pedir_audio_a_edge_tts()
 
         from faster_whisper import WhisperModel
 
@@ -393,7 +524,10 @@ async def generar_audio():
     UMBRAL_REINTENTO = 0.60  # si sale peor que esto, vale la pena regenerar
     UMBRAL_AVISO = 0.75  # si sale peor que esto (tras reintentar o no), avisamos por Telegram
 
-    for intento in range(1, 3):  # hasta 2 intentos
+    # 3 intentos: el TTS se corta por red de vez en cuando y ahora que se
+    # valida el audio, un corte cuenta como intento fallido (antes pasaba
+    # desapercibido y el video revienta mucho más abajo, en el ensamblado).
+    for intento in range(1, 4):
         print(f"👂 Intento {intento}: generando audio y transcribiendo con Whisper...")
         try:
             palabras, coincidencia = await generar_y_transcribir_audio()
@@ -405,28 +539,39 @@ async def generar_audio():
 
         if coincidencia > mejor_coincidencia:
             mejor_palabras, mejor_coincidencia = palabras, coincidencia
-            # Guardamos una copia del mejor audio hasta ahora, por si el
-            # segundo intento resulta peor y hay que quedarnos con este
+            # Guardamos una copia del mejor audio hasta ahora, por si un
+            # intento posterior resulta peor y hay que quedarnos con este
             if os.path.exists(AUDIO_PATH):
                 import shutil
                 shutil.copyfile(AUDIO_PATH, AUDIO_PATH + ".mejor")
 
         if coincidencia >= UMBRAL_REINTENTO:
             break  # ya está lo suficientemente bien, no hace falta reintentar
-        print("⚠️  Coincidencia baja, regenerando el audio una vez más...")
+        if intento < 3:
+            print("⚠️  Coincidencia baja, regenerando el audio una vez más...")
 
     # Nos aseguramos de que el archivo final sea el del mejor intento
     if os.path.exists(AUDIO_PATH + ".mejor"):
         import shutil
         shutil.move(AUDIO_PATH + ".mejor", AUDIO_PATH)
 
+    # Validación final: si el audio no se puede leer o está cortado, fallamos
+    # AQUÍ con un error claro (en vez de dejar que ensamblar_video.js reviente
+    # después con un ffprobe ilegible, que era como se veía el bug).
     if not os.path.exists(AUDIO_PATH):
-        print("❌ No se generó el audio. No hay con qué armar el video.")
+        print("❌ No se generó audio.mp3 — edge-tts no devolvió nada en los 3 intentos.")
+        print("   Suele ser red o el servicio de edge-tts; vuelve a correr el workflow.")
+        sys.exit(1)
+
+    problema, duracion_final = validar_audio(AUDIO_PATH, len(texto.split()))
+    if problema:
+        print(f"❌ audio.mp3 inválido: {problema}")
+        print("   El stream de edge-tts quedó incompleto; vuelve a correr el workflow.")
         sys.exit(1)
 
     tamaño_mb = os.path.getsize(AUDIO_PATH) / (1024 * 1024)
     print(f"✅ Audio generado: {AUDIO_PATH}")
-    print(f"📦 Tamaño: {tamaño_mb:.2f} MB")
+    print(f"📦 Tamaño: {tamaño_mb:.2f} MB — duración {duracion_final:.1f}s")
 
     if mejor_palabras:
         ANCHO = 1080 if es_short else 1920

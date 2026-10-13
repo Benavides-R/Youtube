@@ -130,10 +130,26 @@ console.log(`🎵 Música de fondo: ${hayMusica ? "sí" : "no (opcional)"}`);
 console.log(`📝 Subtítulos: ${haySubtitulos ? "sí" : "no"}`);
 
 function obtenerDuracion(archivo) {
-  const salida = execSync(
-    `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${archivo}"`
-  ).toString();
-  return parseFloat(salida.trim());
+  let salida;
+  try {
+    salida = execSync(
+      `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${archivo}"`
+    ).toString();
+  } catch {
+    // Sin este catch el usuario ve el stack crudo de execSync (pila que no
+    // dice qué hacer). Un mp3 truncado por edge-tts muere aquí.
+    console.error(`❌ ffprobe no puede leer ${path.basename(archivo)} — archivo corrupto o truncado.`);
+    if (archivo === AUDIO_PATH) {
+      console.error("   El stream de edge-tts se cortó: corre python scripts/generar_audio.py de nuevo.");
+    }
+    process.exit(1);
+  }
+  const duracion = parseFloat(salida.trim());
+  if (!Number.isFinite(duracion) || duracion <= 0) {
+    console.error(`❌ Duración inválida en ${path.basename(archivo)}: "${salida.trim()}"`);
+    process.exit(1);
+  }
+  return duracion;
 }
 
 const duracionTotal = obtenerDuracion(AUDIO_PATH);
