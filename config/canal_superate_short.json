@@ -26,5 +26,22 @@
     "el mayor enemigo de tu progreso: tú mismo",
     "una frase para recordar cuando dudes de ti mismo",
     "por qué actuar imperfecto es mejor que no actuar"
+  ],
+  "flujo_v2": true,
+  "v2": {
+    "perfil": "superate",
+    "banco": "config/banco_ideas_superate_short.json",
+    "cooldown_dias": 4,
+    "plan_b": false,
+    "reciclar": true,
+    "hashtags_default": ["#Motivacion", "#Disciplina"],
+    "cierre_facebook": "Sigue la página para más ideas que te ayudan a avanzar."
+  },
+  "sub_nichos": [
+    {"clave": "tecnicas", "nombre": "Técnicas de productividad y disciplina con nombre propio", "usa_noticias": false},
+    {"clave": "errores", "nombre": "Errores mentales con nombre (sesgos de la psicología)", "usa_noticias": false},
+    {"clave": "mentalidad", "nombre": "Ideas de mentalidad con base documentada", "usa_noticias": false},
+    {"clave": "habitos", "nombre": "Hábitos prácticos", "usa_noticias": false},
+    {"clave": "reto", "nombre": "Retos de acción para hoy", "usa_noticias": false}
   ]
 }
