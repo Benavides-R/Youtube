@@ -77,7 +77,9 @@ async function subirArchivo(uploadUrl, videoId) {
 // 3. Publicar el Reel (marcarlo como listo, con título/descripción)
 // ------------------------------------------------------------
 async function publicarReel(videoId) {
-  const descripcionCompleta = `${guionData.titulo}\n\n${guionData.descripcion}`;
+  const descripcionCompleta = guionData.descripcion_facebook
+    ? guionData.descripcion_facebook
+    : `${guionData.titulo}\n\n${guionData.descripcion}`;
   const params = new URLSearchParams({
     upload_phase: "finish",
     video_id: videoId,
