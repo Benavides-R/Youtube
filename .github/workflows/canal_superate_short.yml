@@ -35,7 +35,7 @@ jobs:
         run: npm install
 
       - name: Instalar dependencias de Python
-        run: pip install -r requirements.txt
+        run: pip install --upgrade -r requirements.txt
 
       - name: Preparar credenciales de YouTube (canal Superate777)
         run: |
