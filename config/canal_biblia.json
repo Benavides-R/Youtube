@@ -28,5 +28,26 @@
     "los milagros de Jesús: contexto y su significado real",
     "Génesis explicado: los primeros capítulos y su mensaje",
     "cómo la Biblia habla sobre el trabajo y el propósito"
+  ],
+  "flujo_v2": true,
+  "v2": {
+    "perfil": "biblia",
+    "banco": "config/banco_ideas_biblia_largo.json",
+    "textos": "config/biblia_rv1909.json",
+    "traduccion_nombre": "Reina-Valera 1909",
+    "traduccion_etiqueta": "RV1909",
+    "adaptar_jehova": true,
+    "cooldown_dias": 5,
+    "cooldown_pasaje_dias": 60,
+    "plan_b": false,
+    "reciclar": true,
+    "linea_inicial": "📖 {pasaje}",
+    "hashtags_default": ["#Biblia", "#Fe"]
+  },
+  "sub_nichos": [
+    {"clave": "salmos_sabiduria", "nombre": "Salmos y sabiduría", "usa_noticias": false},
+    {"clave": "jesus", "nombre": "Enseñanzas y parábolas de Jesús", "usa_noticias": false},
+    {"clave": "cartas", "nombre": "Cartas del Nuevo Testamento", "usa_noticias": false},
+    {"clave": "historia_profetas", "nombre": "Historia y profetas", "usa_noticias": false}
   ]
 }
