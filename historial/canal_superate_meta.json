@@ -3,5 +3,15 @@
     "fecha": "2026-10-14",
     "idea_id": "sl-01",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-14",
+    "titulo": "Organiza tu día: 5 herramientas de productividad",
+    "tema_clave": "organizar_dia",
+    "sub_nicho": "productividad",
+    "formula": null,
+    "idea_id": "sl-05",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
