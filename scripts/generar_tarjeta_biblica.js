@@ -97,28 +97,41 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
       process.platform === "win32" ? "C:/Windows/Fonts/arial.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
     const fontPathEscapado = fontPath.replace(/:/g, "\\:");
 
-    const versoTexto = envolverTexto(`"${cita.verso}"`, 26);
+    // Bebas Neue (incluida en assets/fonts) para la referencia: look editorial
+    // en mayúsculas. Si el archivo no estuviera, cae a la fuente del verso.
+    const fontRefPath = path.join(BASE_DIR, "assets", "fonts", "BebasNeue-Regular.ttf");
+    const fontRefUsado = fs.existsSync(fontRefPath) ? fontRefPath : fontPath;
+    const fontRefEscapado = fontRefUsado.replace(/\\/g, "/").replace(/:/g, "\\:");
+    const ACENTO = "0xD4AF37"; // dorado suave para la barra y la referencia
+
+    // Comillas tipográficas (curvas) en vez de comillas rectas
+    const versoTexto = envolverTexto(`\u201C${cita.verso}\u201D`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, versoTexto, "utf-8");
     const versoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
-    fs.writeFileSync(REF_TEMP_PATH, `— ${cita.referencia}`, "utf-8");
+    fs.writeFileSync(REF_TEMP_PATH, `${cita.referencia}`, "utf-8");
     const refPathEscapado = REF_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
     // La referencia va justo debajo del verso, con separación fija -- se
     // calcula en JS (no se puede leer el text_h de OTRO drawtext desde
     // ffmpeg) según cuántas líneas ocupó el verso, para que no se encimen
     // ni queden muy separados con versos cortos.
-    const FONTSIZE_VERSO = 54, LINE_SPACING_VERSO = 20, MARGEN_REFERENCIA = 55;
+    const FONTSIZE_VERSO = 54, LINE_SPACING_VERSO = 20, MARGEN_REFERENCIA = 74;
     const numLineasVerso = versoTexto.split("\n").length;
     const altoVersoEstimado = numLineasVerso * FONTSIZE_VERSO + (numLineasVerso - 1) * LINE_SPACING_VERSO;
     const yVersoTop = (ALTO - altoVersoEstimado) / 2 - 60;
     const yReferencia = Math.min(Math.round(yVersoTop + altoVersoEstimado + MARGEN_REFERENCIA), ALTO - 140);
+    const yBarra = yReferencia - 46;
+    const xBarra = Math.round((ANCHO - 120) / 2); // posición fija (evita paréntesis en drawbox)
 
     let filtro = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
-      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.35:t=fill`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=${FONTSIZE_VERSO}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=${LINE_SPACING_VERSO}:borderw=2:bordercolor=black@0.6:expansion=none`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${refPathEscapado}':fontcolor=white:fontsize=34:x=max(60\\, (w-text_w)/2):y=${yReferencia}:borderw=2:bordercolor=black@0.6:expansion=none`,
+      `gblur=sigma=6`,                          // desenfoque suave: el texto resalta sobre la foto
+      `vignette=PI/4.5`,                        // oscurece los bordes (enfoque en el centro)
+      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.42:t=fill`,
+      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=${FONTSIZE_VERSO}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=${LINE_SPACING_VERSO}:borderw=2:bordercolor=black@0.55:expansion=none`,
+      `drawbox=x=${xBarra}:y=${yBarra}:w=120:h=4:color=${ACENTO}@0.95:t=fill`,
+      `drawtext=fontfile='${fontRefEscapado}':textfile='${refPathEscapado}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yReferencia}:expansion=none`,
     ];
 
     let inputs = `-i "${FONDO_PATH}"`;

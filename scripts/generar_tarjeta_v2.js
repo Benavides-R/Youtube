@@ -62,7 +62,7 @@ async function ejecutar(cfg, nombreConfig) {
   let salida, nombreArchivo;
   if (v2.tipo === "biblia") {
     nombreArchivo = "cita.json";
-    salida = { verso: idea.verso, referencia: `${idea.pasaje} (${v2.traduccion_etiqueta || "RV1909"})`, descripcion, palabras_clave_imagen: fotos };
+    salida = { verso: idea.verso, referencia: idea.pasaje, descripcion, palabras_clave_imagen: fotos };
   } else {
     nombreArchivo = "frase.json";
     salida = { frase: idea.frase, autor: idea.autor || "Superate777", sin_comillas: true, descripcion, palabras_clave_imagen: fotos };

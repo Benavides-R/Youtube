@@ -16,11 +16,10 @@ function expandirRango(ref) {
   return salida;
 }
 
-// Diccionario léxico RV1909 -> lenguaje actual.
-// SOLO vocabulario arcaico que hoy suena raro o se malentiende (sobrepuja,
+// Diccionario léxico RV1909 -> lenguaje actual de Colombia.
+// Solo vocabulario arcaico que hoy suena raro o se malentiende (sobrepuja,
 // apretura, congoja, caridad=en amor, socorro, salud= salvación, etc.).
-// NO cambia el significado, la estructura ni la gramática (se conservan los
-// "vosotros/vuestra" y las conjugaciones); NO es una re-traducción tipo NVI.
+// NO cambia el significado ni las ideas; NO es una re-traducción tipo NVI.
 // Cada entrada respeta los límites de palabra para no tocar derivados vivos.
 const LEXICO = [
   // Frases o palabras con género/contexto que hay que cuidar
@@ -36,11 +35,23 @@ const LEXICO = [
   [/\bmenester es\b/gu, "es necesario"],
   [/\bBástate mi gracia\b/gu, "Mi gracia te basta"],
   [/\bhallarémos\b/gu, "hallaremos"],
+  // "sustancia" con dos sentidos distintos: certeza (Hebreos 11:1) y bienes (Proverbios 3:9)
+  [/\bLa sustancia de las cosas\b/gu, "La certeza de las cosas"],
+  [/\bla sustancia de las cosas\b/gu, "la certeza de las cosas"],
+  [/\bde tu sustancia\b/gu, "de tus bienes"],
   // Vocabulario arcaico suelto
   [/\bsobrepuja\b/gu, "sobrepasa"],
   [/\bapretura\b/gu, "angustia"],
   [/\bsocorro\b/gu, "ayuda"],
-  [/congoj/gu, "angusti"],                      // congoja/congojéis/congojoso -> angustia/angustiéis/angustioso
+  // congoj: por palabra completa (el viejo /congoj/ generaba "anguistiéis", inexistente)
+  // reflexivo conservando el vosotros: "os congojéis/os congojáis" -> "os angustiéis/os angustiáis"
+  [/\bOs congojéis\b/gu, "Os angustiéis"],
+  [/\bos congojéis\b/gu, "os angustiéis"],
+  [/\bOs congojáis\b/gu, "Os angustiáis"],
+  [/\bos congojáis\b/gu, "os angustiáis"],
+  [/\bcongojoso\b/gu, "angustioso"],
+  [/\bcongoje\b/gu, "angustie"],
+  [/\bcongoja\b/gu, "angustia"],
   [/\bgalardonador\b/gu, "recompensador"],
   [/\bzahiere\b/gu, "reprende"],
   [/\bmancebos\b/gu, "jóvenes"],
@@ -57,12 +68,19 @@ const LEXICO = [
   [/\baltivez\b/gu, "arrogancia"],
   [/\bresbalo\b/gu, "resbalón"],
   [/\bsazón\b/gu, "tiempo"],
+  [/\bconfortar\b/gu, "fortalecer"],
+  [/\bconfortarán\b/gu, "fortalecerán"],
+  [/\bconfortaos\b/gu, "fortaleceos"],
   [/\bempero\b/gu, "pero"],
   [/\bEmpero\b/gu, "Pero"],
 ];
 
+// Nota: se conserva el "vosotros/vuestra/os" de la RV1909 tal cual (el dueño
+// prefiere ese registro clásico). Solo se moderniza vocabulario raro (LEXICO).
+
 // La RV1909 dice "Jehová"; el canal usa "el Señor".
-function adaptarTexto(t) {
+function adaptarTexto(t, opts) {
+  const adaptarJehova = !opts || opts.adaptarJehova !== false;
   let s = String(t).replace(/\s+/g, " ").trim();
   // Ortografía antigua de la RV1909: imperativos con tilde final (Veníd, Cesád, conocéd) -> Venid, Cesad, conoced
   s = s.replace(/([áéíóú])d(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" }[v]) + "d");
@@ -70,19 +88,21 @@ function adaptarTexto(t) {
   s = s.replace(/([áé])os(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e" }[v]) + "os");
   // Modernizar vocabulario arcaico (manteniendo significado)
   for (const [re, nueva] of LEXICO) s = s.replace(re, nueva);
-  s = s.replace(/\b([Aa]) Jehová/g, (m, a) => (a === "A" ? "Al Señor" : "al Señor"));
-  s = s.replace(/\b([Dd]e) Jehová/g, (m, d) => (d === "D" ? "Del Señor" : "del Señor"));
-  s = s.replace(/Jehová/g, "el Señor");
-  s = s.replace(/^el Señor/, "El Señor");
-  s = s.replace(/([.!?;:]\s+)el Señor/g, (m, p) => (/[.!?]/.test(p) ? p + "El Señor" : m));
+  if (adaptarJehova) {
+    s = s.replace(/\b([Aa]) Jehová/g, (m, a) => (a === "A" ? "Al Señor" : "al Señor"));
+    s = s.replace(/\b([Dd]e) Jehová/g, (m, d) => (d === "D" ? "Del Señor" : "del Señor"));
+    s = s.replace(/Jehová/g, "el Señor");
+    s = s.replace(/^el Señor/, "El Señor");
+    s = s.replace(/([.!?;:]\s+)el Señor/g, (m, p) => (/[.!?]/.test(p) ? p + "El Señor" : m));
+  }
   return s;
 }
 
-function textoDePasaje(textos, ref) {
+function textoDePasaje(textos, ref, opts) {
   const partes = [];
   for (const r of expandirRango(ref)) {
     if (!textos[r]) return null;
-    partes.push({ ref: r, texto: adaptarTexto(textos[r]) });
+    partes.push({ ref: r, texto: adaptarTexto(textos[r], opts) });
   }
   return partes;
 }
@@ -95,6 +115,9 @@ function cargarBanco(BASE, v2) {
   const rutaTextos = v2.textos ? path.join(BASE, v2.textos) : null;
   const textos = rutaTextos && fs.existsSync(rutaTextos) ? JSON.parse(fs.readFileSync(rutaTextos, "utf-8")) : null;
   const inutilizable = (i, motivo) => ({ ...i, requiere_verificacion: true, verificada: false, _motivo: motivo });
+  const adaptar = v2.adaptar_jehova !== false;      // true solo para la RV1909 (dice "Jehová")
+  const opts = { adaptarJehova: adaptar };
+  const nombreTraduccion = v2.traduccion_nombre || "Reina-Valera 1909";
 
   return ideas.map((i) => {
     if (i.desde) {
@@ -116,15 +139,15 @@ function cargarBanco(BASE, v2) {
       if (!textos) return inutilizable(i, "falta config/biblia_rv1909.json");
       const bloques = [];
       for (const ref of i.pasajes) {
-        const partes = textoDePasaje(textos, ref);
+        const partes = textoDePasaje(textos, ref, opts);
         if (!partes) return inutilizable(i, `faltan versículos de ${ref}`);
-        bloques.push(`${ref} (Reina-Valera 1909, léxico actualizado):\n` + partes.map((p) => `${p.ref.replace(/^.*:/, "")}. ${p.texto}`).join("\n"));
+        bloques.push(`${ref} (${nombreTraduccion}):\n` + partes.map((p) => `${p.ref.replace(/^.*:/, "")}. ${p.texto}`).join("\n"));
       }
       return { ...i, pasaje: i.pasajes.join("; "), dato_central: `TEXTO BÍBLICO (único origen de lo que dice el pasaje):\n${bloques.join("\n\n")}`, requiere_verificacion: false };
     }
     if (i.pasaje && v2.tipo === "biblia") { // tarjetas de versículo
-      if (!textos) return inutilizable(i, "falta config/biblia_rv1909.json");
-      const partes = textoDePasaje(textos, i.pasaje);
+      if (!textos) return inutilizable(i, `falta config/biblia_rv1909.json`);
+      const partes = textoDePasaje(textos, i.pasaje, opts);
       if (!partes) return inutilizable(i, `falta el texto de ${i.pasaje}`);
       const verso = partes.map((p) => p.texto).join(" ");
       if (v2.max_palabras_verso && verso.split(/\s+/).length > v2.max_palabras_verso) return inutilizable(i, "verso demasiado largo para la tarjeta");
