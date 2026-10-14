@@ -1,29 +1,226 @@
 [
-  {"fecha":"2026-10-10","titulo":"2 Corintios 5:17","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"2 Corintios 5:17"},
-  {"fecha":"2026-10-10","titulo":"1 Tesalonicenses 5:18","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"1 Tesalonicenses 5:18"},
-  {"fecha":"2026-10-10","titulo":"Juan 3:16","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Juan 3:16"},
-  {"fecha":"2026-10-10","titulo":"Isaías 43:18","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Isaías 43:18"},
-  {"fecha":"2026-10-10","titulo":"Colosenses 3:23","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Colosenses 3:23"},
-  {"fecha":"2026-10-10","titulo":"Romanos 8:28","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Romanos 8:28"},
-  {"fecha":"2026-10-10","titulo":"Salmo 36:7","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 36:7"},
-  {"fecha":"2026-10-10","titulo":"Salmo 107:1","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 107:1"},
-  {"fecha":"2026-10-10","titulo":"Salmo 28:7","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 28:7"},
-  {"fecha":"2026-10-10","titulo":"Proverbios 4:7","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Proverbios 4:7"},
-  {"fecha":"2026-10-10","titulo":"Salmo 46:1","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 46:1"},
-  {"fecha":"2026-10-10","titulo":"Gálatas 6:9","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Gálatas 6:9"},
-  {"fecha":"2026-10-10","titulo":"Proverbios 3:13","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Proverbios 3:13"},
-  {"fecha":"2026-10-10","titulo":"Mateo 11:28","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Mateo 11:28"},
-  {"fecha":"2026-10-10","titulo":"Salmo 9:1","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 9:1"},
-  {"fecha":"2026-10-10","titulo":"Salmo 100:4","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 100:4"},
-  {"fecha":"2026-10-10","titulo":"1 Corintios 13:4","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"1 Corintios 13:4"},
-  {"fecha":"2026-10-10","titulo":"1 Juan 4:8","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"1 Juan 4:8"},
-  {"fecha":"2026-10-10","titulo":"Isaías 40:31","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Isaías 40:31"},
-  {"fecha":"2026-10-10","titulo":"Santiago 1:12","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Santiago 1:12"},
-  {"fecha":"2026-10-10","titulo":"Proverbios 16:32","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Proverbios 16:32"},
-  {"fecha":"2026-10-10","titulo":"Isaías 41:10","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Isaías 41:10"},
-  {"fecha":"2026-10-10","titulo":"Salmo 4:8","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Salmo 4:8"},
-  {"fecha":"2026-10-10","titulo":"Juan 1:5","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Juan 1:5"},
-  {"fecha":"2026-10-10","titulo":"Proverbios 2:6","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Proverbios 2:6"},
-  {"fecha":"2026-10-10","titulo":"2 Corintios 12:9","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"2 Corintios 12:9"},
-  {"fecha":"2026-10-10","titulo":"Proverbios 22:6","tema_clave":"x","sub_nicho":null,"idea_id":null,"pasaje":"Proverbios 22:6"}
+  {
+    "fecha": "2026-10-10",
+    "titulo": "2 Corintios 5:17",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "2 Corintios 5:17"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "1 Tesalonicenses 5:18",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "1 Tesalonicenses 5:18"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Juan 3:16",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Juan 3:16"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Isaías 43:18",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Isaías 43:18"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Colosenses 3:23",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Colosenses 3:23"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Romanos 8:28",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Romanos 8:28"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 36:7",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 36:7"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 107:1",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 107:1"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 28:7",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 28:7"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Proverbios 4:7",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Proverbios 4:7"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 46:1",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 46:1"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Gálatas 6:9",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Gálatas 6:9"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Proverbios 3:13",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Proverbios 3:13"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Mateo 11:28",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Mateo 11:28"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 9:1",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 9:1"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 100:4",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 100:4"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "1 Corintios 13:4",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "1 Corintios 13:4"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "1 Juan 4:8",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "1 Juan 4:8"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Isaías 40:31",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Isaías 40:31"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Santiago 1:12",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Santiago 1:12"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Proverbios 16:32",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Proverbios 16:32"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Isaías 41:10",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Isaías 41:10"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Salmo 4:8",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Salmo 4:8"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Juan 1:5",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Juan 1:5"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Proverbios 2:6",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Proverbios 2:6"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "2 Corintios 12:9",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "2 Corintios 12:9"
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Proverbios 22:6",
+    "tema_clave": "x",
+    "sub_nicho": null,
+    "idea_id": null,
+    "pasaje": "Proverbios 22:6"
+  },
+  {
+    "fecha": "2026-10-14",
+    "titulo": "Filipenses 4:7",
+    "tema_clave": "paz_dios",
+    "sub_nicho": "paz",
+    "idea_id": "bc-001",
+    "pasaje": "Filipenses 4:7"
+  }
 ]
