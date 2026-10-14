@@ -16,11 +16,60 @@ function expandirRango(ref) {
   return salida;
 }
 
+// Diccionario léxico RV1909 -> lenguaje actual.
+// SOLO vocabulario arcaico que hoy suena raro o se malentiende (sobrepuja,
+// apretura, congoja, caridad=en amor, socorro, salud= salvación, etc.).
+// NO cambia el significado, la estructura ni la gramática (se conservan los
+// "vosotros/vuestra" y las conjugaciones); NO es una re-traducción tipo NVI.
+// Cada entrada respeta los límites de palabra para no tocar derivados vivos.
+const LEXICO = [
+  // Frases o palabras con género/contexto que hay que cuidar
+  [/\bLa caridad\b/gu, "El amor"],
+  [/\bla caridad\b/gu, "el amor"],
+  [/\bcon caridad\b/gu, "con amor"],
+  [/\bcaridad\b/gu, "amor"],                    // resto: "tuviere caridad", "ferviente caridad"
+  [/\bno se huelga\b/gu, "no se goza"],
+  [/\bhuélgase\b/gu, "se goza"],
+  [/\bes sufrida\b/gu, "es paciente"],
+  [/\bes benigna\b/gu, "es bondadoso"],         // 1 Cor 13:4: tras "La caridad"->"El amor", el adjetivo va en masculino
+  [/\bmi salud\b/gu, "mi salvación"],           // en la RV1909 "salud" acá es salvación, no salud física
+  [/\bmenester es\b/gu, "es necesario"],
+  [/\bBástate mi gracia\b/gu, "Mi gracia te basta"],
+  [/\bhallarémos\b/gu, "hallaremos"],
+  // Vocabulario arcaico suelto
+  [/\bsobrepuja\b/gu, "sobrepasa"],
+  [/\bapretura\b/gu, "angustia"],
+  [/\bsocorro\b/gu, "ayuda"],
+  [/congoj/gu, "angusti"],                      // congoja/congojéis/congojoso -> angustia/angustiéis/angustioso
+  [/\bgalardonador\b/gu, "recompensador"],
+  [/\bzahiere\b/gu, "reprende"],
+  [/\bmancebos\b/gu, "jóvenes"],
+  [/\bmozos\b/gu, "muchachos"],
+  [/\baquesta\b/gu, "esta"],
+  [/\besotra\b/gu, "otra"],
+  [/\balfolíes\b/gu, "graneros"],
+  [/\bhenchir\b/gu, "llenar"],
+  [/\bendechar\b/gu, "lamentar"],
+  [/\badarga\b/gu, "baluarte"],
+  [/\bdeléitate\b/gu, "regocíjate"],
+  [/\bjactanciosa\b/gu, "presumido"],           // 1 Cor 13:4: va tras "el amor" (masculino)
+  [/\bhinchada\b/gu, "envanecido"],
+  [/\baltivez\b/gu, "arrogancia"],
+  [/\bresbalo\b/gu, "resbalón"],
+  [/\bsazón\b/gu, "tiempo"],
+  [/\bempero\b/gu, "pero"],
+  [/\bEmpero\b/gu, "Pero"],
+];
+
 // La RV1909 dice "Jehová"; el canal usa "el Señor".
 function adaptarTexto(t) {
   let s = String(t).replace(/\s+/g, " ").trim();
   // Ortografía antigua de la RV1909: imperativos con tilde final (Veníd, Cesád, conocéd) -> Venid, Cesad, conoced
   s = s.replace(/([áéíóú])d(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" }[v]) + "d");
+  // Imperativos reflexivos con tilde antigua (esforzáos, regocijáos) -> esforzaos, regocijaos
+  s = s.replace(/([áé])os(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e" }[v]) + "os");
+  // Modernizar vocabulario arcaico (manteniendo significado)
+  for (const [re, nueva] of LEXICO) s = s.replace(re, nueva);
   s = s.replace(/\b([Aa]) Jehová/g, (m, a) => (a === "A" ? "Al Señor" : "al Señor"));
   s = s.replace(/\b([Dd]e) Jehová/g, (m, d) => (d === "D" ? "Del Señor" : "del Señor"));
   s = s.replace(/Jehová/g, "el Señor");
@@ -69,7 +118,7 @@ function cargarBanco(BASE, v2) {
       for (const ref of i.pasajes) {
         const partes = textoDePasaje(textos, ref);
         if (!partes) return inutilizable(i, `faltan versículos de ${ref}`);
-        bloques.push(`${ref} (Reina-Valera 1909, adaptada):\n` + partes.map((p) => `${p.ref.replace(/^.*:/, "")}. ${p.texto}`).join("\n"));
+        bloques.push(`${ref} (Reina-Valera 1909, léxico actualizado):\n` + partes.map((p) => `${p.ref.replace(/^.*:/, "")}. ${p.texto}`).join("\n"));
       }
       return { ...i, pasaje: i.pasajes.join("; "), dato_central: `TEXTO BÍBLICO (único origen de lo que dice el pasaje):\n${bloques.join("\n\n")}`, requiere_verificacion: false };
     }

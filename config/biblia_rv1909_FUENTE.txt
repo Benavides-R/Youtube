@@ -17,3 +17,14 @@ Script de extracción: scripts/_extraer_versiculos.js (un solo uso)
 Nota: el texto usa "Jehová" en el Antiguo Testamento; la función
 adaptarTexto() de scripts/banco.js lo reemplaza por "el Señor"
 antes de usarlo en los canales.
+
+Modernización léxica (desde 2026-10-14): además de "Jehová"->"el Señor",
+adaptarTexto() aplica un diccionario LEXICO (en scripts/banco.js) que
+reemplaza vocabulario arcaico de la RV1909 por su equivalente actual
+(sobrepuja->sobrepasa, apretura->angustia, congoj*->angusti*, caridad=en
+amor->amor, socorro->ayuda, salud(=salvación)->salvación, etc.).
+
+IMPORTANTE: esto NO es una re-traducción ni es NVI. Solo se moderniza el
+léxico que hoy suena raro o se malentiende; el significado, la estructura
+y la gramática (incluidos los "vosotros/vuestra") se conservan intactos.
+La NVI/RVR1960 son traducciones con copyright y NO se usan por eso.

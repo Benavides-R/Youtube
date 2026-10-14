@@ -34,7 +34,7 @@
     "perfil": "biblia",
     "banco": "config/banco_ideas_biblia_largo.json",
     "textos": "config/biblia_rv1909.json",
-    "traduccion_nombre": "Reina-Valera 1909",
+    "traduccion_nombre": "Reina-Valera 1909 (léxico actualizado)",
     "traduccion_etiqueta": "RV1909",
     "adaptar_jehova": true,
     "cooldown_dias": 5,
