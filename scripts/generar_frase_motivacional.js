@@ -28,6 +28,14 @@ const HISTORIAL_FRASES_PATH = path.join(BASE_DIR, "historial", "canal_superate_i
 
 const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
 
+if (config.flujo_v2 === true) {
+  require("./generar_tarjeta_v2")
+    .ejecutar(config, "canal_superate_imagen")
+    .then(() => process.exit(0))
+    .catch((err) => { console.error("❌ Error generando la frase (v2):", err.message); process.exit(1); });
+  return;
+}
+
 // Anti-repetición de temas
 let historial = [];
 if (fs.existsSync(HISTORIAL_PATH)) {

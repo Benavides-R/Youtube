@@ -28,6 +28,14 @@ const HISTORIAL_VERSICULOS_PATH = path.join(BASE_DIR, "historial", "canal_biblia
 
 const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
 
+if (config.flujo_v2 === true) {
+  require("./generar_tarjeta_v2")
+    .ejecutar(config, "canal_biblia_imagen")
+    .then(() => process.exit(0))
+    .catch((err) => { console.error("❌ Error generando la cita (v2):", err.message); process.exit(1); });
+  return;
+}
+
 // Anti-repetición, igual que en generar_guion.js
 let historial = [];
 if (fs.existsSync(HISTORIAL_PATH)) {
