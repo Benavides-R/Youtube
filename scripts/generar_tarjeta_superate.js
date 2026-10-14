@@ -79,13 +79,19 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     const fontPath = isWin ? "C:/Windows/Fonts/arialbd.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
     const fontPathEsc = fontPath.replace(/:/g, "\\:");
 
-    // Frase entre comillas decorativas
-    const textoFrase = envolverTexto(frase.sin_comillas ? frase.frase : `"${frase.frase}"`, 26);
+    // Bebas Neue (assets/fonts) para el autor: look editorial en mayúsculas
+    const fontAutorPath = path.join(BASE_DIR, "assets", "fonts", "BebasNeue-Regular.ttf");
+    const fontAutorUsado = fs.existsSync(fontAutorPath) ? fontAutorPath : fontPath;
+    const fontAutorEsc = fontAutorUsado.replace(/\\/g, "/").replace(/:/g, "\\:");
+    const ACENTO = "0xD4AF37"; // mismo dorado que la tarjeta bíblica
+
+    // Frase entre comillas decorativas (curvas), respetando sin_comillas
+    const textoFrase = envolverTexto(frase.sin_comillas ? frase.frase : `\u201C${frase.frase}\u201D`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, textoFrase, "utf-8");
     const textoEsc = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
-    // Autor abajo
-    fs.writeFileSync(AUTOR_TEMP_PATH, `— ${frase.autor}`, "utf-8");
+    // Autor sin guion: la barra de acento lo separa de la frase
+    fs.writeFileSync(AUTOR_TEMP_PATH, `${frase.autor}`, "utf-8");
     const autorEsc = AUTOR_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
     const hayLogo = fs.existsSync(LOGO_PATH);
@@ -94,17 +100,22 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     // El autor va justo debajo de la frase -- se calcula en JS según
     // cuántas líneas ocupó la frase, para que no se encimen con frases
     // largas ni queden muy separados con frases cortas.
-    const FONTSIZE_FRASE = 52, LINE_SPACING_FRASE = 18, MARGEN_AUTOR = 50;
+    const FONTSIZE_FRASE = 52, LINE_SPACING_FRASE = 18, MARGEN_AUTOR = 72;
     const numLineasFrase = textoFrase.split("\n").length;
     const altoFraseEstimado = numLineasFrase * FONTSIZE_FRASE + (numLineasFrase - 1) * LINE_SPACING_FRASE;
     const yFraseTop = (ALTO - altoFraseEstimado) / 2 - 70;
     const yAutor = Math.min(Math.round(yFraseTop + altoFraseEstimado + MARGEN_AUTOR), ALTO - 140);
+    const yBarra = yAutor - 46;
+    const xBarra = Math.round((ANCHO - 120) / 2); // posición fija (evita paréntesis en drawbox)
 
     const filtroBase = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
-      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.40:t=fill`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.7:expansion=none`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${autorEsc}':fontcolor=#f0c060:fontsize=34:x=max(60\\, (w-text_w)/2):y=${yAutor}:borderw=2:bordercolor=black@0.7:expansion=none`,
+      `gblur=sigma=6`,                          // desenfoque suave: el texto resalta sobre la foto
+      `vignette=PI/4.5`,                        // oscurece los bordes (enfoque en el centro)
+      `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.42:t=fill`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.55:expansion=none`,
+      `drawbox=x=${xBarra}:y=${yBarra}:w=120:h=4:color=${ACENTO}@0.95:t=fill`,
+      `drawtext=fontfile='${fontAutorEsc}':textfile='${autorEsc}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yAutor}:expansion=none`,
     ].join(",");
 
     let cmd;
