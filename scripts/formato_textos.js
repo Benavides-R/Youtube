@@ -61,14 +61,16 @@ function armarDescripcion(parrafo, promo, hashtags, inicial) {
 }
 
 // Facebook: contenido útil primero, sin "suscríbete" ni #Shorts, con la invitación propia de Facebook.
+// Ojo: Facebook reduce el alcance de los posts con links externos, así que NO se pegan
+// las URLs (sitio ni Telegram); en su lugar se indica que los enlaces están en la
+// biografía de la página. Los hashtags sí se conservan. (En YouTube sí se pueden llevar links.)
 function armarDescripcionFacebook(parrafo, promo, hashtags, cierreFb, inicial) {
   const partes = [];
   if (inicial) partes.push(inicial);
   partes.push(quitarSuscripcion(parrafo).trim());
   if (cierreFb) partes.push(cierreFb);
-  if (promo && promo.link_sitio) partes.push(`👉 Ofertas de gadgets al mejor precio: ${promo.link_sitio}`);
-  const ultimo = lineaFinal(promo, hashtags);
-  if (ultimo) partes.push(ultimo);
+  if (promo && promo.activa) partes.push("Los enlaces de ofertas están en la biografía de la página.");
+  if (hashtags && hashtags.length) partes.push(hashtags.join(" "));
   return partes.join("\n\n");
 }
 
