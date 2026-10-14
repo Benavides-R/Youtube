@@ -30,5 +30,37 @@
     "un versículo sobre el amor incondicional",
     "un versículo sobre la luz en momentos oscuros"
   ],
-  "estilo_imagenes": "atmosféricas y espirituales: amaneceres, cielos dramáticos, naturaleza, montañas, luz entre nubes, caminos, horizontes"
+  "estilo_imagenes": "atmosféricas y espirituales: amaneceres, cielos dramáticos, naturaleza, montañas, luz entre nubes, caminos, horizontes",
+  "flujo_v2": true,
+  "v2": {
+    "tipo": "biblia",
+    "perfil": "biblia",
+    "banco": "config/banco_tarjetas_biblia.json",
+    "textos": "config/biblia_rv1909.json",
+    "traduccion_nombre": "Reina-Valera 1909",
+    "traduccion_etiqueta": "RV1909",
+    "adaptar_jehova": true,
+    "cooldown_dias": 1,
+    "cooldown_pasaje_dias": 30,
+    "max_palabras_verso": 30,
+    "hashtags_default": ["#Biblia", "#Fe"],
+    "cierre_facebook": "Sigue la página para recibir una enseñanza bíblica todos los días.",
+    "fotos": {
+      "paz": ["calm lake at sunrise", "misty mountains", "peaceful forest path", "sunlight through clouds", "still water reflection", "green valley morning"],
+      "fe": ["mountain summit sunrise", "open road horizon", "light breaking through clouds", "hands raised silhouette", "dawn over hills", "path through wheat field"],
+      "amor": ["golden hour field", "warm candle light", "sunrise over the ocean", "autumn path with light", "two hands holding", "field of flowers at sunrise"],
+      "caracter": ["open bible with candle", "morning light through window", "quiet forest stream", "stone path in nature", "sunrise over lake", "old tree at dawn"],
+      "esperanza": ["sunrise breaking through clouds", "new leaves in spring", "dawn light over mountains", "rainbow after rain", "path toward the horizon", "light through forest trees"],
+      "proteccion": ["strong rocks by the sea", "mountain fortress landscape", "shelter under a big tree", "calm river valley", "golden light over hills", "bird flying at sunrise"],
+      "default": ["sunrise over mountains", "calm lake at dawn", "light through clouds"]
+    }
+  },
+  "sub_nichos": [
+    {"clave": "paz", "nombre": "Paz y consuelo", "usa_noticias": false},
+    {"clave": "fe", "nombre": "Fe y confianza", "usa_noticias": false},
+    {"clave": "amor", "nombre": "Amor y relaciones", "usa_noticias": false},
+    {"clave": "caracter", "nombre": "Carácter y sabiduría", "usa_noticias": false},
+    {"clave": "esperanza", "nombre": "Esperanza y nueva vida", "usa_noticias": false},
+    {"clave": "proteccion", "nombre": "Protección, provisión y familia", "usa_noticias": false}
+  ]
 }
