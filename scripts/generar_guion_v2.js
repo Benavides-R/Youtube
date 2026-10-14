@@ -325,8 +325,8 @@ async function ejecutar(cfg, nombreConfig) {
     try {
       salida = await guionVerificado(idea, cfg, p, esLargo);
     } catch (e) {
-      // Un límite de tasa no es culpa de la idea: no quemarla, fallar y que reintente el workflow
-      if (/rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(String(e.message))) throw e;
+      // Un límite de tasa o una caída de red no son culpa de la idea: no quemarla, fallar y que reintente el workflow
+      if (/rate_limit_exceeded|Rate limit reached|Groq API error (429|5\d\d)|fetch failed|ECONNRESET|ETIMEDOUT|ENOTFOUND/i.test(String(e.message))) throw e;
       console.log(`⚠️  Falló la generación del guion: ${e.message}`);
     }
     if (!salida) {
