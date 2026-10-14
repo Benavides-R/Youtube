@@ -32,5 +32,21 @@
     "cómo dejar de depender de la motivación para actuar",
     "el precio del éxito que nadie te cuenta",
     "cómo rodearte de las personas correctas para crecer"
+  ],
+  "flujo_v2": true,
+  "v2": {
+    "perfil": "superate",
+    "banco": "config/banco_ideas_superate_largo.json",
+    "fuentes": ["config/banco_ideas_superate_short.json"],
+    "cooldown_dias": 3,
+    "plan_b": false,
+    "reciclar": true,
+    "hashtags_default": ["#Motivacion", "#Disciplina"]
+  },
+  "sub_nichos": [
+    {"clave": "productividad", "nombre": "Productividad y enfoque", "usa_noticias": false},
+    {"clave": "mente", "nombre": "Mente y decisiones", "usa_noticias": false},
+    {"clave": "habitos", "nombre": "Hábitos", "usa_noticias": false},
+    {"clave": "accion", "nombre": "Retos y acción", "usa_noticias": false}
   ]
 }
