@@ -1,26 +1,180 @@
 [
-  {"fecha":"2026-10-10","titulo":"Lo que realmente pagas por tu celular #Shorts","tema_clave":"precio_celular","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Tu Wi-Fi pierde mitad de velocidad sin que lo notes #Shorts","tema_clave":"wifi","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Este cargador barato puede volar tu móvil #Shorts","tema_clave":"cargador","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"El secreto del reconocimiento facial de tu móvil #Shorts","tema_clave":"reconocimiento_facial","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Una linterna que quiere tus contactos #Shorts","tema_clave":"permisos","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"¿Tu móvil está espiado? Detecta la señal oculta #Shorts","tema_clave":"espionaje","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"¿Por qué tus notificaciones te vuelven adicto? #Shorts","tema_clave":"notificaciones","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Tu batería pierde vida sin que lo notes #Shorts","tema_clave":"bateria","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"El emoji 😂 y su origen oculto #Shorts","tema_clave":"emojis","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Tu cara es una llave de millones de puntos #Shorts","tema_clave":"reconocimiento_facial","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Cargar tu móvil sin cables ni enchufes #Shorts","tema_clave":"carga_inalambrica","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"¿Por qué apps piden permisos invisibles? #Shorts","tema_clave":"permisos","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Google descubre tu trabajo sin que lo digas #Shorts","tema_clave":"google_datos","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"El 70% del precio de tu móvil son patentes #Shorts","tema_clave":"precio_celular","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Android guarda lo que copias en la nube #Shorts","tema_clave":"portapapeles","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Cargar al 100% reduce tu batería un 30 % #Shorts","tema_clave":"bateria","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Descubre consumo exacto con *#*#4636#*#* en Android #Shorts","tema_clave":"codigos_secretos","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Cargador falso que eleva a 12 V y quema tu móvil #Shorts","tema_clave":"cargador","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Notificaciones: la trampa de dopamina que no ves #Shorts","tema_clave":"notificaciones","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"App que traduce cualquier canción sin internet #Shorts","tema_clave":"apps_traduccion","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Vine: 200 millones de videos y su caída en 4 años #Shorts","tema_clave":"historia_apps","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"WhatsApp hackea tu iPhone en 1 minuto #Shorts","tema_clave":"whatsapp","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"IA oculta en tu móvil: adivina la app que abrirás #Shorts","tema_clave":"ia_celular","sub_nicho":null,"idea_id":null},
-  {"fecha":"2026-10-10","titulo":"Descubre la función oculta de una mano en Android #Shorts","tema_clave":"modo_una_mano","sub_nicho":null,"idea_id":null}
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Lo que realmente pagas por tu celular #Shorts",
+    "tema_clave": "precio_celular",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Tu Wi-Fi pierde mitad de velocidad sin que lo notes #Shorts",
+    "tema_clave": "wifi",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Este cargador barato puede volar tu móvil #Shorts",
+    "tema_clave": "cargador",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "El secreto del reconocimiento facial de tu móvil #Shorts",
+    "tema_clave": "reconocimiento_facial",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Una linterna que quiere tus contactos #Shorts",
+    "tema_clave": "permisos",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "¿Tu móvil está espiado? Detecta la señal oculta #Shorts",
+    "tema_clave": "espionaje",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "¿Por qué tus notificaciones te vuelven adicto? #Shorts",
+    "tema_clave": "notificaciones",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Tu batería pierde vida sin que lo notes #Shorts",
+    "tema_clave": "bateria",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "El emoji 😂 y su origen oculto #Shorts",
+    "tema_clave": "emojis",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Tu cara es una llave de millones de puntos #Shorts",
+    "tema_clave": "reconocimiento_facial",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Cargar tu móvil sin cables ni enchufes #Shorts",
+    "tema_clave": "carga_inalambrica",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "¿Por qué apps piden permisos invisibles? #Shorts",
+    "tema_clave": "permisos",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Google descubre tu trabajo sin que lo digas #Shorts",
+    "tema_clave": "google_datos",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "El 70% del precio de tu móvil son patentes #Shorts",
+    "tema_clave": "precio_celular",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Android guarda lo que copias en la nube #Shorts",
+    "tema_clave": "portapapeles",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Cargar al 100% reduce tu batería un 30 % #Shorts",
+    "tema_clave": "bateria",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Descubre consumo exacto con *#*#4636#*#* en Android #Shorts",
+    "tema_clave": "codigos_secretos",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Cargador falso que eleva a 12 V y quema tu móvil #Shorts",
+    "tema_clave": "cargador",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Notificaciones: la trampa de dopamina que no ves #Shorts",
+    "tema_clave": "notificaciones",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "App que traduce cualquier canción sin internet #Shorts",
+    "tema_clave": "apps_traduccion",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Vine: 200 millones de videos y su caída en 4 años #Shorts",
+    "tema_clave": "historia_apps",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "WhatsApp hackea tu iPhone en 1 minuto #Shorts",
+    "tema_clave": "whatsapp",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "IA oculta en tu móvil: adivina la app que abrirás #Shorts",
+    "tema_clave": "ia_celular",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-10",
+    "titulo": "Descubre la función oculta de una mano en Android #Shorts",
+    "tema_clave": "modo_una_mano",
+    "sub_nicho": null,
+    "idea_id": null
+  },
+  {
+    "fecha": "2026-10-14",
+    "titulo": "El mensaje de 'cambié de número' es estafa #Shorts",
+    "tema_clave": "estafa_familiar",
+    "sub_nicho": "estafas",
+    "formula": "Pregunta incómoda que tiene respuesta real",
+    "idea_id": "es-01",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
+  }
 ]
