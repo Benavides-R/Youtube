@@ -19,6 +19,8 @@ function expandirRango(ref) {
 // La RV1909 dice "Jehová"; el canal usa "el Señor".
 function adaptarTexto(t) {
   let s = String(t).replace(/\s+/g, " ").trim();
+  // Ortografía antigua de la RV1909: imperativos con tilde final (Veníd, Cesád, conocéd) -> Venid, Cesad, conoced
+  s = s.replace(/([áéíóú])d(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" }[v]) + "d");
   s = s.replace(/\b([Aa]) Jehová/g, (m, a) => (a === "A" ? "Al Señor" : "al Señor"));
   s = s.replace(/\b([Dd]e) Jehová/g, (m, d) => (d === "D" ? "Del Señor" : "del Señor"));
   s = s.replace(/Jehová/g, "el Señor");
