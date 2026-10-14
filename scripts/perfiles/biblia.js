@@ -8,7 +8,12 @@ module.exports = {
   titulos_reglas: `- El título (máximo 52 caracteres) debe ser CONCRETO: incluye la referencia bíblica o el tema real del pasaje y lo que la persona gana o aprende. Ejemplos de buen estilo: "Filipenses 4:6: cómo soltar la ansiedad", "Salmo 23: qué hacer cuando tienes miedo".
 - PROHIBIDO los títulos vagos o poéticos sin tema claro (como "La luz que transforma tu vida"), el clickbait ("lo que no te contaron", "el secreto oculto", "nadie te dijo esto") y las promesas ("Dios te dará").
 - El gancho es la primera frase del video: una pregunta o situación real de la vida diaria que el pasaje responde, sin misterio.
-- Las 5 opciones deben ser distintas entre sí y distintas de los TÍTULOS YA USADOS.`,
+- Las 5 opciones deben ser distintas entre sí y distintas de los TÍTULOS YA USADOS.
+- Usa UNO de estos tres formatos y VARÍA entre títulos: (a) "<Referencia>: <qué entender o qué hacer>" (ejemplo: "Filipenses 4:6: cómo soltar la ansiedad"); (b) una pregunta de la vida diaria que el pasaje responde, con la referencia al final (ejemplo: "¿Qué hacer cuando todo sale mal? Salmo 34:18"); (c) "Lo que dice <Referencia> sobre <tema>".
+- PROHIBIDO usar la estructura "<frase>: lección de <Referencia>", y las palabras o ideas morbosas o dramáticas (muerte, castigo, terrible).
+- El tono es de esperanza y enseñanza, nunca de miedo.`,
+
+  titulo_prohibido: "lecci[oó]n de|muerte|castigo|terrible|nadie te dijo|el secreto|lo que no te contaron",
 
   guion_hechos: `REGLA DE ORO SOBRE HECHOS: el único origen permitido de datos es la IDEA que recibes abajo (referencia bíblica, paráfrasis del pasaje y enfoque). PROHIBIDO: inventar contexto histórico, fechas, cifras, nombres o "significados originales" de palabras en hebreo o griego, citas de teólogos, pastores o autores, estudios o estadísticas. Parafrasea el pasaje con tus palabras tal como lo describe la IDEA; si citas el texto, que sea una sola frase corta. Cita SIEMPRE la referencia exacta (libro, capítulo y versículo) tal como aparece en la IDEA. No prometas milagros, sanidad ni prosperidad, y no afirmes lo que Dios "hará" por la persona; explica lo que el pasaje dice y cómo aplicarlo con humildad.`,
 

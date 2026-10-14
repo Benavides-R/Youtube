@@ -10,6 +10,8 @@ module.exports = {
 - El gancho es la primera frase del video: retador, directo, sin saludo.
 - Las 5 opciones deben ser distintas entre sí y distintas de los TÍTULOS YA USADOS.`,
 
+  titulo_prohibido: "\\d+\\s*%|estudio|el secreto|nadie te dice|la frase que",
+
   guion_hechos: `REGLA DE ORO SOBRE HECHOS: el único origen permitido de datos es la IDEA que recibes abajo. PROHIBIDO: estadísticas, porcentajes, cifras, "estudios demuestran", "según la ciencia", "los expertos dicen" y citas textuales de personas famosas. Si nombras a una persona o una técnica, solo puedes decir lo que dice la IDEA sobre ella. Nunca prometas resultados ("cambiará tu vida en siete días"). Permitido: preguntas retadoras, comparaciones cotidianas y el reto concreto para hoy.`,
 
   guion_estructura: `ESTRUCTURA DEL SHORT: 1) gancho retador: la primera frase de la idea (puedes pulirla pero no cambiar su sentido), sin saludo ni presentación; 2) la idea o técnica con su nombre, explicada simple; 3) el RETO: UNA acción concreta que la persona puede hacer hoy mismo (tomada del enfoque de la idea); 4) cierre corto y memorable, una frase de impacto.`,

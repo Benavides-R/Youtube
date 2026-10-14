@@ -192,9 +192,11 @@ Enfoque: ${idea.enfoque || ""}
 TÍTULOS YA USADOS: ${angulos.join(" | ")}`;
   const r = await llamarGroqJSON(promptTitulos(p, maxTitulo), user, 0.8);
   const prohibidos = /^(descubre|incre[ií]ble|el secreto)/i;
+  const prohibidoPerfil = p.titulo_prohibido ? new RegExp(p.titulo_prohibido, "i") : null;
   const suma = (q) => (q.gancho || 0) + (q.claridad || 0) + (q.curiosidad || 0);
   const opciones = (r.opciones || []).filter(
     (o) => o && o.titulo && o.gancho && F.largoTituloOk(o.titulo, maxTitulo) && !prohibidos.test(o.titulo.trim()) &&
+      !(prohibidoPerfil && prohibidoPerfil.test(o.titulo)) &&
       !angulos.some((a) => F.similares(a, o.titulo))
   );
   if (!opciones.length) throw new Error("No se obtuvieron títulos válidos para la idea " + (idea.id || ""));
