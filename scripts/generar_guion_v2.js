@@ -1,10 +1,10 @@
-// scripts/generar_guion_v2.js
-// Motor de guiones v2 para canales de shorts. Se activa con "flujo_v2": true en el config del canal.
+// scripts/generar_guion_v2.js  (v2.1: shorts y videos largos)
 const fs = require("fs");
 const path = require("path");
 const { buscarCandidatos } = require("./buscar_temas");
 const S = require("./seleccion_ideas");
 const F = require("./formato_textos");
+const { cargarBanco } = require("./banco");
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
@@ -16,7 +16,6 @@ function leerJSON(ruta, defecto) {
 }
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Misma configuración de llamada que usa generar_guion.js (max_completion_tokens, json_object, reintento por límite de tasa).
 async function llamarGroqJSON(system, user, temperature) {
   const MAX = 5;
   for (let intento = 1; intento <= MAX; intento++) {
@@ -73,50 +72,67 @@ const ESQUEMA_IDEAS = `Responde ÚNICAMENTE con JSON válido, sin markdown:
 Los puntajes van de 1 a 5. Genera EXACTAMENTE 10 ideas.`;
 
 const ESQUEMA_TITULOS = `Responde ÚNICAMENTE con JSON válido, sin markdown:
-{"opciones":[{"titulo":"máximo 52 caracteres, sin #Shorts","gancho":"primera frase del video","puntajes":{"gancho":1,"claridad":1,"curiosidad":1}}]}
+{"opciones":[{"titulo":"máximo MAXCARACTERES caracteres, sin #Shorts","gancho":"primera frase del video","puntajes":{"gancho":1,"claridad":1,"curiosidad":1}}]}
 Genera EXACTAMENTE 5 opciones distintas entre sí. Los puntajes van de 1 a 5.`;
 
-const BASE_VERIFICACION = `Eres verificador de hechos de un canal de YouTube Shorts. Recibes un GUION, el DATO CENTRAL aprobado (con su enfoque) y el MATERIAL permitido.
+const BASE_VERIFICACION = `Eres verificador de hechos de un canal de YouTube. Recibes un GUION, el DATO CENTRAL aprobado (con su enfoque) y el MATERIAL permitido.
 
 Revisa cada afirmación del guion y marca como "sin respaldo" TODA cifra, porcentaje, precio, fecha, nombre propio, caso, estudio o estadística que no aparezca en el dato central, el enfoque o el material, y toda afirmación que sea falsa o exagerada. La frase final que invita al canal de ofertas (si existe) no se revisa.
 
-Si hay afirmaciones sin respaldo, reescribe el guion eliminándolas o suavizándolas, manteniendo el gancho, el tono hablado colombiano, la longitud (más o menos 10 palabras) y la frase final de promoción si existe. El guion corregido va en texto plano, sin markdown ni símbolos.
+Si hay afirmaciones sin respaldo, reescribe el guion eliminándolas o suavizándolas, manteniendo el gancho, el tono hablado colombiano, la longitud (más o menos 10 por ciento) y la frase final de promoción si existe. El guion corregido va en texto plano, sin markdown ni símbolos.
 
 Responde ÚNICAMENTE con JSON válido:
 {"ok": true, "afirmaciones_sin_respaldo": [], "guion_corregido": ""}
 "ok" es false si encontraste algo sin respaldo; en ese caso "guion_corregido" trae el guion completo ya corregido.`;
 
-const promptIdeacion = (p) => `${p.ideacion_rol}\n\n${p.ideacion_reglas}\n\n${ESQUEMA_IDEAS}`;
-const promptTitulos = (p) => `${p.titulos_rol}\n\n${p.titulos_reglas}\n\n${ESQUEMA_TITULOS}`;
-const promptVerificacion = (p) => BASE_VERIFICACION + (p.verificacion_extra ? `\n\n${p.verificacion_extra}` : "");
+const ESTRUCTURA_LARGO = `ESTRUCTURA DEL VIDEO LARGO: 1) gancho de 2 o 3 frases que plantea la pregunta o el problema del video, sin saludo largo ni presentación; 2) entre 3 y 6 secciones, cada una marcada en su primera línea con [SECCION: título corto] (los marcadores no se leen en voz alta) y separadas por una línea en blanco; 3) en cada sección: explica un punto de la IDEA con tus palabras, con un ejemplo cotidiano, y termina con una acción concreta; 4) cierre: un resumen en una frase y UNA sola invitación breve y natural a suscribirse (varía la frase cada vez).`;
 
-function systemPromptGuion(cfg, p) {
+const promptIdeacion = (p) => `${p.ideacion_rol}\n\n${p.ideacion_reglas}\n\n${ESQUEMA_IDEAS}`;
+const promptTitulos = (p, max) => `${p.titulos_rol}\n\n${p.titulos_reglas}\n\n${ESQUEMA_TITULOS.replace("MAXCARACTERES", String(max))}`;
+const promptVerificacion = (p, esLargo) =>
+  BASE_VERIFICACION +
+  (esLargo ? "\n\nEste es un video largo: PRESERVA los marcadores [SECCION: ...] exactamente donde están (no se leen en voz alta)." : "") +
+  (p.verificacion_extra ? `\n\n${p.verificacion_extra}` : "");
+
+function systemPromptGuion(cfg, p, esLargo) {
   const palabras = Math.round((cfg.duracion_objetivo_seg / 60) * 150);
   const min = Math.round(palabras * 0.9);
   const max = Math.round(palabras * 1.1);
   const promo = cfg.promocion;
-  const cierre = promo && promo.activa
+  const cierre = !esLargo && promo && promo.activa
     ? `AL FINAL, en TODOS los videos, cierra con UNA sola frase corta invitando a conocer el canal de ofertas, dicha como se lo contarías a un amigo: natural, relajada, nunca como anuncio. VARÍA la frase en cada video; por ejemplo: "si te interesa ahorrar, en mi perfil tengo un canal de ofertas", "en mi perfil de YouTube hay un canal de ofertas con descuentos diarios" o "el enlace lo dejo en los comentarios". NUNCA menciones URLs ni nombres exactos de canales en el audio.`
     : "";
   const estiloImg = cfg.estilo_imagenes || p.imagenes_ejemplos;
-  return `Eres guionista experto en YouTube Shorts en español, para narración en voz colombiana. Estilo: ${cfg.estilo}.
+  const estructura = esLargo ? `${ESTRUCTURA_LARGO}${p.largo_extra ? " " + p.largo_extra : ""}` : p.guion_estructura;
+  const longitud = esLargo
+    ? `LONGITUD: NUNCA menos de ${min} palabras y máximo ${max} (objetivo ${palabras}). Desarrolla cada sección con ejemplos cotidianos y contexto suficiente; no resumas.`
+    : `LONGITUD: entre ${min} y ${max} palabras (objetivo ${palabras}). Frases cortas, ritmo hablado, sin relleno.`;
+  const notaEjemplos = esLargo
+    ? "NOTA: los ejemplos de abajo son de un video corto; solo imita el tono y el estilo. Tu video es largo y debe desarrollarse mucho más.\n"
+    : "";
+  const reglaDesc = esLargo ? p.descripcion_regla.replace("2 a 3 líneas", "3 a 5 líneas") : p.descripcion_regla;
+  const campoTitulo = esLargo ? "copia el título de la idea tal cual" : "copia el título de la idea tal cual, sin #Shorts";
+  const campoCapitulos = esLargo
+    ? `\n  "capitulos": ["los mismos títulos, en el mismo orden, que los marcadores [SECCION: ...] del guion (entre 3 y 6)"],`
+    : "";
+  return `Eres guionista experto en YouTube, en español, para narración en voz colombiana. Estilo: ${cfg.estilo}.
 
 ${p.guion_hechos}
 
-${p.guion_estructura} ${cierre}
+${estructura} ${cierre}
 
 ${p.guion_prohibidas}
 
-LONGITUD: entre ${min} y ${max} palabras (objetivo ${palabras}). Frases cortas, ritmo hablado, sin relleno.
-FORMATO DEL TEXTO: texto plano para leer en voz alta. NUNCA uses markdown ni símbolos especiales (*, #, _, guiones de lista).
+${longitud}
+FORMATO DEL TEXTO: texto plano para leer en voz alta${esLargo ? ", más los marcadores [SECCION: ...]" : ""}. NUNCA uses markdown ni símbolos especiales (*, #, _, guiones de lista).
 
-${p.ejemplos_tono}
+${notaEjemplos}${p.ejemplos_tono}
 
 Responde ÚNICAMENTE con JSON válido, sin markdown, con esta estructura exacta:
 {
-  "titulo": "copia el título de la idea tal cual, sin #Shorts",
+  "titulo": "${campoTitulo}",
   "guion": "el guion completo listo para narrar",
-  "descripcion": "${p.descripcion_regla}",
+  "descripcion": "${reglaDesc}",${campoCapitulos}
   "hashtags": ["2 hashtags específicos del tema real, con # al inicio, nunca genéricos como #video o #viral"],
   "tags": ["15 a 25 tags de búsqueda en español, variaciones y sinónimos del tema que la gente buscaría en YouTube, sin repetir el título exacto"],
   "texto_miniatura": "${p.texto_miniatura_regla}",
@@ -167,18 +183,18 @@ async function ideacionConLLM({ subNicho, formula, material, angulos, enfriando,
   return { ...mejor, id: null, sub_nicho: subNicho.clave, formula, material_citado: citado, enfoque: mejor.enfoque || "" };
 }
 
-// Para ideas del banco que no traen título/gancho (Biblia) o que se reciclaron: el LLM propone 5 y el código elige.
-async function completarIdea(idea, p, angulos) {
+// Para ideas del banco sin título/gancho o recicladas: el LLM propone 5 y el código elige.
+async function completarIdea(idea, p, angulos, maxTitulo) {
   const user = `IDEA:
-${idea.pasaje ? `Pasaje: ${idea.pasaje}\n` : ""}Dato central: ${idea.dato_central}
+${idea.pasaje ? `Pasaje: ${idea.pasaje}\n` : ""}Dato central: ${String(idea.dato_central).slice(0, 2500)}
 Enfoque: ${idea.enfoque || ""}
 
 TÍTULOS YA USADOS: ${angulos.join(" | ")}`;
-  const r = await llamarGroqJSON(promptTitulos(p), user, 0.8);
+  const r = await llamarGroqJSON(promptTitulos(p, maxTitulo), user, 0.8);
   const prohibidos = /^(descubre|incre[ií]ble|el secreto)/i;
   const suma = (q) => (q.gancho || 0) + (q.claridad || 0) + (q.curiosidad || 0);
   const opciones = (r.opciones || []).filter(
-    (o) => o && o.titulo && o.gancho && F.largoTituloOk(o.titulo) && !prohibidos.test(o.titulo.trim()) &&
+    (o) => o && o.titulo && o.gancho && F.largoTituloOk(o.titulo, maxTitulo) && !prohibidos.test(o.titulo.trim()) &&
       !angulos.some((a) => F.similares(a, o.titulo))
   );
   if (!opciones.length) throw new Error("No se obtuvieron títulos válidos para la idea " + (idea.id || ""));
@@ -186,24 +202,62 @@ TÍTULOS YA USADOS: ${angulos.join(" | ")}`;
   return { ...idea, titulo: opciones[0].titulo.replace(/#shorts/gi, "").trim(), gancho: opciones[0].gancho.trim() };
 }
 
-async function guionVerificado(idea, cfg, p) {
-  const system = systemPromptGuion(cfg, p);
+function marcasSeccion(guion) {
+  return [...String(guion).matchAll(/\[SECCION:\s*(.+?)\s*\]/gi)].map((m) => m[1].trim());
+}
+
+function problemasFormatoLargo(salida, palabrasObjetivo) {
+  const problemas = [];
+  const n = String(salida.guion).trim().split(/\s+/).length;
+  if (n < palabrasObjetivo * 0.8) {
+    problemas.push(`el guion tiene solo ${n} palabras y necesita al menos ${Math.round(palabrasObjetivo * 0.9)}: desarrolla más cada sección con ejemplos cotidianos`);
+  }
+  const m = marcasSeccion(salida.guion).length;
+  if (m < 3 || m > 6) problemas.push("el guion debe tener entre 3 y 6 secciones, cada una marcada con [SECCION: título corto] en su primera línea");
+  return problemas.join("; ");
+}
+
+function finalizarSalida(salida, esLargo) {
+  if (esLargo) {
+    const marcas = marcasSeccion(salida.guion);
+    if (marcas.length >= 3) salida.capitulos = marcas; else delete salida.capitulos;
+  } else {
+    delete salida.capitulos;
+  }
+  return salida;
+}
+
+async function guionVerificado(idea, cfg, p, esLargo) {
+  const palabras = Math.round((cfg.duracion_objetivo_seg / 60) * 150);
+  const system = systemPromptGuion(cfg, p, esLargo);
   const user = userPromptGuion(idea, cfg);
+  const minCorregido = esLargo ? 1500 : 200;
   let salida = await llamarGroqJSON(system, user, 0.7);
   for (const campo of ["guion", "descripcion", "tags", "texto_miniatura", "palabras_clave_imagenes"]) {
     if (!salida[campo]) throw new Error(`Falta el campo "${campo}" en la respuesta de Groq`);
+  }
+  if (esLargo) {
+    const prob = problemasFormatoLargo(salida, palabras);
+    if (prob) {
+      console.log(`⚠️  Se reintenta el guion largo: ${prob}`);
+      await dormir(2000);
+      salida = await llamarGroqJSON(system, `${user}\n\nCORRECCIÓN OBLIGATORIA: ${prob}.`, 0.7);
+      for (const campo of ["guion", "descripcion", "tags", "texto_miniatura", "palabras_clave_imagenes"]) {
+        if (!salida[campo]) throw new Error(`Falta el campo "${campo}" en la respuesta de Groq`);
+      }
+    }
   }
   for (let intento = 0; intento < 2; intento++) {
     // Pausa entre llamadas: el TPM de Groq es por ventana de 60s, y el flujo
     // hace guion + verificación; sin espacio se agota la cuota en ráfaga.
     await dormir(15000);
     const v = await llamarGroqJSON(
-      promptVerificacion(p),
+      promptVerificacion(p, esLargo),
       `DATO CENTRAL: ${idea.dato_central}\nENFOQUE: ${idea.enfoque || ""}\n${idea.pasaje ? `PASAJE: ${idea.pasaje}\n` : ""}MATERIAL PERMITIDO: ${idea.material_citado ? idea.material_citado.titulo + " | " + idea.material_citado.resumen : "ninguno"}\nGUION:\n${salida.guion}`,
       0.2
     );
-    if (v.ok === true) return salida;
-    if (typeof v.guion_corregido === "string" && v.guion_corregido.trim().length >= 200) {
+    if (v.ok === true) return finalizarSalida(salida, esLargo);
+    if (typeof v.guion_corregido === "string" && v.guion_corregido.trim().length >= minCorregido) {
       salida.guion = v.guion_corregido.trim();
     } else {
       salida = await llamarGroqJSON(system, user, 0.7);
@@ -226,6 +280,8 @@ async function ejecutar(cfg, nombreConfig) {
   const v2 = cfg.v2 || {};
   if (!v2.perfil || !v2.banco) throw new Error('El config con "flujo_v2" necesita v2.perfil y v2.banco');
   const p = require(`./perfiles/${v2.perfil}`);
+  const esLargo = (cfg.formato || "horizontal") !== "vertical";
+  const maxTitulo = esLargo ? 60 : 52;
   const dryRun = process.env.DRY_RUN === "1";
   const hoy = Date.now();
   const fechaHoy = new Date(hoy).toISOString().slice(0, 10);
@@ -235,7 +291,7 @@ async function ejecutar(cfg, nombreConfig) {
   fs.mkdirSync(HISTORIAL_DIR, { recursive: true });
 
   const meta = leerJSON(META, []);
-  const banco = leerJSON(path.join(BASE, v2.banco), { ideas: [] }).ideas;
+  const banco = cargarBanco(BASE, v2);
   const angulos = leerJSON(ANGULOS, []).slice(-40);
   const rendimiento = v2.rendimiento ? leerJSON(path.join(BASE, v2.rendimiento), null) : null;
   const diasTema = v2.cooldown_dias ?? 14;
@@ -262,12 +318,12 @@ async function ejecutar(cfg, nombreConfig) {
       idea = { ...sel.idea, material_citado: null };
       subNicho = sel.sub_nicho;
     }
-    if (!idea.titulo || !idea.gancho) idea = await completarIdea(idea, p, angulos);
+    if (!idea.titulo || !idea.gancho) idea = await completarIdea(idea, p, angulos, maxTitulo);
     console.log(`Intento ${t}: idea ${idea.id || "(LLM)"} | ${idea.titulo}`);
 
     let salida = null;
     try {
-      salida = await guionVerificado(idea, cfg, p);
+      salida = await guionVerificado(idea, cfg, p, esLargo);
     } catch (e) {
       // Un límite de tasa no es culpa de la idea: no quemarla, fallar y que reintente el workflow
       if (/rate_limit_exceeded|Rate limit reached|Groq API error 429/i.test(String(e.message))) throw e;
@@ -286,7 +342,7 @@ async function ejecutar(cfg, nombreConfig) {
     const hashtags = F.sanearHashtags(salida.hashtags, v2.hashtags_default);
     const parrafo = F.limpiarParrafo(salida.descripcion);
     const inicial = v2.linea_inicial && idea.pasaje ? v2.linea_inicial.replace("{pasaje}", idea.pasaje) : null;
-    const tituloFinal = F.ajustarTitulo(idea.titulo);
+    const tituloFinal = esLargo ? F.ajustarTituloLargo(idea.titulo) : F.ajustarTitulo(idea.titulo);
 
     const outputData = {
       canal: cfg.nombre_canal,
@@ -297,12 +353,13 @@ async function ejecutar(cfg, nombreConfig) {
       titulo: tituloFinal,
       guion: String(salida.guion).trim(),
       descripcion: F.armarDescripcion(parrafo, promo, hashtags, inicial),
-      descripcion_facebook: F.armarDescripcionFacebook(parrafo, promo, hashtags, v2.cierre_facebook, inicial),
       hashtags,
       tags: recortarTags(salida.tags),
       texto_miniatura: salida.texto_miniatura,
       palabras_clave_imagenes: salida.palabras_clave_imagenes,
     };
+    if (!esLargo) outputData.descripcion_facebook = F.armarDescripcionFacebook(parrafo, promo, hashtags, v2.cierre_facebook, inicial);
+    if (esLargo && salida.capitulos) outputData.capitulos = salida.capitulos;
 
     if (dryRun) {
       console.log(JSON.stringify(outputData, null, 2));
@@ -331,4 +388,4 @@ async function ejecutar(cfg, nombreConfig) {
   throw new Error("No se pudo generar un guion verificado tras 3 intentos");
 }
 
-module.exports = { ejecutar };
+module.exports = { ejecutar, llamarGroqJSON };

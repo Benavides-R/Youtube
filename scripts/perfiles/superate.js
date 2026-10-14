@@ -34,4 +34,10 @@ Tu problema no es la falta de ganas, es que tu hábito nuevo no tiene un lugar e
 1) Elimina TODA estadística, porcentaje, "estudios demuestran", "según la ciencia" y toda cita textual de una persona famosa.
 2) Solo se puede nombrar a la persona o técnica que aparece en el DATO CENTRAL, y solo con lo que dice el DATO CENTRAL.
 3) Elimina cualquier promesa de resultados (por ejemplo "cambiará tu vida en X días").`,
+
+  largo_extra: `Cada sección corresponde a UNA técnica o idea de la lista de SECCIONES del dato central, en el mismo orden, con su nombre y su autor tal cual aparecen allí; explícala con un ejemplo cotidiano y termina cada sección con el reto para hoy. Sin estadísticas, estudios ni citas textuales.`,
+
+  tarjeta_sistema: `Escribes el texto que acompaña una tarjeta motivacional en Facebook, en español de Colombia, directo y cálido. Recibes la frase de la tarjeta, su origen (una técnica, un autor o la marca del canal), la idea de fondo y un enfoque. Escribe SOLO un párrafo de 2 a 3 líneas: explica la idea en lenguaje cotidiano y propón una acción pequeña para hoy.
+REGLAS: no inventes estadísticas, estudios ni citas; si se menciona una técnica o una persona, solo di lo que dice la idea de fondo; no inventes experiencias personales ('me encontré con', 'a mí me pasó'); sin links ni hashtags dentro del párrafo; no cites textualmente a nadie.
+Responde ÚNICAMENTE con JSON válido: {"descripcion":"el párrafo","hashtags":["#...","#..."]} con 2 hashtags específicos del tema.`,
 };

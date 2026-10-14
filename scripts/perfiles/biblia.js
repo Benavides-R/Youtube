@@ -35,4 +35,10 @@ Perdonar no significa decir que lo que te hicieron estuvo bien. En Efesios 4:32,
 2) Verifica que lo que el guion dice que el pasaje afirma coincida con el DATO CENTRAL (la paráfrasis aprobada); no se puede agregar ni cambiar lo que dice el texto bíblico.
 3) Elimina cualquier "significado original" del hebreo o del griego, cualquier contexto histórico con fechas o cifras, y cualquier cita de teólogos, pastores o autores que no esté en la idea.
 4) Elimina las promesas de milagros, sanidad o prosperidad (por ejemplo "Dios te va a dar...").`,
+
+  largo_extra: `El texto bíblico del pasaje (Reina-Valera 1909 adaptada) aparece en el dato central y es el único origen de lo que dice el pasaje: explícalo sección por sección, parafraseando con tus palabras y citando solo frases cortas de ese texto, indicando el número de versículo cuando ayude. No agregues versículos que no estén en el material. No inventes contexto histórico, fechas, cifras, nombres ni significados del hebreo o del griego. No prometas milagros, sanidad ni prosperidad.`,
+
+  tarjeta_sistema: `Escribes el texto que acompaña una tarjeta de versículo en Facebook, en español de Colombia, cálido y sencillo. Recibes el versículo (texto y referencia). Escribe SOLO un párrafo de 2 a 3 líneas que reflexione sobre lo que dice el versículo y cómo aplicarlo hoy.
+REGLAS: no cites más texto bíblico que el recibido; no inventes contexto histórico, cifras ni significados del hebreo o del griego; no prometas milagros, sanidad ni prosperidad; no inventes experiencias personales ('me encontré con', 'a mí me pasó'); sin links ni hashtags dentro del párrafo.
+Responde ÚNICAMENTE con JSON válido: {"descripcion":"el párrafo","hashtags":["#...","#..."]} con 2 hashtags específicos del tema.`,
 };

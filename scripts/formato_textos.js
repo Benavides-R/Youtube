@@ -7,8 +7,14 @@ function ajustarTitulo(t) {
   return `${base} #Shorts`;
 }
 
-function largoTituloOk(t) {
-  return String(t || "").replace(/#shorts/gi, "").trim().length <= 52;
+function largoTituloOk(t, max = 52) {
+  return String(t || "").replace(/#shorts/gi, "").trim().length <= max;
+}
+
+function ajustarTituloLargo(t) {
+  let base = String(t || "").replace(/#shorts/gi, "").replace(/\s+/g, " ").trim();
+  if (base.length > 60) base = base.slice(0, 60).replace(/\s+\S*$/, "").trim();
+  return base;
 }
 
 function sanearHashtags(h, porDefecto) {
@@ -83,6 +89,6 @@ function similares(a, b, umbral = 0.6) {
 }
 
 module.exports = {
-  ajustarTitulo, largoTituloOk, sanearHashtags, limpiarParrafo, quitarSuscripcion,
+  ajustarTitulo, ajustarTituloLargo, largoTituloOk, sanearHashtags, limpiarParrafo, quitarSuscripcion,
   armarDescripcion, armarDescripcionFacebook, similares,
 };
