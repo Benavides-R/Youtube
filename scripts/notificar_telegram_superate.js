@@ -7,6 +7,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { lineaContador } = require("./contador_bancos");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -25,6 +26,12 @@ if (fs.existsSync(FRASE_PATH)) {
   mensaje = `✅ Tarjeta motivacional publicada en Facebook\n\n💬 "${f.frase}"\n— ${f.autor}`;
 } else {
   mensaje = "⚠️ El proceso de la tarjeta motivacional terminó sin generar contenido.";
+}
+
+const nombreConfig = process.argv[2];
+if (nombreConfig) {
+  const linea = lineaContador(nombreConfig);
+  if (linea) mensaje += `\n\n${linea}`;
 }
 
 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {

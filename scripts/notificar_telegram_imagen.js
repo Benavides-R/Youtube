@@ -8,6 +8,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { lineaContador } = require("./contador_bancos");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -30,6 +31,12 @@ if (fs.existsSync(RESULTADO_PATH)) {
   mensaje = `⚠️ Se generó el versículo pero no se pudo confirmar la subida a Facebook\n\n"${c.verso}" — ${c.referencia}`;
 } else {
   mensaje = "⚠️ El proceso de la tarjeta de versículo terminó sin generar contenido.";
+}
+
+const nombreConfig = process.argv[2];
+if (nombreConfig) {
+  const linea = lineaContador(nombreConfig);
+  if (linea) mensaje += `\n\n${linea}`;
 }
 
 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {

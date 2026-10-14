@@ -11,6 +11,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { lineaContador } = require("./contador_bancos");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -58,6 +59,13 @@ if (hayResultadoYoutube || hayResultadoFacebook) {
   mensaje = `⚠️ Se generó el guion ("${guion.titulo}") pero no se completó ninguna subida. Revisa el log en GitHub Actions.`;
 } else {
   mensaje = "❌ El proceso automático terminó sin generar contenido. Revisa el log en GitHub Actions.";
+}
+
+// Consumo del banco de ideas (ej. "7/37") si se indicó el canal: node scripts/notificar_telegram.js canal_xxx
+const nombreConfig = process.argv[2];
+if (nombreConfig) {
+  const linea = lineaContador(nombreConfig);
+  if (linea) mensaje += `\n\n${linea}`;
 }
 
 async function enviarMensaje() {
