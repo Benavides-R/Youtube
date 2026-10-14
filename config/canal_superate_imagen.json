@@ -29,5 +29,24 @@
     "una frase bíblica sobre la esperanza",
     "una frase bíblica sobre la paz interior"
   ],
-  "estilo_imagenes": "atmosféricas de superación: amaneceres sobre montañas, caminos solitarios, cielos dramáticos, bosques con luz entre los árboles, personas en silueta ante horizontes, naturaleza imponente"
+  "estilo_imagenes": "atmosféricas de superación: amaneceres sobre montañas, caminos solitarios, cielos dramáticos, bosques con luz entre los árboles, personas en silueta ante horizontes, naturaleza imponente",
+  "flujo_v2": true,
+  "v2": {
+    "tipo": "superate",
+    "perfil": "superate",
+    "banco": "config/banco_tarjetas_superate.json",
+    "fuentes": ["config/banco_ideas_superate_short.json"],
+    "cooldown_dias": 1,
+    "hashtags_default": ["#Motivacion", "#Disciplina"],
+    "cierre_facebook": "Sigue la página para más ideas que te ayudan a avanzar.",
+    "fotos": {
+      "conceptos": ["person running at sunrise", "mountain trail", "hands writing in a notebook", "city at dawn", "person working focused at desk", "path through forest light"],
+      "frases": ["sunrise over mountains", "lonely road at dawn", "person silhouette at horizon", "dramatic sky over hills", "forest with light between trees", "calm ocean at sunrise"],
+      "default": ["sunrise over mountains", "mountain trail"]
+    }
+  },
+  "sub_nichos": [
+    {"clave": "conceptos", "nombre": "Ideas con nombre propio", "usa_noticias": false},
+    {"clave": "frases", "nombre": "Frases originales de Superate777", "usa_noticias": false}
+  ]
 }
