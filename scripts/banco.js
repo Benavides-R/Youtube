@@ -32,6 +32,8 @@ const LEXICO = [
   [/\bes sufrida\b/gu, "es paciente"],
   [/\bes benigna\b/gu, "es bondadoso"],         // 1 Cor 13:4: tras "La caridad"->"El amor", el adjetivo va en masculino
   [/\bmi salud\b/gu, "mi salvación"],           // en la RV1909 "salud" acá es salvación, no salud física
+  [/\bsalud mía\b/gu, "salvación mía"],          // Salmo 42:11 (mismo sentido, otro orden)
+  [/\bvuestro galardón\b/gu, "vuestra recompensa"], // Mateo 5:12 ("recompensa" es femenino)
   [/\bmenester es\b/gu, "es necesario"],
   [/\bBástate mi gracia\b/gu, "Mi gracia te basta"],
   [/\bhallarémos\b/gu, "hallaremos"],
@@ -81,6 +83,34 @@ const LEXICO = [
   [/\bensalzarme he\b/gu, "me exaltaré"],        // Salmo 46:10 (futuro perifrástico "he")
   [/\basegurarme he\b/gu, "confiaré"],           // Salmo 91:2
   [/\bjuntamente\b/gu, "juntas"],                // Romanos 8:28 "obran juntas"
+  // === Vocabulario arcaico/raro (análisis exhaustivo de los 324 versículos) ===
+  [/\bJetteos\b/gu, "Heteos"],                   // Josué 1:4 (variante del pueblo; nombre bíblico de los Hititas)
+  [/\bcabalgadura\b/gu, "bestia"],               // Lucas 10:34
+  [/\bal mesón/gu, "a la posada"],               // Lucas 10:34 ("posada" es femenino: a+la)
+  [/\bmesonero\b/gu, "posadero"],                // Lucas 10:35
+  [/\bsolícitos\b/gu, "preocupados"],            // Filipenses 4:6
+  [/\bsolícito\b/gu, "preocupado"],              // Proverbios 21:5
+  [/\bhacimiento de gracias\b/gu, "acción de gracias"], // Filipenses 4:6
+  [/\bpresuroso\b/gu, "apresurado"],             // Proverbios 21:5
+  [/\brevertiendo\b/gu, "rebosando"],            // Salmo 23:5
+  [/\btuétano\b/gu, "médula"],                   // Proverbios 3:8
+  [/\blongura de días\b/gu, "larga duración de días"], // Proverbios 3:2
+  [/\bluengos\b/gu, "largos"],                   // Salmo 23:6
+  [/\bdadivosamente\b/gu, "generosamente"],      // Santiago 1:5
+  [/\bcomenzóle\b/gu, "le comenzó"],             // Lucas 15:14
+  [/\bcubrísteme\b/gu, "me cubriste"],           // Salmo 139:13
+  [/\bescapador\b/gu, "libertador"],             // Salmo 18:2
+  [/\bescapará/gu, "librará"],                   // Salmo 91:3 (sin \b final: "á" no es \w)
+  [/\bescondedero\b/gu, "escondite"],            // Salmo 91:1
+  [/\bmi estrado\b/gu, "mi lecho"],              // Salmo 139:8
+  [/\bgozóse\b/gu, "se gozó"],                   // Salmo 28:7
+  [/\bcorrobore\b/gu, "fortalezca"],             // 1 Pedro 5:10
+  [/\bhartura\b/gu, "abundancia"],               // Proverbios 3:10
+  [/\bdemande\b/gu, "pida"],                     // Santiago 1:6
+  [/\bos hincha\b/gu, "os llena"],               // Romanos 15:13
+  // Isaías 26:3 viene corrupta en la fuente ("Sentencia firme: ..."); se repone con el texto del RV limpio
+  [/Sentencia firme: Que guardarás paz, paz; porque en ti se han confiado,/g,
+   "Tú guardarás en paz, paz, porque en ti han confiado."],
 ];
 
 // Nota: se conserva el "vosotros/vuestra/os" de la RV1909 tal cual (el dueño
