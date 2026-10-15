@@ -2,337 +2,681 @@
   "version": 1,
   "ideas": [
     {
-      "id": "fn-01", "sub_nicho": "funciones", "formula": "La función que tu Android ya trae y no usas",
+      "id": "fn-01",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Presta tu celular sin que vean nada más",
       "gancho": "¿Te da miedo prestar tu celular? Android tiene una función para que la otra persona solo pueda usar una app.",
       "dato_central": "Android incluye la función 'Fijar pantalla' (también llamada 'Fijar app'): deja el celular bloqueado dentro de una sola app, y puedes activar que para salir pida tu PIN, patrón o huella.",
       "enfoque": "Escena cotidiana: un niño pide el celular para ver un video, o alguien necesita hacer una llamada. Decir en una sola frase dónde se activa (normalmente en los ajustes de seguridad; el nombre y la ubicación cambian según la marca). No dar pasos numerados.",
       "verificar": "Confirmar que se llama 'Fijar pantalla' o 'Fijar app' y que se puede exigir PIN, patrón o huella para quitarla.",
-      "tema_clave": "prestar_celular", "requiere_verificacion": false
+      "tema_clave": "prestar_celular",
+      "requiere_verificacion": false
     },
     {
-      "id": "fn-02", "sub_nicho": "funciones", "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+      "id": "fn-02",
+      "sub_nicho": "funciones",
+      "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
       "titulo": "Si pierdes tu Android, esto debía estar activo",
       "gancho": "Si te roban el celular y no tenías esto activado, ya es tarde.",
       "dato_central": "Google tiene 'Encontrar mi dispositivo': con tu cuenta de Google puedes ver el celular en un mapa, hacerlo sonar, bloquearlo o borrarlo a distancia, pero solo si lo tenías configurado antes y el celular está encendido y con conexión.",
       "enfoque": "Urgencia útil, sin dramatizar: revisarlo HOY. Mencionar que se puede probar desde otro dispositivo o desde el navegador con la misma cuenta de Google.",
       "verificar": "Confirmar el nombre vigente de la función, que requiere ubicación y conexión, y que existe versión web.",
-      "tema_clave": "encontrar_dispositivo", "requiere_verificacion": false
+      "tema_clave": "encontrar_dispositivo",
+      "requiere_verificacion": false
     },
     {
-      "id": "fn-03", "sub_nicho": "funciones", "formula": "La función que tu Android ya trae y no usas",
+      "id": "fn-03",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Captura una pantalla larga en tu Android",
       "gancho": "¿Sigues haciendo varias capturas para guardar una conversación larga?",
       "dato_central": "Muchos Android permiten una captura de desplazamiento: al hacer la captura aparece una opción como 'Capturar más' o 'Captura de desplazamiento' que une todo en una sola imagen larga; el nombre y la disponibilidad dependen de la marca y la versión.",
       "enfoque": "Decir 'busca la opción que aparece justo después de hacer la captura', sin tutorial. Avisar que en algunos modelos no existe.",
       "verificar": "Confirmar los nombres usuales por marca (por ejemplo Samsung: captura de desplazamiento; Pixel: capturar más).",
-      "tema_clave": "captura_larga", "requiere_verificacion": false
+      "tema_clave": "captura_larga",
+      "requiere_verificacion": false
     },
     {
-      "id": "fn-04", "sub_nicho": "funciones", "formula": "La función que tu Android ya trae y no usas",
+      "id": "fn-04",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Comparte tu clave de WiFi sin dictarla",
       "gancho": "Dictar la clave del WiFi letra por letra ya no hace falta.",
       "dato_central": "En Android 10 o superior, al tocar la red WiFi a la que estás conectado aparece una opción de compartir que muestra un código QR; la otra persona lo escanea con la cámara y se conecta sin escribir la clave.",
       "enfoque": "Escena: visitas en casa. No prometer compatibilidad con todos los aparatos; decir que funciona con celulares que lean el código.",
       "verificar": "Confirmar que la opción de compartir con QR existe desde Android 10 y cómo se llama.",
-      "tema_clave": "wifi_qr", "requiere_verificacion": false
+      "tema_clave": "wifi_qr",
+      "requiere_verificacion": false
     },
     {
-      "id": "fn-05", "sub_nicho": "funciones", "formula": "La función que tu Android ya trae y no usas",
+      "id": "fn-05",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Copia el texto de una foto con tu celular",
       "gancho": "Tienes una foto de un papel y necesitas el texto: no lo escribas a mano.",
       "dato_central": "Google Lens, disponible desde la cámara o desde Google Fotos en muchos Android, reconoce el texto de una imagen para copiarlo, traducirlo o buscarlo.",
       "enfoque": "Casos: facturas, carteles, recetas, direcciones. Decir dónde aparece el botón de Lens en una frase.",
       "verificar": "Confirmar que Google Fotos muestra el botón de Lens y permite copiar texto.",
-      "tema_clave": "lens_texto", "requiere_verificacion": false
+      "tema_clave": "lens_texto",
+      "requiere_verificacion": false
     },
     {
-      "id": "fn-06", "sub_nicho": "funciones", "formula": "La función que tu Android ya trae y no usas",
+      "id": "fn-06",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Subtítulos automáticos para cualquier video",
       "gancho": "¿Un video sin subtítulos y sin poder poner el audio? Tu Android puede ponérselos solo.",
       "dato_central": "Muchos Android traen 'Subtítulos en vivo' (Live Caption): reconoce el audio que suena en el celular y lo muestra como texto en pantalla, incluso en videos sin subtítulos; la disponibilidad depende del modelo y de los idiomas.",
       "enfoque": "Útil en el bus o en reuniones. Decir que suele activarse desde los controles de volumen o en los ajustes de sonido o accesibilidad, y que no está en todos los modelos.",
       "verificar": "Confirmar la ruta típica, que existe en Pixel y Samsung, y si incluye español.",
-      "tema_clave": "subtitulos_vivo", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "subtitulos_vivo",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "fn-07", "sub_nicho": "funciones", "formula": "Pregunta incómoda que tiene respuesta real",
+      "id": "fn-07",
+      "sub_nicho": "funciones",
+      "formula": "Pregunta incómoda que tiene respuesta real",
       "titulo": "Tu Android puede tener un modo invitado",
       "gancho": "Cuando le prestas el celular a alguien, ¿también le prestas tus fotos y tus mensajes?",
       "dato_central": "Muchos Android permiten crear un usuario invitado o varios usuarios, cada uno con sus apps y datos separados; suele estar en los ajustes del sistema, en 'Varios usuarios', aunque algunas marcas lo limitan u ocultan.",
       "enfoque": "Presentarlo como alternativa a prestar el celular desbloqueado. Avisar que depende de la marca y el modelo.",
       "verificar": "Confirmar el nombre y la ruta típica, y que algunas marcas lo limitan.",
-      "tema_clave": "prestar_celular", "requiere_verificacion": false
+      "tema_clave": "prestar_celular",
+      "requiere_verificacion": false
     },
     {
-      "id": "es-01", "sub_nicho": "estafas", "formula": "Pregunta incómoda que tiene respuesta real",
+      "id": "es-01",
+      "sub_nicho": "estafas",
+      "formula": "Pregunta incómoda que tiene respuesta real",
       "titulo": "El mensaje de 'cambié de número' es estafa",
       "gancho": "Si tu 'hijo' te escribe desde un número nuevo pidiendo plata, frena.",
       "dato_central": "Una estafa muy extendida por WhatsApp es el mensaje de un supuesto familiar que dice haber cambiado de número y pide dinero con urgencia; funciona porque usa la foto del familiar y el afán.",
       "enfoque": "Qué hacer: llamar al número de siempre o hacer una pregunta que solo esa persona sabría antes de enviar plata; nunca transferir por urgencia. No dar cifras ni casos con nombre.",
       "verificar": "Confirmar que es un patrón reportado por autoridades o medios en varios países de Latinoamérica.",
-      "tema_clave": "estafa_familiar", "requiere_verificacion": false
+      "tema_clave": "estafa_familiar",
+      "requiere_verificacion": false
     },
     {
-      "id": "es-02", "sub_nicho": "estafas", "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+      "id": "es-02",
+      "sub_nicho": "estafas",
+      "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
       "titulo": "Este código de WhatsApp nunca se comparte",
       "gancho": "Si alguien te pide este código, ya te están robando la cuenta.",
       "dato_central": "Al registrar WhatsApp en un teléfono nuevo llega un código de verificación por SMS o llamada; quien lo tenga puede pasar tu cuenta a su dispositivo. Por eso nadie legítimo lo pide, aunque diga ser un contacto o soporte.",
       "enfoque": "Explicar el mecanismo simple: el estafador intenta registrar tu número y necesita el código que llega a ti; te escribe, a veces desde la cuenta de un amigo ya robado, diciendo que se lo enviaron por error. Cerrar recomendando activar la verificación en dos pasos de WhatsApp (en los ajustes de la cuenta).",
       "verificar": "Confirmar el nombre y la ruta de 'Verificación en dos pasos' en WhatsApp.",
-      "tema_clave": "codigo_whatsapp", "requiere_verificacion": false
+      "tema_clave": "codigo_whatsapp",
+      "requiere_verificacion": false
     },
     {
-      "id": "es-03", "sub_nicho": "estafas", "formula": "El error que casi todos cometen con X",
+      "id": "es-03",
+      "sub_nicho": "estafas",
+      "formula": "El error que casi todos cometen con X",
       "titulo": "Ese SMS de tu 'banco' trae un link trampa",
       "gancho": "Te llega un mensaje: 'tu cuenta será bloqueada, entra aquí'. Esa es la trampa.",
       "dato_central": "En el phishing por SMS (smishing) el mensaje imita a un banco o a una empresa de envíos y trae un enlace a una página falsa que copia el diseño original para robar usuario, clave o códigos.",
       "enfoque": "Regla simple: no abrir el enlace; entrar por la app oficial o escribir la dirección a mano. Las entidades no piden claves ni códigos por mensaje. Sin cifras.",
       "verificar": "Dato genérico; confirmar que el patrón es genérico y no depende de un banco concreto.",
-      "tema_clave": "smishing", "requiere_verificacion": false
+      "tema_clave": "smishing",
+      "requiere_verificacion": false
     },
     {
-      "id": "es-04", "sub_nicho": "estafas", "formula": "El error que casi todos cometen con X",
+      "id": "es-04",
+      "sub_nicho": "estafas",
+      "formula": "El error que casi todos cometen con X",
       "titulo": "El permiso que no debes darle a cualquier app",
       "gancho": "Una app de linterna no necesita leer tu pantalla. Si lo pide, desconfía.",
       "dato_central": "El permiso de Accesibilidad de Android existe para ayudar a personas con discapacidad, pero una app que lo tiene puede ver lo que hay en pantalla e incluso tocar botones por ti; por eso algunos programas maliciosos lo piden.",
       "enfoque": "Invitar a revisar en los ajustes de accesibilidad qué apps lo tienen. Tono útil, no alarmista.",
       "verificar": "Confirmar la descripción oficial del permiso y que el malware bancario lo ha abusado (hay reportes de empresas de seguridad).",
-      "tema_clave": "accesibilidad_permiso", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "accesibilidad_permiso",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "es-05", "sub_nicho": "estafas", "formula": "Pregunta incómoda que tiene respuesta real",
+      "id": "es-05",
+      "sub_nicho": "estafas",
+      "formula": "Pregunta incómoda que tiene respuesta real",
       "titulo": "Revisa quién más ve tu WhatsApp",
       "gancho": "Tu WhatsApp podría estar abierto en un computador que no es tuyo.",
       "dato_central": "WhatsApp muestra en 'Dispositivos vinculados' todas las sesiones abiertas (WhatsApp Web, escritorio u otros) y permite cerrarlas desde el celular.",
       "enfoque": "Revisión de diez segundos: entrar, mirar la lista y cerrar lo que no reconozcas. Típico cuando se escaneó un QR en un computador ajeno.",
       "verificar": "Confirmar el nombre y la ubicación de 'Dispositivos vinculados'.",
-      "tema_clave": "dispositivos_vinculados", "requiere_verificacion": false
+      "tema_clave": "dispositivos_vinculados",
+      "requiere_verificacion": false
     },
     {
-      "id": "es-06", "sub_nicho": "estafas", "formula": "La función que tu Android ya trae y no usas",
+      "id": "es-06",
+      "sub_nicho": "estafas",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Ponle PIN a tu SIM antes de que te roben",
       "gancho": "Un ladrón saca tu SIM y la mete en otro celular. ¿Y tus códigos por SMS?",
       "dato_central": "Los celulares permiten bloquear la tarjeta SIM con un PIN; si alguien la saca y la pone en otro teléfono, le pedirá ese PIN antes de usarla. Suele llamarse 'Bloquear tarjeta SIM' y está en los ajustes de seguridad.",
       "enfoque": "Advertir que si se equivocan con el PIN varias veces la SIM se bloquea y se necesita el código PUK del operador, así que conviene saber cómo pedirlo. No mencionar número de intentos ni el PIN por defecto.",
       "verificar": "Confirmar el nombre del ajuste y la advertencia del PUK.",
-      "tema_clave": "pin_sim", "requiere_verificacion": false
+      "tema_clave": "pin_sim",
+      "requiere_verificacion": false
     },
     {
-      "id": "ap-01", "sub_nicho": "apps", "formula": "La función que tu Android ya trae y no usas",
+      "id": "ap-01",
+      "sub_nicho": "apps",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "La app de Google que borra la basura de tu celular",
       "gancho": "Tu celular dice 'almacenamiento lleno' y no sabes qué borrar: esta app te lo dice.",
       "dato_central": "Files by Google es una app gratuita de Google que sugiere archivos para borrar (basura, duplicados, archivos grandes) y permite compartir archivos con celulares cercanos sin gastar datos.",
       "enfoque": "Beneficio concreto: liberar espacio. No prometer cantidades de GB. Recomendar revisar lo sugerido antes de borrar.",
       "verificar": "Confirmar que sigue disponible en Google Play, es gratuita y mantiene la función de compartir sin internet.",
-      "tema_clave": "files_google", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "files_google",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ap-02", "sub_nicho": "apps", "formula": "La función que tu Android ya trae y no usas",
+      "id": "ap-02",
+      "sub_nicho": "apps",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Traduce carteles con la cámara, sin internet",
       "gancho": "Viajas y no entiendes ningún cartel: apunta la cámara.",
       "dato_central": "Google Traductor puede traducir texto en vivo con la cámara y permite descargar idiomas para usarlos sin conexión.",
       "enfoque": "Útil en viajes y compras. Aclarar que primero hay que descargar el idioma con conexión. No prometer traducciones perfectas.",
       "verificar": "Confirmar que la función de cámara y la descarga de idiomas sin conexión siguen vigentes.",
-      "tema_clave": "traductor", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "traductor",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ap-03", "sub_nicho": "apps", "formula": "El error que casi todos cometen con X",
+      "id": "ap-03",
+      "sub_nicho": "apps",
+      "formula": "El error que casi todos cometen con X",
       "titulo": "Un gestor de contraseñas gratis y serio",
       "gancho": "Si usas la misma clave en todo, una filtración te deja sin cuentas.",
       "dato_central": "Bitwarden es un gestor de contraseñas de código abierto con plan gratuito que guarda y rellena contraseñas en el celular y en otros dispositivos.",
       "enfoque": "Problema: reutilizar claves. Solución: gestor y claves distintas. Aclarar que Google también trae un gestor de contraseñas integrado y que esta es una alternativa. No hablar de precios.",
       "verificar": "Confirmar que el plan gratuito sigue vigente y que es de código abierto.",
-      "tema_clave": "gestor_contrasenas", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "gestor_contrasenas",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ap-04", "sub_nicho": "apps", "formula": "La función que tu Android ya trae y no usas",
+      "id": "ap-04",
+      "sub_nicho": "apps",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Usa Google Maps sin datos ni internet",
       "gancho": "Vas a una zona sin señal y sin Maps no llegas: déjalo listo antes.",
       "dato_central": "Google Maps permite descargar mapas de una zona para usarlos sin conexión; hay que descargarlos antes, con internet, y algunas funciones, como el tráfico, no estarán disponibles sin conexión.",
       "enfoque": "Pensado para viajes por carretera con zonas sin señal. No inventar rutas ni lugares.",
       "verificar": "Confirmar que los mapas sin conexión están disponibles en Colombia.",
-      "tema_clave": "maps_offline", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "maps_offline",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "mb-01", "sub_nicho": "mitos_bateria", "formula": "Mito vs realidad",
+      "id": "mb-01",
+      "sub_nicho": "mitos_bateria",
+      "formula": "Mito vs realidad",
       "titulo": "Cerrar apps no te ahorra batería (casi nunca)",
       "gancho": "Cerrar todas las apps cada noche no te está ahorrando batería.",
       "dato_central": "En la mayoría de los casos cerrar las apps recientes a mano no ahorra batería: Android congela las que no usas, y volver a abrirlas desde cero puede gastar más que dejarlas en segundo plano.",
       "enfoque": "Mito vs realidad. Excepción honesta: una app que se comporta mal; en los ajustes de batería se ve cuál gasta más. No usar cifras.",
       "verificar": "Confirmar con documentación o declaraciones de Google o Android; mantener la excepción.",
-      "tema_clave": "bateria", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "bateria",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "mb-02", "sub_nicho": "mitos_bateria", "formula": "Mito vs realidad",
+      "id": "mb-02",
+      "sub_nicho": "mitos_bateria",
+      "formula": "Mito vs realidad",
       "titulo": "¿Dejar el celular cargando toda la noche lo daña?",
       "gancho": "Lo que te dijeron de cargar el celular toda la noche era cierto hace años.",
       "dato_central": "Los celulares modernos dejan de cargar al llegar al 100%; lo que más desgasta la batería es el calor y pasar muchas horas al máximo. Muchos Android traen funciones para cuidar la batería, como carga adaptable o límite de carga, que conviene activar si existen.",
       "enfoque": "Mito vs realidad con matiz. Sin porcentajes de desgaste.",
       "verificar": "Confirmar los nombres por marca (por ejemplo Samsung: Proteger batería; Pixel: Carga adaptable).",
-      "tema_clave": "bateria", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "bateria",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "mb-03", "sub_nicho": "mitos_bateria", "formula": "Mito vs realidad",
+      "id": "mb-03",
+      "sub_nicho": "mitos_bateria",
+      "formula": "Mito vs realidad",
       "titulo": "El modo oscuro no siempre ahorra batería",
       "gancho": "El modo oscuro no ahorra batería en todos los celulares.",
       "dato_central": "El modo oscuro ahorra batería sobre todo en pantallas OLED o AMOLED, porque apagan los píxeles negros; en pantallas LCD la retroiluminación sigue encendida y el ahorro es mínimo.",
       "enfoque": "Cómo saber qué pantalla tienes: mirar la ficha técnica del modelo (OLED, AMOLED o LCD/IPS). Mito vs realidad, sin tutorial.",
       "verificar": "Dato estable y ampliamente documentado; solo confirmar.",
-      "tema_clave": "bateria", "requiere_verificacion": false
+      "tema_clave": "bateria",
+      "requiere_verificacion": false
     },
     {
-      "id": "mb-04", "sub_nicho": "mitos_bateria", "formula": "Mito vs realidad",
+      "id": "mb-04",
+      "sub_nicho": "mitos_bateria",
+      "formula": "Mito vs realidad",
       "titulo": "¿Cualquier cargador sirve para tu celular?",
       "gancho": "No es la marca del cargador lo que daña tu celular.",
       "dato_central": "Lo importante de un cargador es que cumpla estándares y esté bien fabricado, no que sea de la misma marca: los cargadores baratos sin certificación pueden entregar corriente inestable o calentarse.",
       "enfoque": "Matiz: no decir que los de otra marca son malos. Aconsejar cargador de marca reconocida o certificado, y desconfiar de los de precio absurdo. No dar voltajes.",
       "verificar": "Confirmar que no se prometen detalles técnicos concretos.",
-      "tema_clave": "cargador", "requiere_verificacion": false
+      "tema_clave": "cargador",
+      "requiere_verificacion": false
     },
     {
-      "id": "pr-01", "sub_nicho": "privacidad", "formula": "La función que tu Android ya trae y no usas",
+      "id": "pr-01",
+      "sub_nicho": "privacidad",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "El punto verde que aparece en tu pantalla",
       "gancho": "Si ves un puntico verde arriba, alguien está usando tu cámara o tu micrófono.",
       "dato_central": "Desde Android 12, un indicador (un punto verde) aparece en la esquina de la pantalla cuando una app usa la cámara o el micrófono, y el panel de privacidad muestra qué apps los usaron recientemente.",
       "enfoque": "Tranquilizar: casi siempre es una app legítima (videollamada, grabadora); lo raro es que aparezca sin que la uses. Decir dónde mirar el historial: panel de privacidad en los ajustes.",
       "verificar": "Confirmar versión (Android 12), color del indicador y que existe el panel de privacidad; algunas marcas lo ajustan.",
-      "tema_clave": "indicadores_privacidad", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "indicadores_privacidad",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "pr-02", "sub_nicho": "privacidad", "formula": "El error que casi todos cometen con X",
+      "id": "pr-02",
+      "sub_nicho": "privacidad",
+      "formula": "El error que casi todos cometen con X",
       "titulo": "Tu ubicación no debería estar siempre activa",
       "gancho": "Hay apps que saben dónde estás hasta cuando no las abres.",
       "dato_central": "Android permite elegir si una app usa tu ubicación solo mientras la usas, preguntar cada vez, o siempre; la opción 'siempre' solo se debería dar a apps que realmente la necesiten.",
       "enfoque": "Ejemplos de apps que no necesitan 'siempre': linterna, calculadora, juegos. Decir dónde: ajustes de ubicación, permisos de apps.",
       "verificar": "Confirmar los nombres de las opciones en Android 10 y superiores.",
-      "tema_clave": "ubicacion", "requiere_verificacion": false
+      "tema_clave": "ubicacion",
+      "requiere_verificacion": false
     },
     {
-      "id": "pr-03", "sub_nicho": "privacidad", "formula": "La función que tu Android ya trae y no usas",
+      "id": "pr-03",
+      "sub_nicho": "privacidad",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Android quita permisos a apps que no usas",
       "gancho": "Tu celular está quitando permisos a tus apps y no te avisó.",
       "dato_central": "Desde Android 11, si no abres una app durante un tiempo, el sistema puede retirarle automáticamente los permisos (cámara, micrófono, ubicación); puedes ver y ajustar esto en los permisos de cada app.",
       "enfoque": "Función poco conocida. No decir cuánto tiempo exacto.",
       "verificar": "Confirmar el nombre exacto de la opción y que aplica desde Android 11.",
-      "tema_clave": "permisos_auto", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "permisos_auto",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "pr-04", "sub_nicho": "privacidad", "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+      "id": "pr-04",
+      "sub_nicho": "privacidad",
+      "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
       "titulo": "Mira todo lo que Google guardó de ti",
       "gancho": "Google guarda tu historial de búsquedas y más, y tú puedes verlo y borrarlo.",
       "dato_central": "En 'Mi actividad' de tu cuenta de Google puedes ver el historial de búsquedas, videos y ubicación según lo que tengas activado, borrarlo o configurar el borrado automático.",
       "enfoque": "Útil y sin alarmismo: es tu cuenta y tú decides. Cómo llegar: buscar 'Mi actividad de Google' en el navegador o entrar desde los ajustes de la cuenta de Google.",
       "verificar": "Confirmar que existe el borrado automático y qué datos incluye.",
-      "tema_clave": "google_datos", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "google_datos",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ah-01", "sub_nicho": "ahorro", "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+      "id": "ah-01",
+      "sub_nicho": "ahorro",
+      "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
       "titulo": "Revisa si te están cobrando suscripciones",
       "gancho": "Seguro estás pagando una suscripción que ya no usas.",
       "dato_central": "En Google Play puedes ver y cancelar todas tus suscripciones: abre la tienda, toca tu foto de perfil, entra a 'Pagos y suscripciones' y luego a 'Suscripciones'.",
       "enfoque": "Revisión de un minuto. No prometer ahorros. Aclarar que las suscripciones cobradas por otros medios (no por Google Play) no aparecen ahí.",
       "verificar": "Confirmar la ruta vigente.",
-      "tema_clave": "suscripciones", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "suscripciones",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ah-02", "sub_nicho": "ahorro", "formula": "Pregunta incómoda que tiene respuesta real",
+      "id": "ah-02",
+      "sub_nicho": "ahorro",
+      "formula": "Pregunta incómoda que tiene respuesta real",
       "titulo": "Que tu plan de datos no se acabe a mitad de mes",
       "gancho": "¿Se te acaban los datos antes de fin de mes y no sabes por qué?",
       "dato_central": "Android permite ver cuántos datos usa cada app y poner una alerta o un límite de datos móviles; está en los ajustes de red e internet, en uso de datos.",
       "enfoque": "Mostrar el beneficio: ver qué app gasta más y poner una alerta. Sin cifras de GB.",
       "verificar": "Confirmar la ruta y que existe 'advertencia y límite de datos' en la versión actual.",
-      "tema_clave": "datos_moviles", "requiere_verificacion": false
+      "tema_clave": "datos_moviles",
+      "requiere_verificacion": false
     },
     {
-      "id": "ah-03", "sub_nicho": "ahorro", "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+      "id": "ah-03",
+      "sub_nicho": "ahorro",
+      "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
       "titulo": "Apps que gastan tus datos sin que las abras",
       "gancho": "Hay apps que gastan tus datos aunque no las estés usando.",
       "dato_central": "Android permite restringir los datos en segundo plano por app, o activar el ahorro de datos, para que una app solo use internet cuando la tienes abierta.",
       "enfoque": "Ejemplos típicos: redes sociales y apps de video, sin acusar a apps concretas. Ruta: ajustes de red e internet, ahorro de datos.",
       "verificar": "Confirmar que 'Ahorro de datos' y la restricción por app siguen existiendo.",
-      "tema_clave": "datos_moviles", "requiere_verificacion": false
+      "tema_clave": "datos_moviles",
+      "requiere_verificacion": false
     },
     {
-      "id": "cv-01", "sub_nicho": "celular_viejo", "formula": "La función que tu Android ya trae y no usas",
+      "id": "cv-01",
+      "sub_nicho": "celular_viejo",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Haz que tu celular viejo se sienta más rápido",
       "gancho": "Hay un ajuste escondido que hace sentir tu celular más rápido, y es gratis.",
       "dato_central": "En las Opciones de desarrollador de Android hay tres escalas de animación (ventana, transición y duración); reducirlas o apagarlas hace que los cambios entre pantallas se sientan más rápidos, aunque no aumenta la potencia real.",
       "enfoque": "Honestidad: es sensación de velocidad, no potencia. Mencionar que las Opciones de desarrollador se activan tocando varias veces el 'Número de compilación' en 'Acerca del teléfono', solo mencionarlo, sin tutorial.",
       "verificar": "Confirmar los nombres de las escalas y el método de activación.",
-      "tema_clave": "animaciones", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "animaciones",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "cv-02", "sub_nicho": "celular_viejo", "formula": "Mito vs realidad",
+      "id": "cv-02",
+      "sub_nicho": "celular_viejo",
+      "formula": "Mito vs realidad",
       "titulo": "Borrar la caché de apps: cuándo sí y cuándo no",
       "gancho": "Borrar la caché no es magia, pero a veces arregla una app que se pone lenta.",
       "dato_central": "La caché son archivos temporales que ayudan a que una app abra más rápido; borrarla libera espacio y puede arreglar fallos, pero la app la vuelve a crear. Borrar los 'datos', en cambio, elimina tu sesión y tu configuración.",
       "enfoque": "Distinguir con claridad 'caché' de 'datos'. Advertir que borrar datos puede cerrar sesión o perder información.",
       "verificar": "Confirmar la diferencia entre caché y datos.",
-      "tema_clave": "cache", "requiere_verificacion": false
+      "tema_clave": "cache",
+      "requiere_verificacion": false
     },
     {
-      "id": "cv-03", "sub_nicho": "celular_viejo", "formula": "La función que tu Android ya trae y no usas",
+      "id": "cv-03",
+      "sub_nicho": "celular_viejo",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Las apps que tu celular trae y casi no usas",
       "gancho": "Tu celular nuevo viene con apps que nunca pediste.",
       "dato_central": "Muchos celulares traen apps preinstaladas que no se pueden desinstalar, pero sí se pueden desactivar para que no se ejecuten ni aparezcan; en los ajustes de aplicaciones aparece el botón 'Desactivar'.",
       "enfoque": "Advertencia obligatoria: no desactivar apps del sistema que no reconozcas, porque podrían afectar funciones del celular; solo las que sabes que no usas.",
       "verificar": "Confirmar el dato y mantener la advertencia.",
-      "tema_clave": "apps_preinstaladas", "requiere_verificacion": false
+      "tema_clave": "apps_preinstaladas",
+      "requiere_verificacion": false
     },
     {
-      "id": "hi-01", "sub_nicho": "historia", "formula": "Qué pasó con X (historia documentada)",
+      "id": "hi-01",
+      "sub_nicho": "historia",
+      "formula": "Qué pasó con X (historia documentada)",
       "titulo": "El celular que fue prohibido en los aviones",
       "gancho": "Hubo un celular tan peligroso que las aerolíneas avisaban que no se podía encender.",
       "dato_central": "El Samsung Galaxy Note 7 (2016) fue retirado del mercado por fallas en sus baterías que provocaron incendios, y varias aerolíneas y autoridades prohibieron llevarlo encendido en los vuelos.",
       "enfoque": "Historia corta con lección: por qué importan las baterías certificadas. Sin cifras de unidades ni de pérdidas.",
       "verificar": "Confirmar el año, el retiro del mercado y la prohibición en aviones.",
-      "tema_clave": "historia_moviles", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "historia_moviles",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "hi-02", "sub_nicho": "historia", "formula": "Qué pasó con X (historia documentada)",
+      "id": "hi-02",
+      "sub_nicho": "historia",
+      "formula": "Qué pasó con X (historia documentada)",
       "titulo": "Android no se creó para celulares",
       "gancho": "Android no nació para celulares.",
       "dato_central": "Android Inc. se fundó en 2003 y, según sus fundadores, el plan inicial era un sistema operativo para cámaras digitales antes de enfocarse en teléfonos; Google compró la empresa en 2005.",
       "enfoque": "Giro curioso. Atribuir con 'según sus fundadores' o 'según su cofundador' solo si la verificación lo confirma.",
       "verificar": "OBLIGATORIO verificar con una fuente confiable (entrevistas a los fundadores o medios reconocidos). Si no se confirma, dejar verificada en false.",
-      "tema_clave": "origen_android", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "origen_android",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "hi-03", "sub_nicho": "historia", "formula": "Qué pasó con X (historia documentada)",
+      "id": "hi-03",
+      "sub_nicho": "historia",
+      "formula": "Qué pasó con X (historia documentada)",
       "titulo": "El primer SMS de la historia dijo esto",
       "gancho": "El primer mensaje de texto de la historia tenía solo dos palabras.",
       "dato_central": "El primer SMS se envió en diciembre de 1992 y decía 'Merry Christmas'; lo mandó un ingeniero a un celular de Vodafone.",
       "enfoque": "Contrastar con los miles de mensajes que mandamos hoy, sin inventar cifras.",
       "verificar": "Confirmar la fecha, el texto y el emisor.",
-      "tema_clave": "historia_moviles", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "historia_moviles",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "hi-04", "sub_nicho": "historia", "formula": "Qué pasó con X (historia documentada)",
+      "id": "hi-04",
+      "sub_nicho": "historia",
+      "formula": "Qué pasó con X (historia documentada)",
       "titulo": "Google+: la red social que Google cerró",
       "gancho": "Google tuvo su propia red social y la cerró.",
       "dato_central": "Google+ fue la red social de Google, lanzada en 2011; la versión para usuarios fue cerrada en 2019, en parte por poca actividad y por fallos de seguridad que expusieron datos.",
       "enfoque": "Qué pasa cuando una gran empresa lanza una red social y no engancha.",
       "verificar": "Confirmar las fechas y los motivos; si hay dudas sobre los motivos, redactarlo sin ellos.",
-      "tema_clave": "historia_apps", "requiere_verificacion": true, "verificada": true
+      "tema_clave": "historia_apps",
+      "requiere_verificacion": true,
+      "verificada": true
     },
     {
-      "id": "ga-01", "sub_nicho": "gadgets", "formula": "La función que tu Android ya trae y no usas",
+      "id": "ga-01",
+      "sub_nicho": "gadgets",
+      "formula": "La función que tu Android ya trae y no usas",
       "titulo": "Lee esto en tu cargador antes de comprarlo",
       "gancho": "Tu cargador tiene un número que dice si es rápido o lento.",
       "dato_central": "Los cargadores traen impresos voltios (V) y amperios (A) o vatios (W); la potencia en vatios sale de multiplicar voltios por amperios, y entre más vatios, más rápida puede ser la carga si el celular y el cable la aceptan.",
       "enfoque": "Explicar solo la fórmula. Puedes dar un ejemplo aritmético simple dejando claro que es solo un ejemplo (por ejemplo, 5 voltios por 2 amperios dan 10 vatios).",
       "verificar": "Confirmar la fórmula.",
-      "tema_clave": "cargador", "requiere_verificacion": false
+      "tema_clave": "cargador",
+      "requiere_verificacion": false
     },
     {
-      "id": "ga-02", "sub_nicho": "gadgets", "formula": "Mito vs realidad",
+      "id": "ga-02",
+      "sub_nicho": "gadgets",
+      "formula": "Mito vs realidad",
       "titulo": "No todos los cables USB-C son iguales",
       "gancho": "Dos cables que se ven idénticos pueden hacer cosas distintas.",
       "dato_central": "Hay cables USB-C que solo sirven para cargar y otros que también transfieren datos o admiten carga rápida; por fuera pueden verse iguales.",
       "enfoque": "Consejo: si un cable no pasa fotos al computador, puede ser uno de solo carga; comprar cables de marca reconocida o con especificaciones claras.",
       "verificar": "Dato estable; solo confirmar.",
-      "tema_clave": "cable_usb", "requiere_verificacion": false
+      "tema_clave": "cable_usb",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "fn-08",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
+      "titulo": "Usa dos apps a la vez en la misma pantalla",
+      "gancho": "¿Sabías que tu celular puede mostrarte dos apps al mismo tiempo? Se llama pantalla dividida y ya está en tu teléfono.",
+      "dato_central": "Android permite dividir la pantalla y usar dos apps a la vez: mantienes pulsada una app en el menú de aplicaciones recientes y la colocas en la mitad superior; la otra va abajo. No todas las apps lo permiten, pero las de mensajería, video y navegador sí.",
+      "enfoque": "Escena: quieres ver un video mientras responds un mensaje. Decir en una frase cómo se activa (desde el menú de apps recientes, manteniendo pulsada la app). No dar pasos numerados.",
+      "verificar": "Confirmar que la pantalla dividida funciona desde el menú de aplicaciones recientes y que no toda app la soporta.",
+      "tema_clave": "pantalla_dividida",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "fn-09",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
+      "titulo": "Graba la pantalla de tu celular sin instalar nada",
+      "gancho": "¿Quieres enseñarle a alguien cómo se hace algo en el celular? Android graba la pantalla sin necesidad de apps raras.",
+      "dato_central": "Desde Android 11, el grabador de pantalla viene integrado: se baja el panel de ajustes rápidos y se toca \"Grabador de pantalla\". Graba lo que haces en el celular, con o sin audio del micrófono.",
+      "enfoque": "Escena: grabar un tutorial rápido o mostrar un error. Decir en una frase dónde está (ajustes rápidos). No dar pasos numerados.",
+      "verificar": "Confirmar que el grabador de pantalla está integrado desde Android 11 en los ajustes rápidos.",
+      "tema_clave": "grabar_pantalla",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "fn-10",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
+      "titulo": "Que tu celular lea en voz alta cualquier texto",
+      "gancho": "Si estás cansado de leer, tu Android puede leer por ti: artículos, correos o mensajes.",
+      "dato_central": "Android trae \"Seleccionar para pronunciar\" (en Ajustes > Accesibilidad): activas un botón flotante y, al tocar cualquier texto de la pantalla, el celular lo lee en voz alta. Sirve para descansar la vista o para personas con baja visión.",
+      "enfoque": "Escena: leer un artículo largo o un mensaje mientras cocinas. Decir en una frase dónde se activa (accesibilidad). No dar pasos numerados.",
+      "verificar": "Confirmar que \"Seleccionar para pronunciar\" está en Ajustes > Accesibilidad y lee texto al tocarlo.",
+      "tema_clave": "leer_voz_alta",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "fn-11",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
+      "titulo": "Manda archivos grandes sin internet ni datos",
+      "gancho": "¿No hay WiFi y necesitas mandar un video grande? Android lo envía por el aire, sin subirlo a internet.",
+      "dato_central": "Quick Share (antes \"Compartir cercano\" o Nearby Share) manda archivos grandes por Wi-Fi y Bluetooth directo de celular a celular, sin subirlos a la nube y sin consumir datos. Aparece al compartir un archivo y elegir \"Quick Share\".",
+      "enfoque": "Escena: pasarle una foto o video a alguien que está al lado. Decir en una frase cómo aparece (al compartir). No dar pasos numerados.",
+      "verificar": "Confirmar que Quick Share transfiere por Wi-Fi/Bluetooth sin datos y que antes se llamaba Nearby Share.",
+      "tema_clave": "quick_share",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "fn-12",
+      "sub_nicho": "funciones",
+      "formula": "La función que tu Android ya trae y no usas",
+      "titulo": "Usa tu celular como control remoto del televisor",
+      "gancho": "Perdiste el control del TV otra vez? Tu celular puede ser el control remoto.",
+      "dato_central": "Si tienes un smart TV o un Chromecast, la app \"Google TV\" (o \"Control remoto de Android TV\") convierte tu celular en mando: cambia de canal, ajusta el volumen y escribe con el teclado del celular en lugar de picar con la flechita.",
+      "enfoque": "Escena: no encuentras el control o quieres escribir en el TV sin picar letra por letra. Decir en una frase qué app se usa. No dar pasos numerados.",
+      "verificar": "Confirmar que la app Google TV / Control remoto de Android TV sirve de mando para smart TV y Chromecast.",
+      "tema_clave": "control_remoto",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "es-07",
+      "sub_nicho": "estafas",
+      "formula": "La estafa que está circulando ahora",
+      "titulo": "La llamada falsa de soporte que controla tu celular",
+      "gancho": "Te llaman diciendo ser del banco o del soporte técnico y te piden instalar \"una app para ayudarte\". No lo hagas: es para controlar tu celular.",
+      "dato_central": "Llaman fingiendo ser del \"soporte técnico\", el banco o una empresa, y te piden instalar una app de acceso remoto (AnyDesk, TeamViewer o Quick Support). Con ella toman el control de tu pantalla y pueden vaciar tus cuentas. Ninguna empresa seria pide eso por teléfono.",
+      "enfoque": "Escena real: la llamada, lo que dicen y la app que piden. Cerrar con la regla: nadie legítimo pide acceso remoto ni códigos por teléfono.",
+      "verificar": "Confirmar que el acceso remoto bajo pretexto de soporte es un patrón de estafa reportado por autoridades.",
+      "tema_clave": "acceso_remoto_estafa",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "es-08",
+      "sub_nicho": "estafas",
+      "formula": "La estafa que está circulando ahora",
+      "titulo": "Te depositaron de más y te piden devolverla",
+      "gancho": "Alguien te transfirió \"por error\" de más y te pide devolver solo la diferencia. Cuidado: ese dinero no existe.",
+      "dato_central": "Te transfieren \"de más\" por error y te piden devolver solo la diferencia por transferencia, tarjeta o cripto. La transferencia original es falsa o se revierte, y tú quedas debiendo dinero de tu bolsillo. Nadie te va a pagar de más por accidente.",
+      "enfoque": "Escena: el mensaje pidiendo devolver la diferencia y la urgencia. Cerrar con la regla: si te pagan de más, no devuelvas nada por tu cuenta.",
+      "verificar": "Confirmar que la estafa del \"depósito de más\" funciona con cheques o transferencias que luego se revierten.",
+      "tema_clave": "deposito_de_mas",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "es-09",
+      "sub_nicho": "estafas",
+      "formula": "La estafa que está circulando ahora",
+      "titulo": "El SMS de paquete retenido con link de pago",
+      "gancho": "Llegó un mensaje diciendo que tu paquete está retenido y hay que pagar un pequeño cargo por un link. Es trampa.",
+      "dato_central": "Un SMS o WhatsApp dice que tu paquete está retenido y necesitas pagar un pequeño cargo de reenvío en un link. Es un falso mensaje de paquetería: el link roba tus datos o tu dinero. Las paqueterías reales no cobran por un link de texto.",
+      "enfoque": "Escena: el SMS, el link y la urgencia del \"cargo pequeño\". Cerrar con la regla: no pagues nada por links de mensajes; verifica con la paquetería oficial.",
+      "verificar": "Confirmar que los falsos avisos de paquetería con link de pago son una estafa extendida.",
+      "tema_clave": "paqueteria_estafa",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "pr-05",
+      "sub_nicho": "privacidad",
+      "formula": "Lo que tu celular sabe de ti y puedes borrar",
+      "titulo": "Borra el mapa de todos los lugares donde has estado",
+      "gancho": "Google guarda a dónde has ido, día por día. Puedes verlo, pausarlo o borrarlo.",
+      "dato_central": "Google guarda tu Historial de ubicación: todos los lugares que has visitado. Puedes verlo, pausarlo o borrarlo en \"Actividad y controles\" de tu cuenta de Google, donde también decides cuánto tiempo guarda esos datos.",
+      "enfoque": "Escena: ver el mapa de tus movimientos y decidir si lo quieres. Decir en una frase dónde está (cuenta de Google, actividad). No dar pasos numerados.",
+      "verificar": "Confirmar que el Historial de ubicación se gestiona en Actividad y controles de la cuenta de Google y se puede borrar.",
+      "tema_clave": "historial_ubicacion",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "pr-06",
+      "sub_nicho": "privacidad",
+      "formula": "Un ajuste que te protege en 1 minuto",
+      "titulo": "Activa la verificación en dos pasos ya",
+      "gancho": "Si solo proteges tus cuentas con contraseña, te falta la mitad. Este ajuste evita que entren aunque te roben la clave.",
+      "dato_central": "La verificación en dos pasos añade un segundo código además de tu contraseña: aunque te roben la clave, sin el segundo código no entran. Se activa en la configuración de seguridad de tu cuenta de Google o de tus apps importantes; lo más sólido son las llaves de seguridad o la app de códigos, no solo SMS.",
+      "enfoque": "Escena: la diferencia entre entrar con y sin segundo código. Decir en una frase dónde se activa (seguridad de la cuenta). No dar pasos numerados.",
+      "verificar": "Confirmar que la verificación en dos pasos se activa en la seguridad de la cuenta y que app o llave es más segura que SMS.",
+      "tema_clave": "verificacion_dos_pasos",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "pr-07",
+      "sub_nicho": "privacidad",
+      "formula": "Lo que tu celular sabe de ti y puedes borrar",
+      "titulo": "Revisa qué apps usan tu micrófono y cámara",
+      "gancho": "Ese puntito verde no miente: alguien está usando tu micrófono o cámara. Y puedes quitárselo.",
+      "dato_central": "Android muestra un punto verde o naranja cuando el micrófono o la cámara están en uso. Además, en Ajustes > Privacidad > Permisos puedes ver qué apps tienen acceso y quitárselo a las que no lo necesitan.",
+      "enfoque": "Escena: el punto verde apareciendo y la duda de quién es. Decir en una frase dónde se revisan los permisos. No dar pasos numerados.",
+      "verificar": "Confirmar que el indicador de micrófono/cámara y el gestor de permisos están en Privacidad de Android.",
+      "tema_clave": "permisos_mic_camara",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "ap-05",
+      "sub_nicho": "apps",
+      "formula": "La app que te resuelve esto (y es gratis)",
+      "titulo": "Digitaliza documentos con la cámara de tu celular",
+      "gancho": "No necesitas una impresora con escáner: tu celular convierte cualquier hoja en un PDF limpio.",
+      "dato_central": "La app de Google (o Google Drive) trae un escáner de documentos: apuntas a una hoja, la foto y queda enderezada, recortada y lista para guardar como PDF. Sirve para boletas, contratos o tareas escolares.",
+      "enfoque": "Escena: escanear una boleta o un documento para mandarlo por correo. Decir en una frase qué app tiene el escáner. No dar pasos numerados.",
+      "verificar": "Confirmar que la app de Google o Google Drive incluye escáner de documentos a PDF.",
+      "tema_clave": "escanear_documentos",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "ap-06",
+      "sub_nicho": "apps",
+      "formula": "La app que te resuelve esto (y es gratis)",
+      "titulo": "Lee códigos QR sin bajar apps raras",
+      "gancho": "¿Vas a escanear un QR y tu celular te pide bajar una app llena de publicidad? No la necesitas.",
+      "dato_central": "No necesitas una app rara para leer códigos QR: la cámara de Google (Google Lens) o la cámara nativa de muchos celulares ya los leen al apuntar. Así evitas apps con publicidad que además pueden ser peligrosas.",
+      "enfoque": "Escena: el QR del menú, del cartel o del pago. Decir en una frase qué cámara lo lee. No dar pasos numerados.",
+      "verificar": "Confirmar que Google Lens y la cámara nativa de varios fabricantes leen QR sin app adicional.",
+      "tema_clave": "leer_qr",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "mb-05",
+      "sub_nicho": "mitos_bateria",
+      "formula": "El mito de la batería que todos repiten",
+      "titulo": "Apagar Bluetooth y GPS casi no te ahorra batería",
+      "gancho": "¿Apagas Bluetooth y GPS para \"ahorrar batería\"? Casi no sirve de nada. Lo que de verdad la gasta es otra cosa.",
+      "dato_central": "Apagar Bluetooth, WiFi o GPS ahorra muy poca batería: cuando no están conectados a nada, gastan casi nada. Lo que de verdad drena la batería es la pantalla, las apps en segundo plano y la señal débil. Cerrar apps a mano tampoco ayuda.",
+      "enfoque": "Romper el hábito de apagar todo por costumbre. Decir en una frase qué gasta de verdad (pantalla, segundo plano, señal). No dar pasos numerados.",
+      "verificar": "Confirmar que los radios en reposo gastan poco y que pantalla, segundo plano y señal débil son el consumo real.",
+      "tema_clave": "mito_apagar_radios",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "ah-04",
+      "sub_nicho": "ahorro",
+      "formula": "Ahorra datos (y plata) en tu plan celular",
+      "titulo": "Descarga todo para verlo sin datos",
+      "gancho": "Viajas, vas en el metro o se te acaban los datos? Descarga con WiFi y luego úsalo sin conexión.",
+      "dato_central": "YouTube Music, Spotify, Netflix y Google Maps permiten descargar contenido para verlo o escucharlo sin datos: descargas con WiFi y luego funciona sin conexión. Ideal para viajes, el metro o planes con datos limitados.",
+      "enfoque": "Escena: el viaje o el día sin datos. Decir en una frase qué apps permiten descargar. No dar pasos numerados.",
+      "verificar": "Confirmar que Spotify, YouTube Music, Netflix y Google Maps permiten descarga para uso sin conexión.",
+      "tema_clave": "descarga_offline",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "cv-04",
+      "sub_nicho": "celular_viejo",
+      "formula": "Qué hacer con ese cajón de celulares viejos",
+      "titulo": "Antes de guardar o tirar tu celular viejo, haz esto",
+      "gancho": "Tienes un celular viejo en un cajón? No lo tires ni lo vendas con tus datos dentro.",
+      "dato_central": "Antes de guardar o tirar un celular viejo: borra todo y restaura de fábrica (para no dejar tus datos), revéndelo o donálo si aún sirve, y si ya no funciona llévalo a un punto de reciclaje de electrónicos; no lo tires a la basura común por las baterías.",
+      "enfoque": "Escena: el cajón de celulares viejos y qué hacer con cada uno. Cerrar con la restauración de fábrica como paso no negociable.",
+      "verificar": "Confirmar que la restauración de fábrica borra los datos y que los celulares deben reciclarse en puntos especializados.",
+      "tema_clave": "celular_viejo_disposicion",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "hi-05",
+      "sub_nicho": "historia",
+      "formula": "La historia detrás de algo que usas todos los días",
+      "titulo": "De dónde salió el nombre y el robot verde de Android",
+      "gancho": "¿Sabes por qué Android se llama Android y por qué su mascota es un robot verde? Tiene historia.",
+      "dato_central": "Android se llama así por \"androide\" (robot con apariencia humana) y su mascota es el robot verde que la comunidad apodó \"Bugdroid\". Su diseñador lo creó inspirándose en señales de baños, con la idea de que el software se reconociera de un vistazo.",
+      "enfoque": "Contar la anécdota del nombre y del robot de forma amena, sin datos técnicos. Cerrar con el guiño de las señales de baños.",
+      "verificar": "Confirmar el origen del nombre \"androide\" y la anécdota del diseño del robot de Android.",
+      "tema_clave": "android_historia",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "ga-03",
+      "sub_nicho": "gadgets",
+      "formula": "Antes de comprar ese accesorio, lee esto",
+      "titulo": "Cómo saber si tu cargador rápido es real",
+      "gancho": "Ese cargador barato promete \"carga rápida\", pero puede ser una mentira… o incluso un riesgo.",
+      "dato_central": "Muchos cargadores genéricos prometen \"carga rápida\" pero no la cumplen, y algunos son peligrosos. La carga rápida real usa protocolos certificados (como USB Power Delivery o Quick Charge) y trae sellos de seguridad; un cargador sin marca puede dañar la batería o ser un riesgo.",
+      "enfoque": "Escena: el cargador de la tienda por poco dinero. Decir en una frase qué buscar (protocolo certificado, sellos). No dar pasos numerados.",
+      "verificar": "Confirmar que la carga rápida real usa protocolos certificados (USB PD, Quick Charge) y que los cargadores genéricos sin certificación son riesgosos.",
+      "tema_clave": "cargador_falso",
+      "requiere_verificacion": false
     }
   ]
 }

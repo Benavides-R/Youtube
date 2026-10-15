@@ -1,15 +1,291 @@
 {
   "version": 1,
   "ideas": [
-    {"id":"sl-01","sub_nicho":"productividad","titulo":"5 técnicas para dejar de procrastinar","gancho":"Llevas días aplazando eso que sabes que tienes que hacer. Hoy vas a ver cinco técnicas con nombre propio que sirven para empezar.","bundle":["su-02","su-01","su-03","su-06","su-09"],"enfoque":"Explicar cada técnica con su nombre y autor, un ejemplo cotidiano y el reto de hoy. Cerrar invitando a elegir UNA y probarla hoy.","tema_clave":"procrastinacion"},
-    {"id":"sl-02","sub_nicho":"mente","titulo":"5 errores mentales que sabotean tus decisiones","gancho":"Tu cabeza toma atajos que parecen lógicos y terminan costándote caro. Estos cinco errores tienen nombre y se pueden reconocer.","bundle":["su-18","su-19","su-20","su-21","su-22"],"enfoque":"Describir cada sesgo con un ejemplo de la vida diaria y una pregunta para detectarlo. Sin cifras ni estudios.","tema_clave":"sesgos"},
-    {"id":"sl-03","sub_nicho":"habitos","titulo":"Cómo construir hábitos que de verdad se quedan","gancho":"Casi todos empezamos hábitos y casi todos los abandonamos. Aquí tienes cinco ideas para que se queden.","bundle":["su-24","su-25","su-26","su-04","su-13"],"enfoque":"Enfocar todo en hacer el hábito pequeño, fácil de empezar y visible. Cada sección termina con el reto para hoy.","tema_clave":"habitos"},
-    {"id":"sl-04","sub_nicho":"mente","titulo":"Mentalidad: 4 ideas de filósofos y psicólogos","gancho":"Hay ideas muy viejas y otras muy recientes sobre cómo pensar frente a las dificultades. Estas cuatro merecen una pausa.","bundle":["su-14","su-15","su-16","su-17"],"enfoque":"Presentar cada idea con su autor y lo que dice, sin citar frases textuales; en 'no esperes ganas' incluir la aclaración sobre ayuda profesional.","tema_clave":"mentalidad"},
-    {"id":"sl-05","sub_nicho":"productividad","titulo":"Organiza tu día: 5 herramientas de productividad","gancho":"No es que te falte tiempo, es que no sabes qué merece tu tiempo. Estas cinco herramientas te ayudan a decidirlo.","bundle":["su-10","su-11","su-07","su-12","su-29"],"enfoque":"Cada herramienta con su nombre, cuándo usarla y un reto. Presentar Pareto y Eisenhower como guías, no como leyes exactas.","tema_clave":"organizar_dia"},
-    {"id":"sl-06","sub_nicho":"accion","titulo":"5 retos de un día para recuperar el control","gancho":"A veces no necesitas un plan enorme, necesitas un reto pequeño para hoy. Aquí van cinco.","bundle":["su-30","su-31","su-32","su-28","su-33"],"enfoque":"Tono de coach cercano. Cada sección es un reto concreto con su razón; sin prometer resultados.","tema_clave":"retos"},
-    {"id":"sl-07","sub_nicho":"accion","titulo":"Disciplina sin motivación: 5 ideas que ayudan","gancho":"Esperar a tener ganas es la forma más lenta de empezar. Estas cinco ideas te ayudan a actuar aunque no tengas ganas.","bundle":["su-05","su-09","su-17","su-02","su-25"],"enfoque":"Explicar cada idea con su nombre y un ejemplo; incluir la aclaración sobre ayuda profesional en la sección de activación conductual.","tema_clave":"disciplina"},
-    {"id":"sl-08","sub_nicho":"mente","titulo":"Por qué te comparas y cómo dejar de hacerlo","gancho":"Siempre habrá alguien que va más adelante que tú. La pregunta es qué haces con eso.","bundle":["su-23","su-14","su-32","su-16"],"enfoque":"Hilar las cuatro ideas alrededor de la comparación: de dónde viene, qué controlas, cómo hablarte y cómo cambiar el enfoque.","tema_clave":"comparacion"},
-    {"id":"sl-09","sub_nicho":"habitos","titulo":"Tu mañana y tu noche: 4 ajustes que ayudan","gancho":"Cómo empiezas y cómo terminas el día pesa más de lo que parece. Cuatro ajustes pequeños para probar.","bundle":["su-28","su-25","su-27","su-26"],"enfoque":"Presentar todo como sugerencias prácticas para probar, no como datos científicos. Sin cifras de horas.","tema_clave":"manana_noche"},
-    {"id":"sl-10","sub_nicho":"productividad","titulo":"Haz más con menos: 4 principios de enfoque","gancho":"Hacer más cosas no es lo mismo que avanzar. Cuatro principios para enfocarte en lo que de verdad cuenta.","bundle":["su-11","su-33","su-29","su-10"],"enfoque":"Cada principio con su nombre, un ejemplo y un reto; cierre con una sola prioridad para mañana.","tema_clave":"enfoque"}
+    {
+      "id": "sl-01",
+      "sub_nicho": "productividad",
+      "titulo": "5 técnicas para dejar de procrastinar",
+      "gancho": "Llevas días aplazando eso que sabes que tienes que hacer. Hoy vas a ver cinco técnicas con nombre propio que sirven para empezar.",
+      "bundle": [
+        "su-02",
+        "su-01",
+        "su-03",
+        "su-06",
+        "su-09"
+      ],
+      "enfoque": "Explicar cada técnica con su nombre y autor, un ejemplo cotidiano y el reto de hoy. Cerrar invitando a elegir UNA y probarla hoy.",
+      "tema_clave": "procrastinacion"
+    },
+    {
+      "id": "sl-02",
+      "sub_nicho": "mente",
+      "titulo": "5 errores mentales que sabotean tus decisiones",
+      "gancho": "Tu cabeza toma atajos que parecen lógicos y terminan costándote caro. Estos cinco errores tienen nombre y se pueden reconocer.",
+      "bundle": [
+        "su-18",
+        "su-19",
+        "su-20",
+        "su-21",
+        "su-22"
+      ],
+      "enfoque": "Describir cada sesgo con un ejemplo de la vida diaria y una pregunta para detectarlo. Sin cifras ni estudios.",
+      "tema_clave": "sesgos"
+    },
+    {
+      "id": "sl-03",
+      "sub_nicho": "habitos",
+      "titulo": "Cómo construir hábitos que de verdad se quedan",
+      "gancho": "Casi todos empezamos hábitos y casi todos los abandonamos. Aquí tienes cinco ideas para que se queden.",
+      "bundle": [
+        "su-24",
+        "su-25",
+        "su-26",
+        "su-04",
+        "su-13"
+      ],
+      "enfoque": "Enfocar todo en hacer el hábito pequeño, fácil de empezar y visible. Cada sección termina con el reto para hoy.",
+      "tema_clave": "habitos"
+    },
+    {
+      "id": "sl-04",
+      "sub_nicho": "mente",
+      "titulo": "Mentalidad: 4 ideas de filósofos y psicólogos",
+      "gancho": "Hay ideas muy viejas y otras muy recientes sobre cómo pensar frente a las dificultades. Estas cuatro merecen una pausa.",
+      "bundle": [
+        "su-14",
+        "su-15",
+        "su-16",
+        "su-17"
+      ],
+      "enfoque": "Presentar cada idea con su autor y lo que dice, sin citar frases textuales; en 'no esperes ganas' incluir la aclaración sobre ayuda profesional.",
+      "tema_clave": "mentalidad"
+    },
+    {
+      "id": "sl-05",
+      "sub_nicho": "productividad",
+      "titulo": "Organiza tu día: 5 herramientas de productividad",
+      "gancho": "No es que te falte tiempo, es que no sabes qué merece tu tiempo. Estas cinco herramientas te ayudan a decidirlo.",
+      "bundle": [
+        "su-10",
+        "su-11",
+        "su-07",
+        "su-12",
+        "su-29"
+      ],
+      "enfoque": "Cada herramienta con su nombre, cuándo usarla y un reto. Presentar Pareto y Eisenhower como guías, no como leyes exactas.",
+      "tema_clave": "organizar_dia"
+    },
+    {
+      "id": "sl-06",
+      "sub_nicho": "accion",
+      "titulo": "5 retos de un día para recuperar el control",
+      "gancho": "A veces no necesitas un plan enorme, necesitas un reto pequeño para hoy. Aquí van cinco.",
+      "bundle": [
+        "su-30",
+        "su-31",
+        "su-32",
+        "su-28",
+        "su-33"
+      ],
+      "enfoque": "Tono de coach cercano. Cada sección es un reto concreto con su razón; sin prometer resultados.",
+      "tema_clave": "retos"
+    },
+    {
+      "id": "sl-07",
+      "sub_nicho": "accion",
+      "titulo": "Disciplina sin motivación: 5 ideas que ayudan",
+      "gancho": "Esperar a tener ganas es la forma más lenta de empezar. Estas cinco ideas te ayudan a actuar aunque no tengas ganas.",
+      "bundle": [
+        "su-05",
+        "su-09",
+        "su-17",
+        "su-02",
+        "su-25"
+      ],
+      "enfoque": "Explicar cada idea con su nombre y un ejemplo; incluir la aclaración sobre ayuda profesional en la sección de activación conductual.",
+      "tema_clave": "disciplina"
+    },
+    {
+      "id": "sl-08",
+      "sub_nicho": "mente",
+      "titulo": "Por qué te comparas y cómo dejar de hacerlo",
+      "gancho": "Siempre habrá alguien que va más adelante que tú. La pregunta es qué haces con eso.",
+      "bundle": [
+        "su-23",
+        "su-14",
+        "su-32",
+        "su-16"
+      ],
+      "enfoque": "Hilar las cuatro ideas alrededor de la comparación: de dónde viene, qué controlas, cómo hablarte y cómo cambiar el enfoque.",
+      "tema_clave": "comparacion"
+    },
+    {
+      "id": "sl-09",
+      "sub_nicho": "habitos",
+      "titulo": "Tu mañana y tu noche: 4 ajustes que ayudan",
+      "gancho": "Cómo empiezas y cómo terminas el día pesa más de lo que parece. Cuatro ajustes pequeños para probar.",
+      "bundle": [
+        "su-28",
+        "su-25",
+        "su-27",
+        "su-26"
+      ],
+      "enfoque": "Presentar todo como sugerencias prácticas para probar, no como datos científicos. Sin cifras de horas.",
+      "tema_clave": "manana_noche"
+    },
+    {
+      "id": "sl-10",
+      "sub_nicho": "productividad",
+      "titulo": "Haz más con menos: 4 principios de enfoque",
+      "gancho": "Hacer más cosas no es lo mismo que avanzar. Cuatro principios para enfocarte en lo que de verdad cuenta.",
+      "bundle": [
+        "su-11",
+        "su-33",
+        "su-29",
+        "su-10"
+      ],
+      "enfoque": "Cada principio con su nombre, un ejemplo y un reto; cierre con una sola prioridad para mañana.",
+      "tema_clave": "enfoque"
+    },
+    {
+      "id": "sl-11",
+      "sub_nicho": "mente",
+      "titulo": "4 trucos de tu mente que te sabotean",
+      "gancho": "Tu mente te juega estas cuatro pasadas casi siempre sin que te des cuenta. Hoy las vas a ver venir.",
+      "bundle": [
+        "su-34",
+        "su-37",
+        "su-39",
+        "su-19"
+      ],
+      "enfoque": "Explicar cada sesgo con su nombre, un ejemplo cotidiano y cómo esquivarlo. Cerrar con que ya nombrar el sesgo es medio camino para no caer.",
+      "tema_clave": "sesgos_mentales"
+    },
+    {
+      "id": "sl-12",
+      "sub_nicho": "habitos",
+      "titulo": "Hábitos que se pegan sin disciplina de hierro",
+      "gancho": "No se trata de tener más fuerza de voluntad, sino de diseñar tu día para que el hábito salga solo.",
+      "bundle": [
+        "su-40",
+        "su-41",
+        "su-42",
+        "su-24"
+      ],
+      "enfoque": "Cuatro ideas prácticas: no falles dos días seguidos, arregla el entorno, quita fricción y pega el hábito a otro. Cada una con ejemplo y reto de aplicarla hoy.",
+      "tema_clave": "habitos_sin_disciplina"
+    },
+    {
+      "id": "sl-13",
+      "sub_nicho": "productividad",
+      "titulo": "Decide mejor y enfócate: 4 herramientas que usan de verdad",
+      "gancho": "Cuatro métodos con nombre propio para decidir sin dar vueltas y proteger tu atención.",
+      "bundle": [
+        "su-46",
+        "su-12",
+        "su-47",
+        "su-05"
+      ],
+      "enfoque": "Presentar cada herramienta, su origen (Toyota, la regla 10-10-10, Schelling), un ejemplo real y el reto de usarla en una decisión de hoy.",
+      "tema_clave": "decisiones_enfoque"
+    },
+    {
+      "id": "sl-14",
+      "sub_nicho": "accion",
+      "titulo": "4 retos de un minuto para recuperar el control",
+      "gancho": "Cosas de un minuto que cambian cómo cierras tu día y decides mañana.",
+      "bundle": [
+        "su-43",
+        "su-44",
+        "su-45",
+        "su-08"
+      ],
+      "enfoque": "Cuatro micro-retos: el filtro de \"acerca o aleja\", la gratitud de 60 segundos, la revisión del día y prever el fracaso. Cada uno se explica y se propone probarlo hoy mismo.",
+      "tema_clave": "retos_minuto"
+    },
+    {
+      "id": "sl-15",
+      "sub_nicho": "mente",
+      "titulo": "Por qué eliges mal (y 4 ideas para elegir mejor)",
+      "gancho": "Cuatro razones psicológicas por las que te arrepientes de lo que eliges, y qué hacer con cada una.",
+      "bundle": [
+        "su-20",
+        "su-21",
+        "su-38",
+        "su-18"
+      ],
+      "enfoque": "Cada \"error\" con su nombre (aversión a la pérdida, sesgo del presente, el \"yo futuro\", costo hundido), un ejemplo real y la idea que lo compensa.",
+      "tema_clave": "malas_decisiones"
+    },
+    {
+      "id": "sl-16",
+      "sub_nicho": "accion",
+      "titulo": "Arranca aunque no tengas ganas",
+      "gancho": "No necesitas motivación para empezar: necesitas el primer movimiento. Estas cuatro ideas te lo sacan.",
+      "bundle": [
+        "su-17",
+        "su-06",
+        "su-09",
+        "su-36"
+      ],
+      "enfoque": "Cuatro formas de arrancar sin esperar al \"momento\": empieza y las ganas llegan, haz solo un poco, cuenta hasta 5 y muévete, y acepta que empezarás mal. Cerrar con un primer movimiento de hoy.",
+      "tema_clave": "arrancar_sin_ganas"
+    },
+    {
+      "id": "sl-17",
+      "sub_nicho": "mente",
+      "titulo": "Cómo te hablas decide cómo te va",
+      "gancho": "La conversación que tienes contigo mismo es la más importante del día. Y casi siempre es dura de más.",
+      "bundle": [
+        "su-32",
+        "su-16",
+        "su-35",
+        "su-34"
+      ],
+      "enfoque": "Háblate como a un amigo, cambia \"no puedo\" por \"todavía no\", cambia la pregunta que te hunde y no confundas confianza con saber. Cerrar con una frase amable hacia uno mismo.",
+      "tema_clave": "dialogo_interno"
+    },
+    {
+      "id": "sl-18",
+      "sub_nicho": "productividad",
+      "titulo": "Recupera tu atención robada",
+      "gancho": "Tu atención la quitan sin pedírtela. Estas cuatro ideas te la devuelven.",
+      "bundle": [
+        "su-28",
+        "su-33",
+        "su-11",
+        "su-07"
+      ],
+      "enfoque": "Los primeros minutos sin celular, dejar de hacer varias cosas a la vez, la regla 80/20 y ponerle techo al tiempo. Cerrar con un ajuste de foco para mañana.",
+      "tema_clave": "atencion_robada"
+    },
+    {
+      "id": "sl-19",
+      "sub_nicho": "accion",
+      "titulo": "Decide bien bajo presión",
+      "gancho": "Cuando hay prisa, la cabeza juega en tu contra. Estas cuatro herramientas la calman.",
+      "bundle": [
+        "su-12",
+        "su-05",
+        "su-29",
+        "su-43"
+      ],
+      "enfoque": "La regla 10-10-10, el plan de \"si pasa esto, hago aquello\", una sola prioridad y el filtro de \"acerca o aleja\". Cerrar aplicando una a una decisión pendiente.",
+      "tema_clave": "decision_presion"
+    },
+    {
+      "id": "sl-20",
+      "sub_nicho": "mente",
+      "titulo": "Baja la ansiedad con 4 ajustes",
+      "gancho": "No es debilidad: es ruido mental. Estas cuatro cosas lo bajan.",
+      "bundle": [
+        "su-27",
+        "su-44",
+        "su-14",
+        "su-45"
+      ],
+      "enfoque": "Dormir bien como disciplina, la gratitud de 60 segundos, enfocarte solo en lo que controlas y cerrar el día con dos preguntas. Cerrar con el ajuste más fácil de probar hoy.",
+      "tema_clave": "bajar_ansiedad"
+    }
   ]
 }
