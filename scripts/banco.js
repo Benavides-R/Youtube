@@ -73,6 +73,14 @@ const LEXICO = [
   [/\bconfortaos\b/gu, "fortaleceos"],
   [/\bempero\b/gu, "pero"],
   [/\bEmpero\b/gu, "Pero"],
+  // Arcaismos sueltos que aún sobreviven a la tarjeta (RV1909; se conserva el vosotros)
+  [/\bpresto\b/gu, "pronto"],                    // Isaías 43:19
+  [/\bdesampar/gu, "abandon"],                   // desampará/desamparé/desamparen -> abandonará/...
+  [/\bsolicitud\b/gu, "preocupación"],           // 1 Pedro 5:7 "vuestra solicitud"
+  [/\bespavoreceré/gu, "espantaré"],            // Salmo 27:1 (sin \b final: "é" no es \w)
+  [/\bensalzarme he\b/gu, "me exaltaré"],        // Salmo 46:10 (futuro perifrástico "he")
+  [/\basegurarme he\b/gu, "confiaré"],           // Salmo 91:2
+  [/\bjuntamente\b/gu, "juntas"],                // Romanos 8:28 "obran juntas"
 ];
 
 // Nota: se conserva el "vosotros/vuestra/os" de la RV1909 tal cual (el dueño
