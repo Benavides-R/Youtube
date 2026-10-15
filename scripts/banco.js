@@ -108,6 +108,33 @@ const LEXICO = [
   [/\bhartura\b/gu, "abundancia"],               // Proverbios 3:10
   [/\bdemande\b/gu, "pida"],                     // Santiago 1:6
   [/\bos hincha\b/gu, "os llena"],               // Romanos 15:13
+  // === 23 arcaismos faltantes (verificados en contexto) ===
+  [/\bconfiarme he\b/gu, "confiaré"],            // Salmo 18:2 (futuro perifrástico "he")
+  [/\bguiarme ha\b/gu, "me guiará"],             // Salmo 23:3 (perifrástico "ha")
+  [/\bconfesarte he\b/gu, "te confesaré"],       // Salmo 139:14
+  [/\bConfesarte he\b/gu, "Te confesaré"],       // Salmo 139:14 (empieza la frase con C mayúscula)
+  [/\bház nos saber\b/gu, "haznos saber"],       // Salmo 90:12 (va pegado: "háznos")
+  [/\bvarón\b/gu, "hombre"],                     // Jeremías 17:7, Santiago 1:12
+  [/\bse abrigan\b/gu, "se refugian"],           // Salmo 36:7
+  [/\blonganimidad\b/gu, "paciencia"],           // Colosenses 3:12, Gálatas 5:22
+  [/\btemplanza\b/gu, "dominio propio"],         // Gálatas 5:23 (no toca "templados" de 1 Pedro 5:8)
+  [/\ballegar las piedras\b/gu, "juntar las piedras"], // Eclesiastés 3:5 (sentido: reunir)
+  [/\bse allega\b/gu, "se acerca"],              // Hebreos 11:6 (sentido: acercarse a Dios)
+  [/\brencillas\b/gu, "peleas"],                 // Proverbios 10:12
+  [/\bmaledicencia\b/gu, "calumnia"],            // Efesios 4:31
+  [/\bgritería\b/gu, "gritos"],                  // Efesios 4:31
+  [/\bpalabra podrida\b/gu, "palabra corrompida"], // Efesios 4:29
+  [/\bheredad\b/gu, "herencia"],                 // Josué 1:6, Mateo 5:5
+  [/\bsaeta\b/gu, "flecha"],                     // Salmo 91:5
+  [/\bpestilencia\b/gu, "plaga"],                // Salmo 91:6
+  [/\bmortandad de destrucciones\b/gu, "muerte destructiva"], // Salmo 91:3 (frase completa, suena raro si se parte)
+  [/\bmortandad\b/gu, "muerte"],                 // Salmo 91:6 (resto)
+  [/\bangustiadores\b/gu, "enemigos"],           // Salmo 23:5
+  [/áncora\b/gu, "ancla"],                       // Hebreos 6:19 (sin \b inicial: "á" no es \w)
+  [/\badversario\b/gu, "enemigo"],               // 1 Pedro 5:8
+  [/\bbramando\b/gu, "rugiendo"],                // 1 Pedro 5:8
+  [/\btrague\b/gu, "devore"],                    // 1 Pedro 5:8
+  [/\bimperio\b/gu, "dominio"],                  // 1 Pedro 5:11
   // Isaías 26:3 viene corrupta en la fuente ("Sentencia firme: ..."); se repone con el texto del RV limpio
   [/Sentencia firme: Que guardarás paz, paz; porque en ti se han confiado,/g,
    "Tú guardarás en paz, paz, porque en ti han confiado."],
