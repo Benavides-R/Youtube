@@ -1,6 +1,19 @@
 # MEMORY.md - Historial de Cambios del Pipeline de Ofertas
 
-## Fecha: 12 de Octubre 2026 (última actualización)
+## Fecha: 16 de Octubre 2026 (última actualización)
+
+---
+
+## Cambios Recientes (16 Octubre 2026)
+
+| Commit | Cambio |
+|--------|--------|
+| `226cb46` | **Tecnología: cron de creación adelantado** `52 22` → `45 21` UTC (17:52 → 16:45 CO) para que el short quede listo antes de las 17:40 y pueda agendarse a la franja de las 18:00 CO (pico de Facebook según el análisis de datos de Oferta Radar/Benatech's: un Reel rinde ~210× más impresiones que una foto). **Pendiente**: (1) fijar el Reel a las 18:00 exactas con `video_state=SCHEDULED` + `scheduled_publish_time` en `subir_facebook.js` (hoy se sube apenas termina el pipeline, variable), (2) subir el CTA "Sigue la página" al INICIO de la descripción de Facebook (hoy va al final, cortado por "ver más" → solo 9 seguidores netos de Reel) |
+| `cf4dc58` | **Limpieza v1**: eliminados 4 configs obsoletos de `scripts/` (`canal_biblia{,_imagen}.json`, `canal_superate{,_imagen}.json`). Verificado antes: nada los referenciaba (todos los workflows/scripts apuntan a `config/`) |
+| `a1a3889` | **+38 versículos RV1909** en `biblia_rv1909.json` (324 → 362): traídos de Midvash (dominio público) y verificados 38/38; normalizados al estilo del archivo (14 ` á ` arcaico → ` a `, corchete `[más]` de Lucas 15:7 quitado; 0 palabras cambiadas). Inserción quirúrgica → las 324 existentes quedan byte idénticas. Nota: solo 12 de esos 38 aparecían en el banco de shorts (4 como `pasaje` real) y 26 en ningún banco — la adición es por completitud |
+| — | **Mejora A (ángulos) SIN CAMBIO**: el brief proponía limitar `historial/*_angulos.json` a 50 entradas, pero **ambos escritores ya cortan a 40** (`slice(-40)` en `generar_guion.js:399` y `generar_guion_v2.js:385`) y los 5 archivos tienen 28–40. Subirlo a 50 sería inflar el prompt: se deja en 40 |
+| `8776566` | **Mejora B — Banco supérate largo 20 → 36** (+16 ideas `sl-21..sl-36`), mismo formato, cada una con `bundle` de 4 piezas existentes del banco de shorts. Hábitos pasa de 3 a 9 (cuello de botella); distribución final 9/9/9/9. 36/36 usables verificadas |
+| — | **Mejora C — REQUISITO AL CREAR IDEAS LARGAS BÍBLICAS**: cualquier `pasajes[]` de una idea nueva en `banco_ideas_biblia_largo.json` **debe existir antes en `config/biblia_rv1909.json`** o `cargarBanco` la marcará `inutilizable` ("faltan versículos", `banco.js:208`). Los 38 faltantes se agregaron el 16 oct; al agregar más, agregar primero el texto RV1909 |
 
 ---
 
