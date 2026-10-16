@@ -286,6 +286,230 @@
       ],
       "enfoque": "Dormir bien como disciplina, la gratitud de 60 segundos, enfocarte solo en lo que controlas y cerrar el día con dos preguntas. Cerrar con el ajuste más fácil de probar hoy.",
       "tema_clave": "bajar_ansiedad"
+    },
+    {
+      "id": "sl-21",
+      "sub_nicho": "habitos",
+      "titulo": "Vuelve al camino cuando rompes tu hábito",
+      "gancho": "Todos fallamos algún día con un hábito. La diferencia está en qué haces en las horas siguientes.",
+      "bundle": [
+        "su-40",
+        "su-36",
+        "su-04",
+        "su-42"
+      ],
+      "enfoque": "Cuatro ideas para no abandonar tras el tropiezo: la regla de no fallar dos días seguidos, empezar de nuevo sin culpa, achicar el hábito si te cuesta y quitarle fricción al que sí quieres. Normalizar el error y cerrar con el primer paso para retomar hoy.",
+      "tema_clave": "volver_tras_recaida"
+    },
+    {
+      "id": "sl-22",
+      "sub_nicho": "habitos",
+      "titulo": "Deja los malos hábitos: la estrategia es al revés",
+      "gancho": "Con los malos hábitos no gana la fuerza de voluntad: gana quien acomoda el entorno.",
+      "bundle": [
+        "su-41",
+        "su-42",
+        "su-47",
+        "su-25"
+      ],
+      "enfoque": "Aplicar al revés lo que sirve para los buenos: alejar el mal hábito con más fricción en el entorno, dejarle la noche preparada para no caer, ponerle un compromiso concreto y hacerlo menos atractivo. Un ejemplo por idea; sin prometer que se quita en plazos cortos.",
+      "tema_clave": "dejar_habitos_malos"
+    },
+    {
+      "id": "sl-23",
+      "sub_nicho": "habitos",
+      "titulo": "Hábitos cuando no te queda tiempo",
+      "gancho": "Si tu excusa es que no tienes tiempo, la respuesta no es un hábito de una hora: es uno de dos minutos.",
+      "bundle": [
+        "su-02",
+        "su-04",
+        "su-13",
+        "su-26"
+      ],
+      "enfoque": "La versión mínima de los hábitos: empezar en menos de dos minutos, mejorar un poco cada día, hacerlo poquito pero todos los días y bloquearlo en el calendario. Cerrar eligiendo UN hábito diminuto para probarlo hoy.",
+      "tema_clave": "habitos_sin_tiempo"
+    },
+    {
+      "id": "sl-24",
+      "sub_nicho": "habitos",
+      "titulo": "Mide tu progreso sin volverte loco por ello",
+      "gancho": "Medir ayuda; obsesionarte con el número, no. Cuatro formas de ver tu avance sin que se convierta en tu castigo.",
+      "bundle": [
+        "su-26",
+        "su-31",
+        "su-45",
+        "su-44"
+      ],
+      "enfoque": "La X en el calendario, anotar tres cosas que te salieron bien, cerrar el día con dos preguntas y una gratitud breve. Presentar el seguimiento como información, no como juicio; sin cifras ni metas numéricas.",
+      "tema_clave": "seguimiento_progreso"
+    },
+    {
+      "id": "sl-25",
+      "sub_nicho": "habitos",
+      "titulo": "Duerme mejor: convierte el descanso en hábito",
+      "gancho": "Dormir mal no se arregla con ganas de dormir: se arregla con una rutina. Estos cuatro ajustes la construyen.",
+      "bundle": [
+        "su-27",
+        "su-25",
+        "su-28",
+        "su-45"
+      ],
+      "enfoque": "Presentar el descanso como disciplina: la rutina de noche, el celular fuera de los primeros minutos del día, dejar lista la acción de mañana y cerrar el día con dos preguntas. Todo como sugerencias para probar; sin cifras de horas.",
+      "tema_clave": "habito_sueno"
+    },
+    {
+      "id": "sl-26",
+      "sub_nicho": "habitos",
+      "titulo": "Tus hábitos cuando cambia tu vida",
+      "gancho": "Cambio de trabajo, viaje, rutina rota: ahí se caen los hábitos. Así los sostienes cuando nada es normal.",
+      "bundle": [
+        "su-40",
+        "su-41",
+        "su-42",
+        "su-02"
+      ],
+      "enfoque": "Cómo mantener hábitos en transiciones: no fallar dos días seguidos aunque cambie todo, acomodar el entorno al lugar nuevo, reducir la versión del hábito y anclarlo a algo que sí viaja contigo. Ejemplos de cambios cotidianos; sin prometer continuidad perfecta.",
+      "tema_clave": "habitos_en_cambio"
+    },
+    {
+      "id": "sl-27",
+      "sub_nicho": "accion",
+      "titulo": "Retos de 7 días para despertar la disciplina",
+      "gancho": "No necesitas un plan de un año. Necesitas una semana cumpliéndote a ti mismo.",
+      "bundle": [
+        "su-26",
+        "su-40",
+        "su-09",
+        "su-43"
+      ],
+      "enfoque": "Un reto de siete días, una regla por día: marcar la X, no fallar dos seguidos, arrancar con el conteo de 5 y aplicar el filtro de acerca o aleja. Presentarlo como experimento de una semana, no como transformación garantizada.",
+      "tema_clave": "reto_7_dias"
+    },
+    {
+      "id": "sl-28",
+      "sub_nicho": "accion",
+      "titulo": "Actúa sin tener todo resuelto",
+      "gancho": "Esperas tener claro el plan completo y mientras tanto no haces nada. A veces hay que moverse primero.",
+      "bundle": [
+        "su-08",
+        "su-30",
+        "su-43",
+        "su-36"
+      ],
+      "enfoque": "Cuatro formas de actuar con información incompleta: imaginar el fracaso antes de empezar, la pregunta que rompe la duda, el filtro de acerca o aleja y aceptar que empezarás mal. Cerrar con una acción de hoy que puedas hacer a medias.",
+      "tema_clave": "actuar_sin_plan"
+    },
+    {
+      "id": "sl-29",
+      "sub_nicho": "accion",
+      "titulo": "Rompe la duda antes de que te paralice",
+      "gancho": "La duda no se va con más pensamiento: se va con un movimiento pequeño que te demuestra algo a ti mismo.",
+      "bundle": [
+        "su-30",
+        "su-32",
+        "su-16",
+        "su-34"
+      ],
+      "enfoque": "Cuatro ideas para salir de la duda: qué es lo peor que pasa, hablarte como a un amigo, cambiar no puedo por todavía no, y no creerte experto en tu propio fracaso. Sin datos ni estudios; cerrar con el primer movimiento.",
+      "tema_clave": "romper_duda"
+    },
+    {
+      "id": "sl-30",
+      "sub_nicho": "accion",
+      "titulo": "Haz lo que te cuesta (sin drama)",
+      "gancho": "Hay cosas que llevas días evitando. Y hay formas de hacerlas que no dependen de la motivación.",
+      "bundle": [
+        "su-03",
+        "su-09",
+        "su-06",
+        "su-47"
+      ],
+      "enfoque": "Tres métodos con nombre propio (comer el sapo, empezar solo un poco, el conteo de 5) más el compromiso de atarte hoy a la decisión buena. Cada uno con ejemplo cotidiano y el reto de aplicarlo a UNA tarea pendiente de hoy.",
+      "tema_clave": "hacer_lo_dificil"
+    },
+    {
+      "id": "sl-31",
+      "sub_nicho": "productividad",
+      "titulo": "Gestiona tu energía, no tu tiempo",
+      "gancho": "Las 24 horas son iguales para todos; lo que cambia es en qué estado haces las cosas.",
+      "bundle": [
+        "su-01",
+        "su-27",
+        "su-33",
+        "su-29"
+      ],
+      "enfoque": "Trabajar por bloques cuando rindes, dejar de hacer varias cosas a la vez, proteger una sola prioridad y cuidar el descanso como base de la energía. Cerrar con cómo acomodar el día según tu mejor hora; sin cifras de productividad.",
+      "tema_clave": "gestion_energia"
+    },
+    {
+      "id": "sl-32",
+      "sub_nicho": "productividad",
+      "titulo": "El poder de decir NO",
+      "gancho": "Cada sí que das por compromiso es un no a algo que sí te importa. Aprende a filtrarlo.",
+      "bundle": [
+        "su-10",
+        "su-11",
+        "su-43",
+        "su-29"
+      ],
+      "enfoque": "Cuatro guías para decir no: lo urgente no siempre es importante, la regla 80/20, el filtro de acerca o aleja y una sola prioridad. Ejemplos de peticiones cotidianas; cerrar con algo concreto al que vas a decir no esta semana.",
+      "tema_clave": "decir_no"
+    },
+    {
+      "id": "sl-33",
+      "sub_nicho": "productividad",
+      "titulo": "Planifica mejor: los planes reales sobreviven",
+      "gancho": "Tu plan se cae siempre a la mitad. No es que seas malo planeando: le faltan tres piezas.",
+      "bundle": [
+        "su-22",
+        "su-07",
+        "su-08",
+        "su-05"
+      ],
+      "enfoque": "Tres ajustes a cualquier plan: el tiempo se estira (doble el que crees y ponle techo al ejecutar), piensa qué puede salir mal antes, y deja listo el si pasa esto hago aquello. Cerrar replanteando un plan real pendiente; sin fórmulas exactas de horas.",
+      "tema_clave": "planificar_realista"
+    },
+    {
+      "id": "sl-34",
+      "sub_nicho": "productividad",
+      "titulo": "Revisa tu semana y ajusta el rumbo",
+      "gancho": "Avanzar sin revisar es correr sin mirar el mapa. Un repaso corto cambia la semana siguiente.",
+      "bundle": [
+        "su-45",
+        "su-11",
+        "su-13",
+        "su-29"
+      ],
+      "enfoque": "Ritual de cierre de semana: cerrar el día con dos preguntas, revisar qué te robó el tiempo, hacer una mejora pequeña para la próxima y elegir una sola prioridad. Presentarlo como ritual corto y manual; sin prometer resultados.",
+      "tema_clave": "revision_semanal"
+    },
+    {
+      "id": "sl-35",
+      "sub_nicho": "mente",
+      "titulo": "Cómo lidiar con la crítica de otros",
+      "gancho": "La crítica duele más de lo que debería. Cuatro ideas para que te sirva en vez de frenarte.",
+      "bundle": [
+        "su-32",
+        "su-35",
+        "su-23",
+        "su-14"
+      ],
+      "enfoque": "Háblate como a un amigo, cambia la pregunta de por qué a mí por otra útil, deja de compararte y recuerda que solo controlas tu respuesta. Incluir que no toda crítica merece espacio; cerrar con una frase amable hacia ti.",
+      "tema_clave": "critica_ajena"
+    },
+    {
+      "id": "sl-36",
+      "sub_nicho": "mente",
+      "titulo": "El miedo al fracaso (y cómo lo esquivas)",
+      "gancho": "El miedo a fallar no te cuida: te paraliza. Así lo reconoces y sigues igual.",
+      "bundle": [
+        "su-30",
+        "su-36",
+        "su-39",
+        "su-15"
+      ],
+      "enfoque": "La pregunta que rompe el miedo, aceptar que empezarás mal, el sesgo de ver solo a los que lo lograron y ver el obstáculo como parte del camino. Sin exagerar ni prometer éxito; cerrar con un paso pequeño a pesar del miedo.",
+      "tema_clave": "miedo_fracaso"
     }
   ]
 }
