@@ -35,7 +35,11 @@
     "plan_b": false,
     "reciclar": true,
     "hashtags_default": ["#Motivacion", "#Disciplina"],
-    "cierre_facebook": "Sigue la página para más ideas que te ayudan a avanzar."
+    "cierre_facebook": [
+      "Sigue la página para más ideas que te ayudan a avanzar.",
+      "Sigue la página para una idea nueva cada día.",
+      "Sigue la página para hábitos, disciplina y enfoque que te hacen avanzar."
+    ]
   },
   "sub_nichos": [
     {"clave": "tecnicas", "nombre": "Técnicas de productividad y disciplina con nombre propio", "usa_noticias": false},

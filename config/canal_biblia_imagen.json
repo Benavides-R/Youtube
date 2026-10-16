@@ -44,7 +44,11 @@
     "cooldown_pasaje_dias": 30,
     "max_palabras_verso": 30,
     "hashtags_default": ["#Biblia", "#Fe"],
-    "cierre_facebook": "Sigue la página para recibir una enseñanza bíblica todos los días.",
+    "cierre_facebook": [
+      "Sigue la página para recibir una enseñanza bíblica todos los días.",
+      "Sigue la página para un versículo nuevo cada día.",
+      "Sigue la página para meditar la Biblia un poco cada día."
+    ],
     "fotos": {
       "paz": ["calm lake at sunrise", "misty mountains", "peaceful forest path", "sunlight through clouds", "still water reflection", "green valley morning"],
       "fe": ["mountain summit sunrise", "open road horizon", "light breaking through clouds", "hands raised silhouette", "dawn over hills", "path through wheat field"],

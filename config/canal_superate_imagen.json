@@ -38,7 +38,11 @@
     "fuentes": ["config/banco_ideas_superate_short.json"],
     "cooldown_dias": 1,
     "hashtags_default": ["#Motivacion", "#Disciplina"],
-    "cierre_facebook": "Sigue la página para más ideas que te ayudan a avanzar.",
+    "cierre_facebook": [
+      "Sigue la página para más ideas que te ayudan a avanzar.",
+      "Sigue la página para una idea nueva cada día.",
+      "Sigue la página para hábitos, disciplina y enfoque que te hacen avanzar."
+    ],
     "fotos": {
       "conceptos": ["person running at sunrise", "mountain trail", "hands writing in a notebook", "city at dawn", "person working focused at desk", "path through forest light"],
       "frases": ["sunrise over mountains", "lonely road at dawn", "person silhouette at horizon", "dramatic sky over hills", "forest with light between trees", "calm ocean at sunrise"],

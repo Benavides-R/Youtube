@@ -60,18 +60,25 @@ function armarDescripcion(parrafo, promo, hashtags, inicial) {
   return partes.join("\n\n");
 }
 
-// Facebook: contenido útil primero, sin "suscríbete" ni #Shorts, con la invitación propia de Facebook.
+// Facebook: la invitación propia de Facebook va PRIMERO (visible antes del "ver más"),
+// después el contenido útil, sin "suscríbete" ni #Shorts.
 // Ojo: Facebook reduce el alcance de los posts con links externos, así que NO se pegan
 // las URLs (sitio ni Telegram); en su lugar se indica que los enlaces están en la
 // biografía de la página. Los hashtags sí se conservan. (En YouTube sí se pueden llevar links.)
 function armarDescripcionFacebook(parrafo, promo, hashtags, cierreFb, inicial) {
   const partes = [];
+  if (cierreFb) partes.push(cierreFb);
   if (inicial) partes.push(inicial);
   partes.push(quitarSuscripcion(parrafo).trim());
-  if (cierreFb) partes.push(cierreFb);
   if (promo && promo.activa) partes.push("Los enlaces de ofertas están en la biografía de la página.");
   if (hashtags && hashtags.length) partes.push(hashtags.join(" "));
   return partes.join("\n\n");
+}
+
+// cierre_facebook puede ser string (se usa tal cual) o array de variantes (elige 1 al azar).
+function elegirCierreFacebook(cierre) {
+  if (Array.isArray(cierre)) return cierre.length ? cierre[Math.floor(Math.random() * cierre.length)] : null;
+  return cierre || null;
 }
 
 function palabrasClave(t) {
@@ -92,5 +99,5 @@ function similares(a, b, umbral = 0.6) {
 
 module.exports = {
   ajustarTitulo, ajustarTituloLargo, largoTituloOk, sanearHashtags, limpiarParrafo, quitarSuscripcion,
-  armarDescripcion, armarDescripcionFacebook, similares,
+  armarDescripcion, armarDescripcionFacebook, elegirCierreFacebook, similares,
 };

@@ -360,7 +360,11 @@ async function ejecutar(cfg, nombreConfig) {
       texto_miniatura: salida.texto_miniatura,
       palabras_clave_imagenes: salida.palabras_clave_imagenes,
     };
-    if (!esLargo) outputData.descripcion_facebook = F.armarDescripcionFacebook(parrafo, promo, hashtags, v2.cierre_facebook, inicial);
+    if (!esLargo) {
+      const cta = F.elegirCierreFacebook(v2.cierre_facebook);
+      outputData.cta_facebook = cta;
+      outputData.descripcion_facebook = F.armarDescripcionFacebook(parrafo, promo, hashtags, cta, inicial);
+    }
     if (esLargo && salida.capitulos) outputData.capitulos = salida.capitulos;
 
     if (dryRun) {

@@ -12,7 +12,11 @@
     "reciclar": false,
     "rendimiento": "historial/rendimiento_tecnologia.json",
     "hashtags_default": ["#TrucosAndroid", "#Android"],
-    "cierre_facebook": "Sigue la página para más trucos de Android."
+    "cierre_facebook": [
+      "Sigue la página: trucos de Android y descuentos para ahorrar en tecnología.",
+      "Sigue la página para trucos de Android y descuentos en tecnología.",
+      "Sigue la página: cada día trucos de Android y ofertas de tecnología."
+    ]
   },
   "estilo": "claro, cercano, tono de revelación/curiosidad ('esto no lo sabías'), sin tecnicismos innecesarios, con datos concretos y verificables, acento colombiano neutro, energía entusiasta pero no exagerada. SUENA NATURAL: como un amigo colombiano contándote algo útil de forma espontánea, NUNCA como locutor, anuncio ni persona leyendo un guion. Puedes nombrar la ruta de un ajuste en una sola frase (ej: 'normalmente en Ajustes, Seguridad; el nombre cambia según la marca') pero NUNCA formato de tutorial paso a paso, porque el video no muestra capturas de pantalla reales",
   "sub_nichos": [

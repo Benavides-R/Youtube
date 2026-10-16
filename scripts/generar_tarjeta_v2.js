@@ -55,7 +55,8 @@ async function ejecutar(cfg, nombreConfig) {
     parrafo = v2.tipo === "biblia" ? "Un versículo para meditar hoy y llevar contigo." : "Una idea para aplicar hoy mismo.";
     hashtags = F.sanearHashtags([], v2.hashtags_default);
   }
-  const descripcion = F.armarDescripcionFacebook(parrafo, null, hashtags, v2.cierre_facebook, null);
+  const cta = F.elegirCierreFacebook(v2.cierre_facebook);
+  const descripcion = F.armarDescripcionFacebook(parrafo, null, hashtags, cta, null);
   const lista = (v2.fotos && (v2.fotos[subNicho.clave] || v2.fotos.default)) || ["sunrise over mountains"];
   const fotos = elegirAlAzar(lista, 4);
 
@@ -67,6 +68,7 @@ async function ejecutar(cfg, nombreConfig) {
     nombreArchivo = "frase.json";
     salida = { frase: idea.frase, autor: idea.autor || "Superate777", sin_comillas: true, descripcion, palabras_clave_imagen: fotos };
   }
+  salida.cta_facebook = cta;
 
   if (dryRun) {
     console.log(JSON.stringify(salida, null, 2));

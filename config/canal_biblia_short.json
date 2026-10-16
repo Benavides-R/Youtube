@@ -37,7 +37,11 @@
     "reciclar": true,
     "linea_inicial": "📖 {pasaje}",
     "hashtags_default": ["#Biblia", "#Fe"],
-    "cierre_facebook": "Sigue la página para recibir una enseñanza bíblica todos los días."
+    "cierre_facebook": [
+      "Sigue la página para recibir una enseñanza bíblica todos los días.",
+      "Sigue la página para un versículo nuevo cada día.",
+      "Sigue la página para meditar la Biblia un poco cada día."
+    ]
   },
   "sub_nichos": [
     {"clave": "paz", "nombre": "Paz, ansiedad y consuelo", "usa_noticias": false},
