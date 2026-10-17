@@ -298,7 +298,13 @@ async function ejecutar(cfg, nombreConfig) {
   const rendimiento = v2.rendimiento ? leerJSON(path.join(BASE, v2.rendimiento), null) : null;
   const diasTema = v2.cooldown_dias ?? 14;
   const diasPasaje = v2.cooldown_pasaje_dias || 0;
-  const opcionesBanco = { banco, meta, subNichos: cfg.sub_nichos, hoy, diasTema, diasPasaje, reciclar: !!v2.reciclar };
+  const opcionesBanco = {
+    banco, meta, subNichos: cfg.sub_nichos, hoy, diasTema, diasPasaje, reciclar: !!v2.reciclar,
+    // Ideas del banco con título: también se filtran por similitud con los últimos títulos
+    // publicados (angulos). Sin esto, dos ideas del mismo tema con claves distintas podían
+    // publicarse seguidas (ej. dos mitos de batería).
+    tituloUsado: (t) => angulos.some((a) => F.similares(a, t)),
+  };
 
   for (let t = 1; t <= 3; t++) {
     let sel = S.elegirIdeaDelBanco(opcionesBanco);

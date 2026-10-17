@@ -41,7 +41,9 @@ function elegirFormula(formulas, meta) {
 }
 
 // Devuelve { idea, sub_nicho } o null (null = plan B si el canal lo tiene, o error si no).
-function elegirIdeaDelBanco({ banco, meta, subNichos, hoy = Date.now(), diasTema = 14, diasPasaje = 0, reciclar = false }) {
+// tituloUsado: opcional, función (titulo) => bool. Descarta ideas cuyo título ya se parece
+// a uno publicado (similitud de palabras clave), aunque tengan otra clave de tema.
+function elegirIdeaDelBanco({ banco, meta, subNichos, hoy = Date.now(), diasTema = 14, diasPasaje = 0, reciclar = false, tituloUsado = null }) {
   const usadasTodas = new Set(meta.map((m) => m.idea_id).filter(Boolean)); // incluye descartadas
   const descartadas = new Set(meta.filter((m) => m.estado === "descartada").map((m) => m.idea_id));
   const enfriando = temasEnEnfriamiento(meta, hoy, diasTema);
@@ -50,7 +52,8 @@ function elegirIdeaDelBanco({ banco, meta, subNichos, hoy = Date.now(), diasTema
     (!i.requiere_verificacion || i.verificada === true) &&
     !descartadas.has(i.id) &&
     !enfriando.has(i.tema_clave) &&
-    !(i.pasaje && pasajesFrios.has(i.pasaje));
+    !(i.pasaje && pasajesFrios.has(i.pasaje)) &&
+    !(i.titulo && tituloUsado && tituloUsado(i.titulo));
   const ultimoUso = (id) =>
     Math.max(0, ...validas(meta).filter((m) => m.idea_id === id).map((m) => Date.parse(m.fecha)));
 
