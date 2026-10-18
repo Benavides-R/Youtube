@@ -48,5 +48,15 @@
     "fecha": "2026-10-18",
     "idea_id": "bl-03",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-18",
+    "titulo": "Proverbios 3: confiar y no apoyarte en ti",
+    "tema_clave": "proverbios_3",
+    "sub_nicho": "salmos_sabiduria",
+    "formula": null,
+    "idea_id": "bl-04",
+    "pasaje": "Proverbios 3:1-12",
+    "fuente": "conocimiento_estable"
   }
 ]
