@@ -98,5 +98,15 @@
     "fecha": "2026-10-18",
     "idea_id": "su-31",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-18",
+    "titulo": "Háblate como le hablas a un amigo #Shorts",
+    "tema_clave": "autocompasion",
+    "sub_nicho": "reto",
+    "formula": null,
+    "idea_id": "su-32",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
