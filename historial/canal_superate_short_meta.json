@@ -88,5 +88,15 @@
     "idea_id": "su-25",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-10-18",
+    "idea_id": "su-30",
+    "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-18",
+    "idea_id": "su-31",
+    "estado": "descartada"
   }
 ]
