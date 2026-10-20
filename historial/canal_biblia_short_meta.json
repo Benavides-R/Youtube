@@ -220,5 +220,15 @@
     "fecha": "2026-10-20",
     "idea_id": "bi-07",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-20",
+    "titulo": "Salmo 34:18: cómo encontrar consuelo cuando duele #Shorts",
+    "tema_clave": "dolor",
+    "sub_nicho": "paz",
+    "formula": null,
+    "idea_id": "bi-08",
+    "pasaje": "Salmo 34:18",
+    "fuente": "conocimiento_estable"
   }
 ]
