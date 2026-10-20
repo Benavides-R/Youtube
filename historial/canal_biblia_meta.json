@@ -63,5 +63,15 @@
     "fecha": "2026-10-20",
     "idea_id": "bl-08",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-20",
+    "titulo": "No se afanen: lo que Jesús dijo del afán",
+    "tema_clave": "afan",
+    "sub_nicho": "jesus",
+    "formula": null,
+    "idea_id": "bl-09",
+    "pasaje": "Mateo 6:25-34",
+    "fuente": "conocimiento_estable"
   }
 ]
