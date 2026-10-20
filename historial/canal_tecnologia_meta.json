@@ -216,5 +216,15 @@
     "idea_id": "ah-01",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-10-20",
+    "titulo": "Apagar Bluetooth y GPS casi no te ahorra batería #Shorts",
+    "tema_clave": "mito_apagar_radios",
+    "sub_nicho": "mitos_bateria",
+    "formula": "El mito de la batería que todos repiten",
+    "idea_id": "mb-05",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
