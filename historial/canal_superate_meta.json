@@ -73,5 +73,15 @@
     "fecha": "2026-10-20",
     "idea_id": "sl-12",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-20",
+    "titulo": "Vuelve al camino cuando rompes tu hábito",
+    "tema_clave": "volver_tras_recaida",
+    "sub_nicho": "habitos",
+    "formula": null,
+    "idea_id": "sl-21",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
