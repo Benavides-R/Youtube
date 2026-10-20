@@ -63,5 +63,15 @@
     "idea_id": "sl-04",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-10-20",
+    "idea_id": "sl-09",
+    "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-20",
+    "idea_id": "sl-12",
+    "estado": "descartada"
   }
 ]
