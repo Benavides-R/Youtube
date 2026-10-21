@@ -78,5 +78,15 @@
     "fecha": "2026-10-21",
     "idea_id": "bl-14",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-21",
+    "titulo": "Efesios 4: palabras, enojo y perdón",
+    "tema_clave": "efesios_4",
+    "sub_nicho": "cartas",
+    "formula": null,
+    "idea_id": "bl-15",
+    "pasaje": "Efesios 4:25-32",
+    "fuente": "conocimiento_estable"
   }
 ]
