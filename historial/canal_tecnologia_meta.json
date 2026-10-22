@@ -241,5 +241,15 @@
     "fecha": "2026-10-22",
     "idea_id": "cv-01",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-22",
+    "titulo": "Borrar la caché de apps: cuándo sí y cuándo no #Shorts",
+    "tema_clave": "cache",
+    "sub_nicho": "celular_viejo",
+    "formula": "Mito vs realidad",
+    "idea_id": "cv-02",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
