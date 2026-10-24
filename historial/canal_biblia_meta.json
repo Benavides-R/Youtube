@@ -123,5 +123,15 @@
     "fecha": "2026-10-24",
     "idea_id": "bl-16",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-24",
+    "titulo": "Colosenses 3: cómo vestirte de compasión",
+    "tema_clave": "colosenses_3",
+    "sub_nicho": "cartas",
+    "formula": null,
+    "idea_id": "bl-17",
+    "pasaje": "Colosenses 3:12-17",
+    "fuente": "conocimiento_estable"
   }
 ]
