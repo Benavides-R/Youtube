@@ -286,5 +286,15 @@
     "fecha": "2026-10-25",
     "idea_id": "fn-02",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-25",
+    "titulo": "Captura una pantalla larga en tu Android #Shorts",
+    "tema_clave": "captura_larga",
+    "sub_nicho": "funciones",
+    "formula": "La función que tu Android ya trae y no usas",
+    "idea_id": "fn-03",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
