@@ -281,5 +281,10 @@
     "idea_id": "es-02",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-10-25",
+    "idea_id": "fn-02",
+    "estado": "descartada"
   }
 ]
