@@ -301,5 +301,15 @@
     "fecha": "2026-10-28",
     "idea_id": "pr-03",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-28",
+    "titulo": "Mira todo lo que Google guardó de ti #Shorts",
+    "tema_clave": "google_datos",
+    "sub_nicho": "privacidad",
+    "formula": "Esto te cuesta (plata, batería o privacidad) sin que lo sepas",
+    "idea_id": "pr-04",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
