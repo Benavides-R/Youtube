@@ -158,5 +158,15 @@
     "fecha": "2026-10-28",
     "idea_id": "sl-23",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-28",
+    "titulo": "Mide tu progreso sin volverte loco por ello",
+    "tema_clave": "seguimiento_progreso",
+    "sub_nicho": "habitos",
+    "formula": null,
+    "idea_id": "sl-24",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
