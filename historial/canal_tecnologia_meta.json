@@ -296,5 +296,10 @@
     "idea_id": "fn-03",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-10-28",
+    "idea_id": "pr-03",
+    "estado": "descartada"
   }
 ]
