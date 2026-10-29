@@ -1,7 +1,7 @@
 // scripts/generar_guion_v2.js  (v2.1: shorts y videos largos)
 const fs = require("fs");
 const path = require("path");
-const { buscarCandidatos } = require("./buscar_temas");
+const { buscarCandidatos, aptoParaCanal } = require("./buscar_temas");
 const S = require("./seleccion_ideas");
 const F = require("./formato_textos");
 const { cargarBanco } = require("./banco");
@@ -180,6 +180,11 @@ async function ideacionConLLM({ subNicho, formula, material, angulos, enfriando,
   const mejor = buenas[0];
   const n = Number(mejor.fuente);
   const citado = Number.isInteger(n) && material[n - 1] ? material[n - 1] : null;
+  // Red de seguridad: aunque el material ya viene filtrado, ningún guion puede
+  // apoyarse en una oferta, un precio o una noticia de otro país.
+  if (citado && !aptoParaCanal(citado)) {
+    throw new Error("La idea se apoya en material descartado (oferta, precio o noticia de otro país)");
+  }
   return { ...mejor, id: null, sub_nicho: subNicho.clave, formula, material_citado: citado, enfoque: mejor.enfoque || "" };
 }
 

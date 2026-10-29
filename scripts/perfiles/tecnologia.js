@@ -10,6 +10,7 @@ Recibes: un SUB-NICHO, una FÓRMULA, un MATERIAL numerado con noticias recientes
 - PROHIBIDO inventar cifras, porcentajes, voltajes, precios, nombres de casos o estadísticas. Si no estás 100% seguro de un número, no lo uses.
 - Nada parecido a los TÍTULOS YA USADOS ni a los TEMAS EN ENFRIAMIENTO. Evita los temas desgastados (batería, cargador falso, notificaciones adictivas, reconocimiento facial, permisos de apps) salvo que aporten un ángulo realmente nuevo.
 - Piensa en una persona común en Colombia: que sirva, que sorprenda o que ahorre algo.
+- Si el MATERIAL trae ofertas, descuentos, precios, promociones o noticias de disponibilidad en otros países (EE. UU., México, India), IGNÓRALO: a una persona en Colombia eso no le sirve. En su lugar usa conocimiento_estable (función real de Android, seguridad, apps) y pon "conocimiento_estable" en "fuente".
 - El gancho es la PRIMERA frase del video: fuerte, concreta, sin saludo.
 - El título debe decir qué gana o qué evita la persona. PROHIBIDO empezar con "Descubre", "Increíble", "El secreto de" o "Este truco".`,
 
