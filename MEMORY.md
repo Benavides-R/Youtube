@@ -1,6 +1,14 @@
 # MEMORY.md - Historial de Cambios del Pipeline de Ofertas
 
-## Fecha: 16 de Octubre 2026 (última actualización)
+## Fecha: 29 de Octubre 2026 (última actualización)
+
+---
+
+## Cambios Recientes (29 Octubre 2026)
+
+| Commit | Cambio |
+|--------|--------|
+| `f7bac50` | **Filtro de noticias del canal de tecnología** (plan B). Motivo: la corrida del 29 oct tomó de androidpolice.com la oferta *"AT&T deal: $1,200 off the Galaxy Z Fold 8"* y la publicó como "Ahorra $1200 al comprar el Galaxy Z Fold 8" (oferta de operador de EE. UU., inútil para Colombia). `scripts/buscar_temas.js`: nueva `aptoParaCanal()` que **descarta** ofertas/descuentos/cupones, precios y consejos de compra, resultados financieros, y noticias de EE. UU./México/India/Bizum; y exige que la **lista blanca** (android, google, pixel, samsung, whatsapp, seguridad, privacidad, batería, apps...) aparezca en el **título** (no en el resumen, para evitar falsos positivos tipo "la app de Renfe"). `buscarCandidatos` filtra antes de la tapa de 3 por fuente y ahora separa Xataka de Xataka Android (compartían dominio `weblogssl.com` y cupo). `generar_guion_v2.js`: red de seguridad, si la idea citada se apoya en material descartado lanza error y reintenta. `perfiles/tecnologia.js`: regla explícita para ignorar ofertas/precios/noticias de otros países y usar conocimiento_estable. Probado: 11/11 casos unitarios y feeds en vivo → 15 candidatos ruidosos → 12, todos de Android/apps/seguridad |
 
 ---
 
