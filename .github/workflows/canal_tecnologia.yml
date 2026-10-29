@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "45 21 * * *" # 4:45pm hora Colombia
   workflow_dispatch:
+    inputs:
+      forzar_noticias:
+        description: "Probar una noticia (plan B) sin esperar el turno"
+        type: boolean
+        default: false
 
 jobs:
   generar_y_subir_video:
@@ -45,6 +50,7 @@ jobs:
       - name: Generar guion
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          FORZAR_NOTICIAS: ${{ inputs.forzar_noticias }}
         run: node scripts/generar_guion.js config/canal_tecnologia.json
 
       - name: Guardar historial de temas

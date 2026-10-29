@@ -311,14 +311,20 @@ async function ejecutar(cfg, nombreConfig) {
     tituloUsado: (t) => angulos.some((a) => F.similares(a, t)),
   };
 
+  const forzarNoticias = /^(1|true)$/i.test(String(process.env.FORZAR_NOTICIAS || ""));
+  const subNoticias = (cfg.sub_nichos || []).find((s) => s.usa_noticias) || null;
+
   for (let t = 1; t <= 3; t++) {
-    let sel = S.elegirIdeaDelBanco(opcionesBanco);
+    // FORZAR_NOTICIAS (solo workflow manual): prueba una noticia con el filtro nuevo
+    // sin esperar el turno del sub-nicho en la rotación.
+    const forzarEsta = forzarNoticias && t === 1 && !!subNoticias;
+    let sel = forzarEsta ? null : S.elegirIdeaDelBanco(opcionesBanco);
     let idea, subNicho;
     if (sel) {
       idea = { ...sel.idea, material_citado: null };
       subNicho = sel.sub_nicho;
     } else if (v2.plan_b) {
-      subNicho = S.ordenSubNichos(cfg.sub_nichos, meta)[0];
+      subNicho = forzarEsta ? subNoticias : S.ordenSubNichos(cfg.sub_nichos, meta)[0];
       const formula = S.elegirFormula(cfg.formulas, meta);
       const material = await buscarCandidatos(cfg.feeds);
       console.log(`Plan B: sub-nicho ${subNicho.clave}, ${material.length} noticias disponibles`);
