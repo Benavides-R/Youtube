@@ -353,5 +353,15 @@
     "fecha": "2026-10-29",
     "idea_id": "su-45",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-29",
+    "titulo": "Urgente no siempre es importante #Shorts",
+    "tema_clave": "eisenhower",
+    "sub_nicho": "tecnicas",
+    "formula": null,
+    "idea_id": "su-10",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
