@@ -183,5 +183,15 @@
     "fecha": "2026-10-30",
     "idea_id": "sl-31",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-30",
+    "titulo": "El poder de decir NO",
+    "tema_clave": "decir_no",
+    "sub_nicho": "productividad",
+    "formula": null,
+    "idea_id": "sl-32",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
