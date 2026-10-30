@@ -4,6 +4,14 @@
 
 ---
 
+## Cambios Recientes (30 Octubre 2026)
+
+| Commit | Cambio |
+|--------|--------|
+| `6a20d51` | **Tecnología: YouTube pausado, el short sigue solo en Facebook** (decisión del usuario: la voz se oye plana/sintética y prefiere no arriesgar el canal ante la política de contenido inauténtico de YouTube; hará videos caseros reales para YT). Workflow `canal_tecnologia.yml`: `env.SUBIR_YOUTUBE: "false"` a nivel de workflow; el paso "Subir a YouTube" se salta con `if: env.SUBIR_YOUTUBE != 'false'`. **Para reactivar: poner `"true"`** (una línea). Se reordenó la subida a Facebook antes de confirmar y **la confirmación del tema ya no depende de YouTube**: un paso nuevo "Comprobar si se publicó" marca ok si YouTube subió **o** si `output/resultado_facebook.json` tiene `"exito": true`; así no se repiten ideas cuando YT está apagado. `notificar_telegram.js` muestra "⏸️ YouTube: pausado en este canal" en vez de "❌ falló" cuando `SUBIR_YOUTUBE=false`. Los otros 6 canales no cambian |
+
+---
+
 ## Cambios Recientes (29 Octubre 2026)
 
 | Commit | Cambio |
