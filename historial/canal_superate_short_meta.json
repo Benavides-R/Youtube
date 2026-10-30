@@ -383,5 +383,15 @@
     "fecha": "2026-10-30",
     "idea_id": "su-42",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-30",
+    "titulo": "Decide mejor con la regla 10-10-10 #Shorts",
+    "tema_clave": "diez_diez_diez",
+    "sub_nicho": "tecnicas",
+    "formula": null,
+    "idea_id": "su-12",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
