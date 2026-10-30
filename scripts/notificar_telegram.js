@@ -30,6 +30,8 @@ const AVISO_AUDIO_PATH = path.join(BASE_DIR, "output", "aviso_calidad_audio.txt"
 let mensaje;
 const hayResultadoYoutube = fs.existsSync(RESULTADO_PATH);
 const hayResultadoFacebook = fs.existsSync(RESULTADO_FB_PATH);
+// Canales con YouTube pausado a propósito (el video solo sale en Facebook)
+const youtubePausado = String(process.env.SUBIR_YOUTUBE || "").toLowerCase() === "false";
 
 if (hayResultadoYoutube || hayResultadoFacebook) {
   const partes = [];
@@ -41,7 +43,9 @@ if (hayResultadoYoutube || hayResultadoFacebook) {
       : "✅ YouTube: subido (privado)";
     partes.push(`${lineaYouTube}\n🔗 https://youtube.com/watch?v=${r.videoId}\n📹 ${r.titulo}\n📢 Canal: ${r.canal}`);
   } else {
-    partes.push("❌ YouTube: falló la subida, revisa el log en GitHub Actions");
+    partes.push(youtubePausado
+      ? "⏸️ YouTube: pausado en este canal (solo Facebook)"
+      : "❌ YouTube: falló la subida, revisa el log en GitHub Actions");
   }
 
   if (hayResultadoFacebook) {

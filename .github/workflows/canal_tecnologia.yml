@@ -3,6 +3,12 @@ name: Canal Tecnología - Video Automático
 permissions:
   contents: write
 
+# YouTube pausado en ESTE canal (voz sintética plana + riesgo de la política de
+# contenido inauténtico de YouTube). El short se sigue generando y publicando
+# solo en Facebook. Para reactivar: cambiar a "true".
+env:
+  SUBIR_YOUTUBE: "false"
+
 on:
   schedule:
     - cron: "45 21 * * *" # 4:45pm hora Colombia
@@ -79,27 +85,13 @@ jobs:
 
       - name: Subir a YouTube
         id: subir_youtube
+        if: env.SUBIR_YOUTUBE != 'false'
         continue-on-error: true
         env:
           # Franjas propias de ESTE canal (único canal de tecnología).
           # 21:00 pasa intermedio: si la generación se alarga, evita caer a 22:45
           PUBLISH_FRANJAS: "19:30,21:00,22:45"
         run: node scripts/subir_youtube.js
-
-      - name: Confirmar tema usado
-        if: steps.subir_youtube.outcome == 'success'
-        run: node scripts/confirmar_meta.js canal_tecnologia
-
-      - name: Guardar historial meta
-        if: steps.subir_youtube.outcome == 'success'
-        continue-on-error: true
-        run: |
-          git config user.name "youtube-auto-bot"
-          git config user.email "actions@github.com"
-          git add historial/
-          git commit -m "Historial meta: tema usado" || echo "Sin cambios que guardar"
-          git pull --rebase --autostash origin main || true
-          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
 
       - name: Enviar video de respaldo a Telegram (si falló YouTube)
         if: steps.subir_youtube.outcome == 'failure'
@@ -110,12 +102,40 @@ jobs:
         run: node scripts/enviar_telegram_respaldo.js
 
       - name: Subir a Facebook Reels
+        id: subir_facebook
         if: always()
         continue-on-error: true
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_TECNOLOGIA }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_TECNOLOGIA }}
         run: node scripts/subir_facebook.js
+
+      - name: Comprobar si se publicó (YouTube o Facebook)
+        id: subida
+        if: always()
+        run: |
+          if [ "${{ steps.subir_youtube.outcome }}" = "success" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          elif [ -f output/resultado_facebook.json ] && grep -q '"exito": true' output/resultado_facebook.json; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Confirmar tema usado
+        if: steps.subida.outputs.ok == 'true'
+        run: node scripts/confirmar_meta.js canal_tecnologia
+
+      - name: Guardar historial meta
+        if: steps.subida.outputs.ok == 'true'
+        continue-on-error: true
+        run: |
+          git config user.name "youtube-auto-bot"
+          git config user.email "actions@github.com"
+          git add historial/
+          git commit -m "Historial meta: tema usado" || echo "Sin cambios que guardar"
+          git pull --rebase --autostash origin main || true
+          git push || echo "No se pudo guardar el historial esta vez, no es grave, seguimos"
 
       - name: Notificar por Telegram
         if: always()
