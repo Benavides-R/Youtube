@@ -336,5 +336,15 @@
     "fecha": "2026-10-31",
     "idea_id": "ah-03",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-31",
+    "titulo": "Descarga todo para verlo sin datos #Shorts",
+    "tema_clave": "descarga_offline",
+    "sub_nicho": "ahorro",
+    "formula": "Ahorra datos (y plata) en tu plan celular",
+    "idea_id": "ah-04",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
