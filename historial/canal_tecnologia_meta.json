@@ -331,5 +331,10 @@
     "idea_id": null,
     "pasaje": null,
     "fuente": "androidpolice.com"
+  },
+  {
+    "fecha": "2026-10-31",
+    "idea_id": "ah-03",
+    "estado": "descartada"
   }
 ]
