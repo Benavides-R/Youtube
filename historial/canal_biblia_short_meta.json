@@ -455,5 +455,15 @@
     "fecha": "2026-10-31",
     "idea_id": "bi-63",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-10-31",
+    "titulo": "Lo que dice Salmo 30:5 sobre la esperanza #Shorts",
+    "tema_clave": "esperanza",
+    "sub_nicho": "identidad",
+    "formula": null,
+    "idea_id": "bi-64",
+    "pasaje": "Salmo 30:5",
+    "fuente": "conocimiento_estable"
   }
 ]
