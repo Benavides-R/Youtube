@@ -446,5 +446,13 @@
     "sub_nicho": "conceptos",
     "idea_id": "cs-07",
     "pasaje": null
+  },
+  {
+    "fecha": "2026-11-02",
+    "titulo": "Imagina que tu plan ya fracasó y descubre por qué antes de empezar.",
+    "tema_clave": "premortem",
+    "sub_nicho": "conceptos",
+    "idea_id": "cs-08",
+    "pasaje": null
   }
 ]
