@@ -228,5 +228,15 @@
     "fecha": "2026-11-03",
     "idea_id": "bl-46",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-03",
+    "titulo": "Escogeos hoy a quién servir",
+    "tema_clave": "escoger_servir",
+    "sub_nicho": "historia_profetas",
+    "formula": null,
+    "idea_id": "bl-47",
+    "pasaje": "Josué 24:15; Miqueas 6:8",
+    "fuente": "conocimiento_estable"
   }
 ]
