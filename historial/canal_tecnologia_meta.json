@@ -371,5 +371,15 @@
     "fecha": "2026-11-03",
     "idea_id": "cv-03",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-03",
+    "titulo": "Antes de guardar o tirar tu celular viejo, haz esto #Shorts",
+    "tema_clave": "celular_viejo_disposicion",
+    "sub_nicho": "celular_viejo",
+    "formula": "Qué hacer con ese cajón de celulares viejos",
+    "idea_id": "cv-04",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
