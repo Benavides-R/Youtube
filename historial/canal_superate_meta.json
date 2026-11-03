@@ -218,5 +218,15 @@
     "fecha": "2026-11-03",
     "idea_id": "sl-27",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-03",
+    "titulo": "Actúa sin tener todo resuelto",
+    "tema_clave": "actuar_sin_plan",
+    "sub_nicho": "accion",
+    "formula": null,
+    "idea_id": "sl-28",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
