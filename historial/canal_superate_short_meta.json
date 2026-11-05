@@ -438,5 +438,15 @@
     "fecha": "2026-11-05",
     "idea_id": "su-29",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-05",
+    "titulo": "Habla a tu error como a un amigo y reduce la presión #Shorts",
+    "tema_clave": "autocompasion",
+    "sub_nicho": "reto",
+    "formula": null,
+    "idea_id": "su-32",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
