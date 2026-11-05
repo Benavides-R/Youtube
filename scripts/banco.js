@@ -147,6 +147,9 @@ const LEXICO = [
 function adaptarTexto(t, opts) {
   const adaptarJehova = !opts || opts.adaptarJehova !== false;
   let s = String(t).replace(/\s+/g, " ").trim();
+  // La RV1909 trae marcas de párrafo (¶) pegadas al texto; en la tarjeta y en
+  // los videos se dibujan como un cuadro raro, así que se quitan.
+  s = s.replace(/\s*¶\s*/g, " ").replace(/\s+/g, " ").trim();
   // Ortografía antigua de la RV1909: imperativos con tilde final (Veníd, Cesád, conocéd) -> Venid, Cesad, conoced
   s = s.replace(/([áéíóú])d(?![\p{L}])/gu, (m, v) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" }[v]) + "d");
   // Imperativos reflexivos con tilde antigua (esforzáos, regocijáos) -> esforzaos, regocijaos
