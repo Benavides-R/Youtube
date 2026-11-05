@@ -258,5 +258,15 @@
     "fecha": "2026-11-05",
     "idea_id": "bl-34",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-05",
+    "titulo": "Ser luz: no esconder lo que se vive",
+    "tema_clave": "luz_mundo",
+    "sub_nicho": "jesus",
+    "formula": null,
+    "idea_id": "bl-35",
+    "pasaje": "Mateo 5:14; Mateo 5:16; Juan 1:5",
+    "fuente": "conocimiento_estable"
   }
 ]
