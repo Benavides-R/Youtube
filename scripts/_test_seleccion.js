@@ -19,7 +19,11 @@ const titulosPub = fs.existsSync(angulosPath) ? JSON.parse(fs.readFileSync(angul
 const tituloUsado = (t) => titulosPub.some((a) => F.similares(a, t));
 const diasTema = v2.cooldown_dias ?? 14;
 const diasPasaje = v2.cooldown_pasaje_dias || 0;
-const inicio = Date.parse("2026-10-12");
+const ultimaFecha = meta.reduce((max, m) => Math.max(max, Date.parse(m.fecha) || 0), 0);
+// Si ya hay historial, simular desde el día siguiente a la última publicación real;
+// así se prueba lo que pasará de verdad (incluido el reciclaje cuando el banco está agotado).
+// Se puede forzar otra fecha con el 5º argumento: 2026-11-02
+const inicio = process.argv[5] ? Date.parse(process.argv[5]) : (ultimaFecha ? ultimaFecha + 86400000 : Date.parse("2026-10-12"));
 const filas = [];
 for (let d = 0; d < dias; d++) {
   for (let k = 0; k < porDia; k++) {

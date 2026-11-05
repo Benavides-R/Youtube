@@ -48,19 +48,22 @@ function elegirIdeaDelBanco({ banco, meta, subNichos, hoy = Date.now(), diasTema
   const descartadas = new Set(meta.filter((m) => m.estado === "descartada").map((m) => m.idea_id));
   const enfriando = temasEnEnfriamiento(meta, hoy, diasTema);
   const pasajesFrios = diasPasaje > 0 ? pasajesEnEnfriamiento(meta, hoy, diasPasaje) : new Set();
+  // Condiciones que debe cumplir cualquier idea, nueva o reciclada.
   const habilitada = (i) =>
     (!i.requiere_verificacion || i.verificada === true) &&
     !descartadas.has(i.id) &&
     !enfriando.has(i.tema_clave) &&
-    !(i.pasaje && pasajesFrios.has(i.pasaje)) &&
-    !(i.titulo && tituloUsado && tituloUsado(i.titulo));
+    !(i.pasaje && pasajesFrios.has(i.pasaje));
+  // El título solo descarta ideas NUEVAS: una reciclada se vuelve a titular con el LLM
+  // (completarIdea), así que su título viejo no debe impedir reutilizarla.
+  const tituloLibre = (i) => !(i.titulo && tituloUsado && tituloUsado(i.titulo));
   const ultimoUso = (id) =>
     Math.max(0, ...validas(meta).filter((m) => m.idea_id === id).map((m) => Date.parse(m.fecha)));
 
   for (const sn of ordenSubNichos(subNichos, meta)) {
     if (sn.usa_noticias) return null; // le toca el turno a noticias (plan B)
     const delSub = banco.filter((i) => i.sub_nicho === sn.clave && habilitada(i));
-    const nuevas = delSub.filter((i) => !usadasTodas.has(i.id));
+    const nuevas = delSub.filter((i) => !usadasTodas.has(i.id) && tituloLibre(i));
     if (nuevas.length) return { idea: nuevas[0], sub_nicho: sn };
     if (reciclar && delSub.length) {
       delSub.sort((a, b) => ultimoUso(a.id) - ultimoUso(b.id)); // la usada hace más tiempo
