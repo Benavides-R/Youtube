@@ -35,7 +35,14 @@ async function ejecutar(cfg, nombreConfig) {
     banco, meta, subNichos: cfg.sub_nichos, hoy,
     diasTema: v2.cooldown_dias ?? 1, diasPasaje: v2.cooldown_pasaje_dias || 0, reciclar: true,
   };
-  const sel = S.elegirIdeaDelBanco(opciones) || S.elegirIdeaDelBanco({ ...opciones, diasTema: 0, diasPasaje: 0 });
+  // IDEA_ID permite regenerar una tarjeta concreta (por ejemplo, para reparar
+  // una publicación vieja). En ese modo no se toca el historial: no es una
+  // publicación nueva, es la misma idea otra vez.
+  const ideaForzada = process.env.IDEA_ID ? banco.find((i) => i.id === process.env.IDEA_ID) : null;
+  if (process.env.IDEA_ID && !ideaForzada) throw new Error(`No existe la idea ${process.env.IDEA_ID} en el banco`);
+  const sel = ideaForzada
+    ? { idea: ideaForzada, sub_nicho: cfg.sub_nichos.find((s) => s.clave === ideaForzada.sub_nicho) || cfg.sub_nichos[0] }
+    : S.elegirIdeaDelBanco(opciones) || S.elegirIdeaDelBanco({ ...opciones, diasTema: 0, diasPasaje: 0 });
   if (!sel) throw new Error("El banco de tarjetas no tiene ideas utilizables");
   const idea = sel.idea;
   const subNicho = sel.sub_nicho;
@@ -77,8 +84,10 @@ async function ejecutar(cfg, nombreConfig) {
   const outputDir = path.join(BASE, "output");
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(path.join(outputDir, nombreArchivo), JSON.stringify(salida, null, 2), "utf-8");
-  meta.push({ fecha, titulo: idea.frase || idea.pasaje, tema_clave: idea.tema_clave, sub_nicho: subNicho.clave, idea_id: idea.id, pasaje: idea.pasaje || null });
-  fs.writeFileSync(META, JSON.stringify(meta.slice(-400), null, 2), "utf-8");
+  if (!process.env.IDEA_ID) {
+    meta.push({ fecha, titulo: idea.frase || idea.pasaje, tema_clave: idea.tema_clave, sub_nicho: subNicho.clave, idea_id: idea.id, pasaje: idea.pasaje || null });
+    fs.writeFileSync(META, JSON.stringify(meta.slice(-400), null, 2), "utf-8");
+  }
   console.log(`✅ Tarjeta lista: ${nombreArchivo}`);
   return salida;
 }

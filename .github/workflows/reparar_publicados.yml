@@ -1,0 +1,139 @@
+name: Reparar publicaciones con cuadros
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "Qué se va a reparar"
+        type: choice
+        options:
+          - miniaturas
+          - tarjeta_facebook
+        default: miniaturas
+      canal:
+        description: "Canal de las miniaturas (o de la tarjeta)"
+        type: choice
+        options:
+          - biblia
+          - superate
+        default: biblia
+      publicar:
+        description: "Subir a YouTube/Facebook (si está apagado, solo genera el archivo para revisarlo)"
+        type: boolean
+        default: false
+      idea_id:
+        description: "Solo tarjeta_facebook: idea del banco a regenerar"
+        type: string
+        default: bc-085
+      post_id_borrar:
+        description: "Solo tarjeta_facebook: ID de la publicación vieja (opcional; se borra antes de reponer)"
+        type: string
+        default: ""
+
+jobs:
+  miniaturas:
+    if: inputs.modo == 'miniaturas'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar FFmpeg y fuentes
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Preparar credenciales (canal bíblico)
+        if: inputs.canal == 'biblia'
+        run: |
+          mkdir -p config
+          echo '${{ secrets.YT_CREDENTIALS_JSON_BIBLIA }}' > config/credentials.json
+          echo '${{ secrets.YT_TOKEN_JSON_BIBLIA }}' > config/token.json
+
+      - name: Preparar credenciales (canal Superate)
+        if: inputs.canal == 'superate'
+        run: |
+          mkdir -p config
+          echo '${{ secrets.YT_CREDENTIALS_JSON_SUPERATE }}' > config/credentials.json
+          echo '${{ secrets.YT_TOKEN_JSON_SUPERATE }}' > config/token.json
+
+      - name: Regenerar miniaturas
+        run: node scripts/reparar_miniaturas.js --canal "${{ inputs.canal }}"
+
+      - name: Guardar las miniaturas para revisión
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: miniaturas-reparadas-${{ inputs.canal }}
+          path: output/reparaciones/*.jpg
+          if-no-files-found: warn
+
+      - name: Subir miniaturas a YouTube
+        if: inputs.publicar
+        run: node scripts/subir_miniaturas.js --canal "${{ inputs.canal }}"
+
+  tarjeta_facebook:
+    if: inputs.modo == 'tarjeta_facebook'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar FFmpeg y fuentes
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Generar la tarjeta corregida (misma idea, sin tocar el historial)
+        env:
+          IDEA_ID: ${{ inputs.idea_id }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generar_cita_biblica.js
+
+      - name: Dibujar la tarjeta
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/generar_tarjeta_biblica.js
+
+      - name: Guardar la tarjeta para revisión
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarjeta-reparada
+          path: |
+            output/tarjeta_final.jpg
+            output/cita.json
+          if-no-files-found: warn
+
+      - name: Borrar la publicación vieja (si se indicó su ID)
+        if: inputs.publicar && inputs.post_id_borrar != ''
+        env:
+          FB_POST_ID: ${{ inputs.post_id_borrar }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_BIBLIA }}
+        run: node scripts/borrar_post_facebook.js
+
+      - name: Publicar la tarjeta corregida
+        if: inputs.publicar
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_BIBLIA }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_BIBLIA }}
+        run: node scripts/subir_facebook_imagen.js

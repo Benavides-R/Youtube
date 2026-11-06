@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "nota": "Publicaciones que quedaron con el cuadro (tofu) de ffmpeg antes del arreglo f84bdf7. Solo se regeneran las listadas aquí.",
+  "miniaturas": [
+    {
+      "video_id": "YtvevyhTgEM",
+      "canal": "biblia",
+      "texto": "PAZ Y ESPERANZA",
+      "vertical": false
+    },
+    {
+      "video_id": "_eUsNbwHQlA",
+      "canal": "biblia",
+      "texto": "LUZ Y ACCIÓN",
+      "vertical": false
+    },
+    {
+      "video_id": "ZjgRkcF_GKI",
+      "canal": "biblia",
+      "texto": "SER LUZ",
+      "vertical": true
+    },
+    {
+      "video_id": "3obOaFn5bpg",
+      "canal": "superate",
+      "texto": "PRIORIDAD HOY",
+      "vertical": false
+    },
+    {
+      "video_id": "hXD8R6FwdeQ",
+      "canal": "superate",
+      "texto": "AUTOCOMPASIÓN YA",
+      "vertical": true
+    },
+    {
+      "video_id": "xxY2tF98nAc",
+      "canal": "superate",
+      "texto": "COSTO HUNDIDO",
+      "vertical": true
+    },
+    {
+      "video_id": "oDsZ5LlofTs",
+      "canal": "superate",
+      "texto": "NO FALLAR",
+      "vertical": false
+    }
+  ],
+  "tarjetas": [
+    {
+      "canal": "biblia",
+      "idea_id": "bc-085",
+      "pasaje": "Proverbios 21:5",
+      "fecha_original": "2026-11-05"
+    }
+  ]
+}
