@@ -25,7 +25,7 @@ on:
         type: boolean
         default: false
       idea_id:
-        description: "Solo tarjeta_facebook: idea del banco a regenerar"
+        description: "Solo tarjeta_facebook: idea del banco a regenerar (bc-… en biblia, cs-/cf-… en superate)"
         type: string
         default: bc-085
       post_id_borrar:
@@ -103,37 +103,68 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Generar la tarjeta corregida (misma idea, sin tocar el historial)
+      - name: Generar la tarjeta bíblica (misma idea, sin tocar el historial)
+        if: inputs.canal == 'biblia'
         env:
           IDEA_ID: ${{ inputs.idea_id }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: node scripts/generar_cita_biblica.js
 
-      - name: Dibujar la tarjeta
+      - name: Dibujar la tarjeta bíblica
+        if: inputs.canal == 'biblia'
         env:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: node scripts/generar_tarjeta_biblica.js
+
+      - name: Generar la tarjeta de Superate (misma idea, sin tocar el historial)
+        if: inputs.canal == 'superate'
+        env:
+          IDEA_ID: ${{ inputs.idea_id }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/generar_frase_motivacional.js
+
+      - name: Dibujar la tarjeta de Superate
+        if: inputs.canal == 'superate'
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/generar_tarjeta_superate.js
 
       - name: Guardar la tarjeta para revisión
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tarjeta-reparada
+          name: tarjeta-reparada-${{ inputs.canal }}
           path: |
             output/tarjeta_final.jpg
+            output/tarjeta_superate.jpg
             output/cita.json
+            output/frase.json
           if-no-files-found: warn
 
-      - name: Borrar la publicación vieja (si se indicó su ID)
-        if: inputs.publicar && inputs.post_id_borrar != ''
+      - name: Borrar la publicación vieja (canal bíblico)
+        if: inputs.canal == 'biblia' && inputs.publicar && inputs.post_id_borrar != ''
         env:
           FB_POST_ID: ${{ inputs.post_id_borrar }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_BIBLIA }}
         run: node scripts/borrar_post_facebook.js
 
-      - name: Publicar la tarjeta corregida
-        if: inputs.publicar
+      - name: Borrar la publicación vieja (canal Superate)
+        if: inputs.canal == 'superate' && inputs.publicar && inputs.post_id_borrar != ''
+        env:
+          FB_POST_ID: ${{ inputs.post_id_borrar }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_SUPERATE }}
+        run: node scripts/borrar_post_facebook.js
+
+      - name: Publicar la tarjeta bíblica corregida
+        if: inputs.canal == 'biblia' && inputs.publicar
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_BIBLIA }}
           FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_BIBLIA }}
         run: node scripts/subir_facebook_imagen.js
+
+      - name: Publicar la tarjeta de Superate corregida
+        if: inputs.canal == 'superate' && inputs.publicar
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID_SUPERATE }}
+          FB_ACCESS_TOKEN: ${{ secrets.FB_ACCESS_TOKEN_SUPERATE }}
+        run: node scripts/subir_facebook_superate.js
