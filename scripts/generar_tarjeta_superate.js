@@ -14,6 +14,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const F = require("./formato_textos");
 
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const BASE_DIR = path.join(__dirname, "..");
@@ -85,13 +86,17 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     const fontAutorEsc = fontAutorUsado.replace(/\\/g, "/").replace(/:/g, "\\:");
     const ACENTO = "0xD4AF37"; // mismo dorado que la tarjeta bíblica
 
-    // Frase entre comillas decorativas (curvas), respetando sin_comillas
-    const textoFrase = envolverTexto(frase.sin_comillas ? frase.frase : `\u201C${frase.frase}\u201D`, 26);
+    // Frase entre comillas decorativas (curvas), respetando sin_comillas.
+    // Se limpia lo que dibuja ffmpeg (saltos de línea de la IA, emojis,
+    // caracteres invisibles): salían como un cuadro raro en la tarjeta.
+    const fraseLimpia = F.limpiarParaDibujo(frase.frase);
+    const autorLimpio = F.limpiarParaDibujo(frase.autor);
+    const textoFrase = envolverTexto(frase.sin_comillas ? fraseLimpia : `\u201C${fraseLimpia}\u201D`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, textoFrase, "utf-8");
     const textoEsc = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
     // Autor sin guion: la barra de acento lo separa de la frase
-    fs.writeFileSync(AUTOR_TEMP_PATH, `${frase.autor}`, "utf-8");
+    fs.writeFileSync(AUTOR_TEMP_PATH, `${autorLimpio}`, "utf-8");
     const autorEsc = AUTOR_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
     const hayLogo = fs.existsSync(LOGO_PATH);

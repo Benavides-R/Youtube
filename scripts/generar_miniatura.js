@@ -12,6 +12,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const F = require("./formato_textos");
 
 const BASE_DIR = path.join(__dirname, "..");
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
@@ -52,15 +53,21 @@ const fontPathRaw =
 const fontPath = fontPathRaw.replace(/:/g, "\\:");
 
 // Texto corto para miniatura (generado específico por la IA), con respaldo
-// al título completo si un guion viejo no lo trae
-let titulo = (guionData.texto_miniatura || guionData.titulo).toUpperCase();
+// al título completo si un guion viejo no lo trae.
+// Se limpia porque la IA a veces devuelve dos líneas ("PRIORIDAD\nHOY") o
+// emojis: el salto/símbolo se dibujaba como un cuadro raro en la miniatura.
+const textoBase =
+  F.limpiarParaDibujo(guionData.texto_miniatura) ||
+  F.limpiarParaDibujo(guionData.titulo) ||
+  "VIDEO";
+let titulo = textoBase.toUpperCase();
 // Corta en límite de PALABRA (antes un slice a secas podía partir "NADIE" en "NAD")
 if (titulo.length > 35) {
   titulo = titulo.slice(0, 35);
   const ultimoEspacio = titulo.lastIndexOf(" ");
   if (ultimoEspacio > 10) titulo = titulo.slice(0, ultimoEspacio);
 }
-const palabras = titulo.split(" ");
+const palabras = titulo.split(/\s+/).filter(Boolean);
 const mitad = Math.ceil(palabras.length / 2);
 const linea1 = palabras.slice(0, mitad).join(" ");
 const linea2 = palabras.slice(mitad).join(" ");
@@ -79,7 +86,7 @@ if (anchoEstimado > anchoMax) {
 // IMPORTANTE: el texto va en un ARCHIVO aparte, no directo en el comando.
 // Meter un salto de línea real dentro del comando rompe la terminal en
 // Windows (lo interpreta como si fueran 2 comandos distintos).
-fs.writeFileSync(TEXTO_TEMP_PATH, `${linea1}\n${linea2}`, "utf-8");
+fs.writeFileSync(TEXTO_TEMP_PATH, [linea1, linea2].filter(Boolean).join("\n"), "utf-8");
 
 // Ruta del archivo de texto, también escapada para el filtro de ffmpeg
 const textoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");

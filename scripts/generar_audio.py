@@ -26,6 +26,7 @@ import random
 import re
 import subprocess
 import sys
+import unicodedata
 
 import edge_tts
 
@@ -74,6 +75,32 @@ def segundos_a_timestamp_ass(segundos: float) -> str:
     segs = int(segundos % 60)
     centesimas = int((segundos - int(segundos)) * 100)
     return f"{horas}:{minutos:02d}:{segs:02d}.{centesimas:02d}"
+
+
+def limpiar_para_dibujo(texto: str) -> str:
+    """Deja el texto apto para dibujarse (subtítulos) y para la voz.
+
+    La IA a veces devuelve saltos de línea, caracteres invisibles o emojis.
+    Bebas Neue no tiene glifo para varios de ellos y ffmpeg/libass los
+    dibuja como un cuadro (tofu). Igual que en scripts/formato_textos.js:
+    saltos e invisibles -> espacio; fuera del latín + puntuación común -> se
+    eliminan.
+    """
+    texto = unicodedata.normalize("NFC", texto or "")
+    texto = re.sub(
+        r"[\u0000-\u001F\u007F-\u009F\u00AD\u200B-\u200F\u2028\u2029"
+        r"\u202A-\u202E\u2060-\u206F\uFEFF]",
+        " ",
+        texto,
+    )
+    texto = re.sub(r"\s+", " ", texto)
+    texto = re.sub(
+        r"[^\u0020-\u007E\u00A1-\u00FF\u0100-\u024F"
+        r"\u2013\u2014\u2018\u2019\u201C\u201D\u2026]",
+        "",
+        texto,
+    )
+    return re.sub(r"\s+", " ", texto).strip()
 
 
 def normalizar_numeros(texto: str) -> str:
@@ -188,6 +215,7 @@ def procesar_texto(texto: str) -> str:
     """Limpieza + normalización para TTS (el mismo flujo de siempre).
     También elimina marcadores [SECCION: ...] por si llegaron de más —
     nunca deben leerse en voz alta."""
+    texto = limpiar_para_dibujo(texto)
     texto = re.sub(r"\[SECCION:\s*.+?\s*\]", " ", texto, flags=re.IGNORECASE)
     texto = re.sub(r"[*_#`~]", "", texto)
     texto = re.sub(r"\s+", " ", texto).strip()
@@ -302,7 +330,10 @@ def generar_ass_desde_palabras(palabras_con_tiempo, ancho: int, alto: int, taman
             else:
                 duracion_cs = round((palabra["fin"] - palabra["inicio"]) * 100)
             duracion_cs = max(duracion_cs, 1)  # nunca 0 o negativo, rompería el tag
-            texto_palabra = palabra["text"].upper()
+            texto_palabra = limpiar_para_dibujo(palabra["text"]).upper()
+            # Un "{" o "}" en un subtítulo abriría un bloque de override de
+            # ASS y rompería la línea; no deben llegar nunca, pero se neutralizan.
+            texto_palabra = texto_palabra.replace("{", "").replace("}", "")
             partes.append(f"{{\\k{duracion_cs}}}{texto_palabra}")
 
         texto = " ".join(partes)

@@ -13,6 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const F = require("./formato_textos");
 
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const BASE_DIR = path.join(__dirname, "..");
@@ -104,12 +105,16 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     const fontRefEscapado = fontRefUsado.replace(/\\/g, "/").replace(/:/g, "\\:");
     const ACENTO = "0xD4AF37"; // dorado suave para la barra y la referencia
 
-    // Comillas tipográficas (curvas) en vez de comillas rectas
-    const versoTexto = envolverTexto(`\u201C${cita.verso}\u201D`, 26);
+    // Comillas tipográficas (curvas) en vez de comillas rectas.
+    // Se limpia lo que dibuja ffmpeg (saltos de línea de la IA, emojis,
+    // caracteres invisibles): salían como un cuadro raro en la tarjeta.
+    const versoLimpio = F.limpiarParaDibujo(cita.verso);
+    const referenciaLimpia = F.limpiarParaDibujo(cita.referencia);
+    const versoTexto = envolverTexto(`\u201C${versoLimpio}\u201D`, 26);
     fs.writeFileSync(TEXTO_TEMP_PATH, versoTexto, "utf-8");
     const versoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
-    fs.writeFileSync(REF_TEMP_PATH, `${cita.referencia}`, "utf-8");
+    fs.writeFileSync(REF_TEMP_PATH, `${referenciaLimpia}`, "utf-8");
     const refPathEscapado = REF_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
 
     // La referencia va justo debajo del verso, con separación fija -- se

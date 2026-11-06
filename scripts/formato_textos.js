@@ -88,6 +88,22 @@ function palabrasClave(t) {
   );
 }
 
+// Limpia texto que se dibuja con ffmpeg (miniaturas, tarjetas, subtítulos):
+// - convierte saltos de línea y espacios raros en un espacio normal (la IA a
+//   veces devuelve "PRIORIDAD\nHOY" y el salto se dibujaba como un cuadro)
+// - quita caracteres invisibles/control
+// - quita emojis y símbolos que la fuente no tiene (salen como cuadro/tofu)
+// Deja letras latinas, números y la puntuación habitual en español.
+function limpiarParaDibujo(t) {
+  let s = String(t == null ? "" : t)
+    .normalize("NFC")
+    .replace(/[\u0000-\u001F\u007F-\u009F\u00AD\u200B-\u200F\u2028\u2029\u202A-\u202E\u2060-\u206F\uFEFF]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  s = s.replace(/[^\u0020-\u007E\u00A1-\u00FF\u0100-\u024F\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
+  return s.replace(/\s+/g, " ").trim();
+}
+
 // true si dos títulos comparten demasiadas palabras (se consideran "el mismo")
 function similares(a, b, umbral = 0.6) {
   const A = palabrasClave(a), B = palabrasClave(b);
@@ -99,5 +115,5 @@ function similares(a, b, umbral = 0.6) {
 
 module.exports = {
   ajustarTitulo, ajustarTituloLargo, largoTituloOk, sanearHashtags, limpiarParrafo, quitarSuscripcion,
-  armarDescripcion, armarDescripcionFacebook, elegirCierreFacebook, similares,
+  armarDescripcion, armarDescripcionFacebook, elegirCierreFacebook, similares, limpiarParaDibujo,
 };
