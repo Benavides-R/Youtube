@@ -1,6 +1,14 @@
 # MEMORY.md - Historial de Cambios del Pipeline de Ofertas
 
-## Fecha: 29 de Octubre 2026 (última actualización)
+## Fecha: 6 de Noviembre 2026 (última actualización)
+
+---
+
+## Cambios Recientes (6 Noviembre 2026)
+
+| Commit | Cambio |
+|--------|--------|
+| `2e9ccda` | **Cuadros (tofu) al final de cada línea en tarjetas y miniaturas — arreglo de raíz**. El problema no era un carácter del texto (se verificó que los versos/frases terminan limpios en punto) sino el salto de línea que recibía `drawtext`: en el runner Ubuntu, ffmpeg/HarfBuzz dibuja un cuadro por cada `\n`, y desactivar `text_shaping` no lo evitó. Ahora **cada línea se dibuja con su propia `drawtext`** (el texto dibujado nunca lleva `\n`): nuevos helpers en `scripts/formato_textos.js` — `envolverEnLineas()` (devuelve array de líneas), `filtrosLineas()` (escribe un `.txt` por línea y arma un `drawtext` por línea con su `y`) y `escaparRutaFiltro()`. Aplicado en `generar_tarjeta_biblica.js`, `generar_tarjeta_superate.js`, `generar_miniatura.js` y `reparar_miniaturas.js` (así el workflow manual de reparación también regenera sin cuadros). Ventaja extra: cada línea queda centrada por separado (antes el bloque se centraba como un todo y con `max(60,...)` quedaba corrido a la izquierda). Probado localmente con ffmpeg 9.0.1 ejecutando los 3 scripts reales (fondo simulado, sin Pexels): 0 cuadros, 3 imágenes correctas y temporales borrados |
 
 ---
 
