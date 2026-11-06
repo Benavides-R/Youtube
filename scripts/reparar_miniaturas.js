@@ -6,7 +6,7 @@
  *
  * No necesita el proyecto original: descarga la miniatura pública
  * del video, borra la zona del texto con un desenfoque y vuelve a
- * dibujar el texto limpio con text_shaping=0.
+ * dibujar el texto limpio con UNA drawtext por línea (sin "\n").
  *
  * Uso:
  *   node scripts/reparar_miniaturas.js --canal biblia
@@ -55,8 +55,6 @@ if (casos.length === 0) {
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.mkdirSync(ORIGINALES_DIR, { recursive: true });
 
-const escaparFiltro = (p) => p.replace(/\\/g, "/").replace(/:/g, "\\:");
-
 async function descargar(url, destino) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`No se pudo descargar ${url} (HTTP ${res.status})`);
@@ -82,6 +80,7 @@ async function descargar(url, destino) {
       continue;
     }
 
+    let archivosTexto = [];
     try {
       if (!fs.existsSync(original)) {
         await descargar(`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`, original);
@@ -97,8 +96,6 @@ async function descargar(url, destino) {
       const mitad = Math.ceil(palabras.length / 2);
       const linea1 = palabras.slice(0, mitad).join(" ");
       const linea2 = palabras.slice(mitad).join(" ");
-      const textoPath = path.join(OUT_DIR, `${videoId}.txt`);
-      fs.writeFileSync(textoPath, [linea1, linea2].filter(Boolean).join("\n"), "utf-8");
 
       // La miniatura vertical se publica dentro de un lienzo 16:9 con barras
       // negras: se recorta el centro (9:16) y se escala de vuelta a 720x1280.
@@ -114,15 +111,27 @@ async function descargar(url, destino) {
         fuente = Math.max(30, Math.floor((fuente * anchoMax) / anchoEstimado));
       }
 
+      // Una drawtext por línea: con "\n" ffmpeg dibuja un cuadro al final.
+      const dibujo = F.filtrosLineas([linea1, linea2].filter(Boolean), {
+        dir: OUT_DIR,
+        nombre: `${videoId}_texto`,
+        fontPath: FONT_PATH,
+        fontSize: fuente,
+        yTop: TEXTO_Y,
+        lineSpacing: 15,
+        color: "white",
+        borderw: 3,
+        bordercolor: "black@0.8",
+      });
+      archivosTexto = dibujo.archivos;
+
       const filtro = [
         `[0:v]${base}[b]`,
         `[b]split[limpia][parabla]`,
         `[parabla]crop=${ANCHO}:${CAJA_ALTO}:0:${CAJA_Y},boxblur=24:2[borrosa]`,
         `[limpia][borrosa]overlay=0:${CAJA_Y}[fondo]`,
-        `[fondo]drawbox=x=0:y=${CAJA_Y}:w=${ANCHO}:h=${CAJA_ALTO}:color=black@0.55:t=fill,` +
-          `drawtext=fontfile='${escaparFiltro(FONT_PATH)}':textfile='${escaparFiltro(textoPath)}':` +
-          `fontcolor=white:fontsize=${fuente}:x=(w-text_w)/2:y=${TEXTO_Y}:line_spacing=15:` +
-          `borderw=3:bordercolor=black@0.8:expansion=none:text_shaping=0[out]`,
+        `[fondo]drawbox=x=0:y=${CAJA_Y}:w=${ANCHO}:h=${CAJA_ALTO}:color=black@0.55:t=fill` +
+          dibujo.filtros.map((f) => `,${f}`).join("") + "[out]",
       ].join(";");
 
       execFileSync("ffmpeg", [
@@ -139,6 +148,8 @@ async function descargar(url, destino) {
     } catch (err) {
       console.error(`❌ ${videoId}: ${err.message}`);
       fallos.push(videoId);
+    } finally {
+      archivosTexto.forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
     }
   }
 

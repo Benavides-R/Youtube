@@ -1,4 +1,7 @@
 // scripts/formato_textos.js
+const fs = require("fs");
+const path = require("path");
+
 const PROHIBIDAS_DESC = /(me encontr[eé]|yo lo uso|a m[ií] me|me pas[oó]|lo uso a diario|lo uso todos los d[ií]as)/i;
 
 function ajustarTitulo(t) {
@@ -104,6 +107,68 @@ function limpiarParaDibujo(t) {
   return s.replace(/\s+/g, " ").trim();
 }
 
+// Envuelve el texto en líneas SIN unirlas con "\n": ffmpeg, cuando el texto
+// lleva un salto de línea, dibuja un cuadro (tofu) al final de cada línea
+// (HarfBuzz lo interpreta como un glifo). Por eso devolvemos un array y cada
+// línea se dibuja con su propia drawtext.
+function envolverEnLineas(texto, caracteresPorLinea = 26) {
+  const palabras = String(texto == null ? "" : texto).split(" ").filter(Boolean);
+  const lineas = [];
+  let lineaActual = "";
+  for (const palabra of palabras) {
+    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
+    if (candidata.length > caracteresPorLinea && lineaActual) {
+      lineas.push(lineaActual);
+      lineaActual = palabra;
+    } else {
+      lineaActual = candidata;
+    }
+  }
+  if (lineaActual) lineas.push(lineaActual);
+  return lineas;
+}
+
+// Escapa una ruta para usarla dentro de un filtro de ffmpeg (las comillas del
+// filtro se ponen aparte): barras normales y ":" del disco de Windows.
+function escaparRutaFiltro(p) {
+  return String(p).replace(/\\/g, "/").replace(/:/g, "\\:");
+}
+
+// Genera UNA drawtext por línea (sin "\n") y escribe un archivo de texto por
+// línea (así el texto puede llevar comas, comillas y acentos sin romper el
+// filtro). Devuelve los filtros y las rutas temporales creadas, para poder
+// borrarlas al terminar.
+//   dir, nombre        dónde y con qué nombre se escriben los .txt
+//   fontPath           ruta real de la fuente (se escapa aquí)
+//   fontSize, yTop     tamaño y posición Y de la primera línea
+//   lineSpacing        separación extra entre líneas (px)
+//   altoLinea          avance vertical entre líneas (por defecto fontSize +
+//                      lineSpacing, igual que el cálculo de alto de las tarjetas)
+function filtrosLineas(lineas, opts) {
+  const {
+    dir,
+    nombre,
+    fontPath,
+    fontSize,
+    yTop,
+    lineSpacing = 15,
+    altoLinea = fontSize + lineSpacing,
+    color = "white",
+    borderw = 2,
+    bordercolor = "black@0.55",
+    x = "(w-text_w)/2",
+  } = opts;
+  const archivos = [];
+  const filtros = (lineas || []).filter(Boolean).map((linea, i) => {
+    const ruta = path.join(dir, `_${nombre}_${i}.txt`);
+    fs.writeFileSync(ruta, linea, "utf-8");
+    archivos.push(ruta);
+    const y = Math.round(yTop + i * altoLinea);
+    return `drawtext=fontfile='${escaparRutaFiltro(fontPath)}':textfile='${escaparRutaFiltro(ruta)}':fontcolor=${color}:fontsize=${fontSize}:x=${x}:y=${y}:borderw=${borderw}:bordercolor=${bordercolor}:expansion=none:text_shaping=0`;
+  });
+  return { filtros, archivos };
+}
+
 // true si dos títulos comparten demasiadas palabras (se consideran "el mismo")
 function similares(a, b, umbral = 0.6) {
   const A = palabrasClave(a), B = palabrasClave(b);
@@ -116,4 +181,5 @@ function similares(a, b, umbral = 0.6) {
 module.exports = {
   ajustarTitulo, ajustarTituloLargo, largoTituloOk, sanearHashtags, limpiarParrafo, quitarSuscripcion,
   armarDescripcion, armarDescripcionFacebook, elegirCierreFacebook, similares, limpiarParaDibujo,
+  envolverEnLineas, escaparRutaFiltro, filtrosLineas,
 };

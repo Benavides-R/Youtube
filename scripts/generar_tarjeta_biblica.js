@@ -21,8 +21,8 @@ const CITA_PATH = path.join(BASE_DIR, "output", "cita.json");
 const FONDO_PATH = path.join(BASE_DIR, "output", "fondo_tarjeta.jpg");
 const OUTPUT_PATH = path.join(BASE_DIR, "output", "tarjeta_final.jpg");
 const LOGO_PATH = path.join(BASE_DIR, "assets", "logo.png");
-const TEXTO_TEMP_PATH = path.join(BASE_DIR, "output", "_tarjeta_texto.txt");
-const REF_TEMP_PATH = path.join(BASE_DIR, "output", "_tarjeta_ref.txt");
+const TEXTO_TEMP_DIR = path.join(BASE_DIR, "output");
+const REF_TEMP_PATH = path.join(TEXTO_TEMP_DIR, "_tarjeta_ref.txt");
 
 if (!PEXELS_API_KEY) {
   console.error("❌ Falta PEXELS_API_KEY");
@@ -65,38 +65,20 @@ async function buscarYDescargarFondo() {
 // 2. Envolver el texto del versículo en varias líneas (a mano,
 // simple, para que quepa bien en la tarjeta)
 // ------------------------------------------------------------
-function envolverTexto(texto, caracteresPorLinea = 26) {
-  // Antes se cortaba cada 4 palabras fijas, sin importar si eran cortas
-  // ("y", "el") o largas ("quebrantados") -- eso hacía que unas líneas
-  // salieran "llenitas" y otras casi vacías. Envolviendo por cantidad de
-  // caracteres, cada línea ocupa un ancho visual mucho más parejo.
-  const palabras = texto.split(" ");
-  const lineas = [];
-  let lineaActual = "";
-  for (const palabra of palabras) {
-    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
-    if (candidata.length > caracteresPorLinea && lineaActual) {
-      lineas.push(lineaActual);
-      lineaActual = palabra;
-    } else {
-      lineaActual = candidata;
-    }
-  }
-  if (lineaActual) lineas.push(lineaActual);
-  return lineas.join("\n");
-}
+// (el envoltorio vive en formato_textos.envolverEnLineas y devuelve un ARRAY:
+// cada línea se dibuja con su propia drawtext, nunca con "\n")
 
 // ------------------------------------------------------------
 // 3. Armar la tarjeta con FFmpeg
 // ------------------------------------------------------------
 (async () => {
+  let archivosTemporales = [];
   try {
     console.log("🖼️  Buscando imagen de fondo...");
     await buscarYDescargarFondo();
 
     const fontPath =
       process.platform === "win32" ? "C:/Windows/Fonts/arial.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
-    const fontPathEscapado = fontPath.replace(/:/g, "\\:");
 
     // Bebas Neue (incluida en assets/fonts) para la referencia: look editorial
     // en mayúsculas. Si el archivo no estuviera, cae a la fuente del verso.
@@ -110,33 +92,45 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     // caracteres invisibles): salían como un cuadro raro en la tarjeta.
     const versoLimpio = F.limpiarParaDibujo(cita.verso);
     const referenciaLimpia = F.limpiarParaDibujo(cita.referencia);
-    const versoTexto = envolverTexto(`\u201C${versoLimpio}\u201D`, 26);
-    fs.writeFileSync(TEXTO_TEMP_PATH, versoTexto, "utf-8");
-    const versoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+    // Una línea = una drawtext. Antes se unían con "\n" y ffmpeg dibujaba
+    // un cuadro al final de cada línea (el salto se tomaba como glifo).
+    const versoLineas = F.envolverEnLineas(`\u201C${versoLimpio}\u201D`, 26);
 
     fs.writeFileSync(REF_TEMP_PATH, `${referenciaLimpia}`, "utf-8");
-    const refPathEscapado = REF_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+    const refPathEscapado = F.escaparRutaFiltro(REF_TEMP_PATH);
 
     // La referencia va justo debajo del verso, con separación fija -- se
     // calcula en JS (no se puede leer el text_h de OTRO drawtext desde
     // ffmpeg) según cuántas líneas ocupó el verso, para que no se encimen
     // ni queden muy separados con versos cortos.
     const FONTSIZE_VERSO = 54, LINE_SPACING_VERSO = 20, MARGEN_REFERENCIA = 74;
-    const numLineasVerso = versoTexto.split("\n").length;
+    const numLineasVerso = versoLineas.length;
     const altoVersoEstimado = numLineasVerso * FONTSIZE_VERSO + (numLineasVerso - 1) * LINE_SPACING_VERSO;
     const yVersoTop = (ALTO - altoVersoEstimado) / 2 - 60;
     const yReferencia = Math.min(Math.round(yVersoTop + altoVersoEstimado + MARGEN_REFERENCIA), ALTO - 140);
     const yBarra = yReferencia - 46;
     const xBarra = Math.round((ANCHO - 120) / 2); // posición fija (evita paréntesis en drawbox)
 
-    // text_shaping=0: con HarfBuzz (runner Ubuntu) ffmpeg dibuja un cuadro
-    // (tofu) por cada salto de línea; sin shaping el \n solo hace el salto.
+    const dibujoVerso = F.filtrosLineas(versoLineas, {
+      dir: TEXTO_TEMP_DIR,
+      nombre: "tarjeta_texto",
+      fontPath,
+      fontSize: FONTSIZE_VERSO,
+      yTop: yVersoTop,
+      lineSpacing: LINE_SPACING_VERSO,
+      color: "white",
+      borderw: 2,
+      bordercolor: "black@0.55",
+      x: "max(60\\, (w-text_w)/2)", // cada línea centrada, sin salirse a la izquierda
+    });
+    archivosTemporales.push(...dibujoVerso.archivos, REF_TEMP_PATH);
+
     let filtro = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `gblur=sigma=6`,                          // desenfoque suave: el texto resalta sobre la foto
       `vignette=PI/4.5`,                        // oscurece los bordes (enfoque en el centro)
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.42:t=fill`,
-      `drawtext=fontfile='${fontPathEscapado}':textfile='${versoPathEscapado}':fontcolor=white:fontsize=${FONTSIZE_VERSO}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-60:line_spacing=${LINE_SPACING_VERSO}:borderw=2:bordercolor=black@0.55:expansion=none:text_shaping=0`,
+      ...dibujoVerso.filtros,                   // una drawtext por línea (sin "\n")
       `drawbox=x=${xBarra}:y=${yBarra}:w=120:h=4:color=${ACENTO}@0.95:t=fill`,
       `drawtext=fontfile='${fontRefEscapado}':textfile='${refPathEscapado}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yReferencia}:expansion=none:text_shaping=0`,
     ];
@@ -161,6 +155,6 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     console.error("❌ Error generando la tarjeta:", err.stderr ? err.stderr.toString() : err.message);
     process.exit(1);
   } finally {
-    [TEXTO_TEMP_PATH, REF_TEMP_PATH].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+    archivosTemporales.forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
   }
 })();

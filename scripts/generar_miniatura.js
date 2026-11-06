@@ -18,7 +18,6 @@ const BASE_DIR = path.join(__dirname, "..");
 const GUION_PATH = path.join(BASE_DIR, "output", "guion.json");
 const IMAGENES_DIR = path.join(BASE_DIR, "output", "imagenes");
 const OUTPUT_PATH = path.join(BASE_DIR, "output", "miniatura.jpg");
-const TEXTO_TEMP_PATH = path.join(BASE_DIR, "output", "_miniatura_texto.txt");
 
 if (!fs.existsSync(GUION_PATH)) {
   console.error("❌ No existe output/guion.json. Corre primero generar_guion.js");
@@ -45,12 +44,10 @@ const CAJA_ALTO = esShort ? Math.round(ALTO * 0.22) : 250;
 const TEXTO_Y = CAJA_Y + Math.round(CAJA_ALTO * 0.15);
 
 // Fuente según sistema operativo
-const fontPathRaw =
+const fontPath =
   process.platform === "win32"
     ? "C:/Windows/Fonts/arialbd.ttf"
     : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
-// Escapamos el ":" del drive letter en Windows para el filtro de ffmpeg
-const fontPath = fontPathRaw.replace(/:/g, "\\:");
 
 // Texto corto para miniatura (generado específico por la IA), con respaldo
 // al título completo si un guion viejo no lo trae.
@@ -83,20 +80,26 @@ if (anchoEstimado > anchoMax) {
   console.log(`ℹ️  Texto largo (${maxLineaChars} chars): fuente reducida a ${TAMANO_FUENTE}px para que quepa`);
 }
 
-// IMPORTANTE: el texto va en un ARCHIVO aparte, no directo en el comando.
-// Meter un salto de línea real dentro del comando rompe la terminal en
-// Windows (lo interpreta como si fueran 2 comandos distintos).
-fs.writeFileSync(TEXTO_TEMP_PATH, [linea1, linea2].filter(Boolean).join("\n"), "utf-8");
-
-// Ruta del archivo de texto, también escapada para el filtro de ffmpeg
-const textoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+// Se dibuja UNA línea por drawtext (ver formato_textos.filtrosLineas).
+// Antes se escribían las dos líneas juntas con un "\n" y ffmpeg dibujaba
+// un cuadro (tofu) al final de la primera línea.
+const lineas = [linea1, linea2].filter(Boolean);
+const dibujo = F.filtrosLineas(lineas, {
+  dir: path.join(BASE_DIR, "output"),
+  nombre: "miniatura_texto",
+  fontPath,
+  fontSize: TAMANO_FUENTE,
+  yTop: TEXTO_Y,
+  lineSpacing: 15,
+  color: "white",
+  borderw: 3,
+  bordercolor: "black@0.8",
+});
 
 const filtro = [
   `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
   `drawbox=x=0:y=${CAJA_Y}:w=${ANCHO}:h=${CAJA_ALTO}:color=black@0.55:t=fill`,
-  // text_shaping=0: con HarfBuzz (runner Ubuntu) ffmpeg dibuja un cuadro
-  // (tofu) por cada salto de línea; sin shaping el \n solo hace el salto.
-  `drawtext=fontfile='${fontPath}':textfile='${textoPathEscapado}':fontcolor=white:fontsize=${TAMANO_FUENTE}:x=(w-text_w)/2:y=${TEXTO_Y}:line_spacing=15:borderw=3:bordercolor=black@0.8:text_shaping=0`,
+  ...dibujo.filtros,
 ].join(",");
 
 const cmd = `ffmpeg -y -i "${primeraImagen}" -vf "${filtro}" "${OUTPUT_PATH}"`;
@@ -108,5 +111,5 @@ try {
   console.error("❌ Error generando miniatura:", err.stderr ? err.stderr.toString() : err.message);
   console.error("   (esto no detiene el proceso, el video se sube igual sin miniatura personalizada)");
 } finally {
-  if (fs.existsSync(TEXTO_TEMP_PATH)) fs.unlinkSync(TEXTO_TEMP_PATH);
+  dibujo.archivos.forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
 }

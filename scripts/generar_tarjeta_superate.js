@@ -21,7 +21,7 @@ const BASE_DIR = path.join(__dirname, "..");
 const FRASE_PATH = path.join(BASE_DIR, "output", "frase.json");
 const FONDO_PATH = path.join(BASE_DIR, "output", "fondo_superate.jpg");
 const OUTPUT_PATH = path.join(BASE_DIR, "output", "tarjeta_superate.jpg");
-const TEXTO_TEMP_PATH = path.join(BASE_DIR, "output", "_superate_texto.txt");
+const TEXTO_TEMP_DIR = path.join(BASE_DIR, "output");
 const AUTOR_TEMP_PATH = path.join(BASE_DIR, "output", "_superate_autor.txt");
 
 // Logo específico de Superate o respaldo al genérico
@@ -54,31 +54,17 @@ async function buscarYDescargarFondo() {
   console.log(`  🖼️  Fondo: "${query}" (pág ${paginaAlAzar})`);
 }
 
-function envolverTexto(texto, caracteresPorLinea = 26) {
-  const palabras = texto.split(" ");
-  const lineas = [];
-  let lineaActual = "";
-  for (const palabra of palabras) {
-    const candidata = lineaActual ? `${lineaActual} ${palabra}` : palabra;
-    if (candidata.length > caracteresPorLinea && lineaActual) {
-      lineas.push(lineaActual);
-      lineaActual = palabra;
-    } else {
-      lineaActual = candidata;
-    }
-  }
-  if (lineaActual) lineas.push(lineaActual);
-  return lineas.join("\n");
-}
+// (el envoltorio vive en formato_textos.envolverEnLineas y devuelve un ARRAY:
+// cada línea se dibuja con su propia drawtext, nunca con "\n")
 
 (async () => {
+  let archivosTemporales = [];
   try {
     console.log("🖼️  Buscando imagen de fondo...");
     await buscarYDescargarFondo();
 
     const isWin = process.platform === "win32";
     const fontPath = isWin ? "C:/Windows/Fonts/arialbd.ttf" : "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
-    const fontPathEsc = fontPath.replace(/:/g, "\\:");
 
     // Bebas Neue (assets/fonts) para el autor: look editorial en mayúsculas
     const fontAutorPath = path.join(BASE_DIR, "assets", "fonts", "BebasNeue-Regular.ttf");
@@ -91,13 +77,13 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     // caracteres invisibles): salían como un cuadro raro en la tarjeta.
     const fraseLimpia = F.limpiarParaDibujo(frase.frase);
     const autorLimpio = F.limpiarParaDibujo(frase.autor);
-    const textoFrase = envolverTexto(frase.sin_comillas ? fraseLimpia : `\u201C${fraseLimpia}\u201D`, 26);
-    fs.writeFileSync(TEXTO_TEMP_PATH, textoFrase, "utf-8");
-    const textoEsc = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+    // Una línea = una drawtext. Antes se unían con "\n" y ffmpeg dibujaba
+    // un cuadro al final de cada línea (el salto se tomaba como glifo).
+    const fraseLineas = F.envolverEnLineas(frase.sin_comillas ? fraseLimpia : `\u201C${fraseLimpia}\u201D`, 26);
 
     // Autor sin guion: la barra de acento lo separa de la frase
     fs.writeFileSync(AUTOR_TEMP_PATH, `${autorLimpio}`, "utf-8");
-    const autorEsc = AUTOR_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:");
+    const autorEsc = F.escaparRutaFiltro(AUTOR_TEMP_PATH);
 
     const hayLogo = fs.existsSync(LOGO_PATH);
     const inputs = hayLogo ? `-i "${FONDO_PATH}" -i "${LOGO_PATH}"` : `-i "${FONDO_PATH}"`;
@@ -106,21 +92,33 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     // cuántas líneas ocupó la frase, para que no se encimen con frases
     // largas ni queden muy separados con frases cortas.
     const FONTSIZE_FRASE = 52, LINE_SPACING_FRASE = 18, MARGEN_AUTOR = 72;
-    const numLineasFrase = textoFrase.split("\n").length;
+    const numLineasFrase = fraseLineas.length;
     const altoFraseEstimado = numLineasFrase * FONTSIZE_FRASE + (numLineasFrase - 1) * LINE_SPACING_FRASE;
     const yFraseTop = (ALTO - altoFraseEstimado) / 2 - 70;
     const yAutor = Math.min(Math.round(yFraseTop + altoFraseEstimado + MARGEN_AUTOR), ALTO - 140);
     const yBarra = yAutor - 46;
     const xBarra = Math.round((ANCHO - 120) / 2); // posición fija (evita paréntesis en drawbox)
 
-    // text_shaping=0: con HarfBuzz (runner Ubuntu) ffmpeg dibuja un cuadro
-    // (tofu) por cada salto de línea; sin shaping el \n solo hace el salto.
+    const dibujoFrase = F.filtrosLineas(fraseLineas, {
+      dir: TEXTO_TEMP_DIR,
+      nombre: "superate_texto",
+      fontPath,
+      fontSize: FONTSIZE_FRASE,
+      yTop: yFraseTop,
+      lineSpacing: LINE_SPACING_FRASE,
+      color: "white",
+      borderw: 2,
+      bordercolor: "black@0.55",
+      x: "max(60\\, (w-text_w)/2)", // cada línea centrada, sin salirse a la izquierda
+    });
+    archivosTemporales.push(...dibujoFrase.archivos, AUTOR_TEMP_PATH);
+
     const filtroBase = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `gblur=sigma=6`,                          // desenfoque suave: el texto resalta sobre la foto
       `vignette=PI/4.5`,                        // oscurece los bordes (enfoque en el centro)
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.42:t=fill`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.55:expansion=none:text_shaping=0`,
+      ...dibujoFrase.filtros,                   // una drawtext por línea (sin "\n")
       `drawbox=x=${xBarra}:y=${yBarra}:w=120:h=4:color=${ACENTO}@0.95:t=fill`,
       `drawtext=fontfile='${fontAutorEsc}':textfile='${autorEsc}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yAutor}:expansion=none:text_shaping=0`,
     ].join(",");
@@ -138,6 +136,6 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     console.error("❌ Error:", err.stderr ? err.stderr.toString() : err.message);
     process.exit(1);
   } finally {
-    [TEXTO_TEMP_PATH, AUTOR_TEMP_PATH].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+    archivosTemporales.forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
   }
 })();
