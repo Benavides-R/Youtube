@@ -94,7 +94,9 @@ const textoPathEscapado = TEXTO_TEMP_PATH.replace(/\\/g, "/").replace(/:/g, "\\:
 const filtro = [
   `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
   `drawbox=x=0:y=${CAJA_Y}:w=${ANCHO}:h=${CAJA_ALTO}:color=black@0.55:t=fill`,
-  `drawtext=fontfile='${fontPath}':textfile='${textoPathEscapado}':fontcolor=white:fontsize=${TAMANO_FUENTE}:x=(w-text_w)/2:y=${TEXTO_Y}:line_spacing=15:borderw=3:bordercolor=black@0.8`,
+  // text_shaping=0: con HarfBuzz (runner Ubuntu) ffmpeg dibuja un cuadro
+  // (tofu) por cada salto de línea; sin shaping el \n solo hace el salto.
+  `drawtext=fontfile='${fontPath}':textfile='${textoPathEscapado}':fontcolor=white:fontsize=${TAMANO_FUENTE}:x=(w-text_w)/2:y=${TEXTO_Y}:line_spacing=15:borderw=3:bordercolor=black@0.8:text_shaping=0`,
 ].join(",");
 
 const cmd = `ffmpeg -y -i "${primeraImagen}" -vf "${filtro}" "${OUTPUT_PATH}"`;

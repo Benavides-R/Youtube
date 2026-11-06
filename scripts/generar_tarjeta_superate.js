@@ -113,14 +113,16 @@ function envolverTexto(texto, caracteresPorLinea = 26) {
     const yBarra = yAutor - 46;
     const xBarra = Math.round((ANCHO - 120) / 2); // posición fija (evita paréntesis en drawbox)
 
+    // text_shaping=0: con HarfBuzz (runner Ubuntu) ffmpeg dibuja un cuadro
+    // (tofu) por cada salto de línea; sin shaping el \n solo hace el salto.
     const filtroBase = [
       `scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO}`,
       `gblur=sigma=6`,                          // desenfoque suave: el texto resalta sobre la foto
       `vignette=PI/4.5`,                        // oscurece los bordes (enfoque en el centro)
       `drawbox=x=0:y=0:w=${ANCHO}:h=${ALTO}:color=black@0.42:t=fill`,
-      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.55:expansion=none`,
+      `drawtext=fontfile='${fontPathEsc}':textfile='${textoEsc}':fontcolor=white:fontsize=${FONTSIZE_FRASE}:x=max(60\\, (w-text_w)/2):y=(h-text_h)/2-70:line_spacing=${LINE_SPACING_FRASE}:borderw=2:bordercolor=black@0.55:expansion=none:text_shaping=0`,
       `drawbox=x=${xBarra}:y=${yBarra}:w=120:h=4:color=${ACENTO}@0.95:t=fill`,
-      `drawtext=fontfile='${fontAutorEsc}':textfile='${autorEsc}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yAutor}:expansion=none`,
+      `drawtext=fontfile='${fontAutorEsc}':textfile='${autorEsc}':fontcolor=${ACENTO}:fontsize=40:x=(w-text_w)/2:y=${yAutor}:expansion=none:text_shaping=0`,
     ].join(",");
 
     let cmd;
