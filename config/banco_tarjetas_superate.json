@@ -31,7 +31,6 @@
     {"id":"cs-28","sub_nicho":"conceptos","desde":"su-32","frase":"Háblate como le hablarías a un amigo.","autor":"Autocompasión, Kristin Neff","tema_clave":"autocompasion"},
     {"id":"cs-29","sub_nicho":"conceptos","desde":"su-33","frase":"Hacer una cosa a la vez rinde más que saltar entre varias.","autor":"Una tarea a la vez","tema_clave":"monotarea"},
     {"id":"cs-30","sub_nicho":"conceptos","desde":"su-29","frase":"Elige una sola prioridad para hoy y empieza por ella.","autor":"Superate777","tema_clave":"una_prioridad"},
-
     {"id":"cf-01","sub_nicho":"frases","frase":"No necesitas ganas para empezar: empieza y las ganas llegan.","autor":"Superate777","tema_clave":"ganas_f"},
     {"id":"cf-02","sub_nicho":"frases","frase":"Hacerlo imperfecto hoy vale más que hacerlo perfecto nunca.","autor":"Superate777","tema_clave":"perfeccionismo"},
     {"id":"cf-03","sub_nicho":"frases","frase":"La disciplina es decidir de nuevo, cada día, lo que de verdad quieres.","autor":"Superate777","tema_clave":"disciplina"},
@@ -71,6 +70,26 @@
     {"id":"cf-37","sub_nicho":"frases","frase":"Practica la paciencia: lo bueno casi nunca llega de un día para otro.","autor":"Superate777","tema_clave":"paciencia"},
     {"id":"cf-38","sub_nicho":"frases","frase":"Agradece lo que tienes y sigue trabajando por lo que quieres.","autor":"Superate777","tema_clave":"gratitud"},
     {"id":"cf-39","sub_nicho":"frases","frase":"Habla menos de tus planes y más de tus avances.","autor":"Superate777","tema_clave":"avances"},
-    {"id":"cf-40","sub_nicho":"frases","frase":"Hoy es un buen día para dejar de aplazar eso que sabes que debes hacer.","autor":"Superate777","tema_clave":"aplazar"}
+    {"id":"cf-40","sub_nicho":"frases","frase":"Hoy es un buen día para dejar de aplazar eso que sabes que debes hacer.","autor":"Superate777","tema_clave":"aplazar"},
+    {"id":"cs-31","sub_nicho":"conceptos","desde":"su-48","frase":"Dale una hora concreta a cada tarea y deja de improvisar el día.","autor":"Time blocking","tema_clave":"bloque_tiempo"},
+    {"id":"cs-32","sub_nicho":"conceptos","desde":"su-49","frase":"Elige una tarea grande, tres medianas y cinco pequeñas. Nada más.","autor":"Regla 1-3-5","tema_clave":"regla_135"},
+    {"id":"cs-33","sub_nicho":"conceptos","desde":"su-50","frase":"Todo tarda más de lo que crees, incluso cuando ya lo sabes.","autor":"Ley de Hofstadter","tema_clave":"hofstadter"},
+    {"id":"cs-34","sub_nicho":"conceptos","desde":"su-51","frase":"La primera cifra que escuchas condiciona todas las demás.","autor":"Sesgo de anclaje","tema_clave":"anclaje"},
+    {"id":"cs-35","sub_nicho":"conceptos","desde":"su-52","frase":"Preferimos lo de siempre aunque no funcione, solo porque es conocido.","autor":"Sesgo de status quo","tema_clave":"sesgo_status_quo"},
+    {"id":"cs-36","sub_nicho":"conceptos","desde":"su-53","frase":"Una buena primera impresión no prueba que alguien sea bueno en todo.","autor":"Efecto halo","tema_clave":"efecto_halo"},
+    {"id":"cs-37","sub_nicho":"conceptos","desde":"su-54","frase":"No controlas todo lo que pasa, pero sí lo que decides hacer con eso.","autor":"Locus de control, Julian Rotter","tema_clave":"locus_control"},
+    {"id":"cs-38","sub_nicho":"conceptos","desde":"su-55","frase":"Sentir que no mereces estar ahí no significa que no pertenezcas.","autor":"Síndrome del impostor","tema_clave":"impostor"},
+    {"id":"cs-39","sub_nicho":"conceptos","desde":"su-56","frase":"Hazlo tan pequeño que no puedas fallar. Luego repite.","autor":"Hábito mínimo","tema_clave":"habito_minimo"},
+    {"id":"cs-40","sub_nicho":"conceptos","desde":"su-57","frase":"Lo que no se registra se olvida. Marca el hábito y míralo crecer.","autor":"Registro de hábitos","tema_clave":"registro_habito"},
+    {"id":"cf-41","sub_nicho":"frases","frase":"Empieza hoy por la tarea que llevas tres días evitando.","autor":"Superate777","tema_clave":"evitar"},
+    {"id":"cf-42","sub_nicho":"frases","frase":"No necesitas tenerlo todo claro para dar el primer paso.","autor":"Superate777","tema_clave":"primer_paso"},
+    {"id":"cf-43","sub_nicho":"frases","frase":"La disciplina también es descansar cuando toca.","autor":"Superate777","tema_clave":"descanso_2"},
+    {"id":"cf-44","sub_nicho":"frases","frase":"Cada vez que cumples lo que te prometes, te crees un poco más.","autor":"Superate777","tema_clave":"promesas"},
+    {"id":"cf-45","sub_nicho":"frases","frase":"Si te equivocas, corriges y sigues. Eso también es avanzar.","autor":"Superate777","tema_clave":"corregir"},
+    {"id":"cf-46","sub_nicho":"frases","frase":"No compares tu proceso con el resultado de otra persona.","autor":"Superate777","tema_clave":"comparacion_2"},
+    {"id":"cf-47","sub_nicho":"frases","frase":"Hazlo con miedo, pero hazlo.","autor":"Superate777","tema_clave":"miedo_accion"},
+    {"id":"cf-48","sub_nicho":"frases","frase":"Tu rutina de hoy construye tu tranquilidad de mañana.","autor":"Superate777","tema_clave":"rutina_2"},
+    {"id":"cf-49","sub_nicho":"frases","frase":"Pide ayuda antes de que el problema se haga más grande.","autor":"Superate777","tema_clave":"pedir_ayuda"},
+    {"id":"cf-50","sub_nicho":"frases","frase":"Termina lo que empezaste, aunque no quede perfecto.","autor":"Superate777","tema_clave":"terminar_2"}
   ]
 }

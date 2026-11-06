@@ -540,6 +540,149 @@
       "verificar": "Confirmar el concepto de \"pacto de Ulises\" (o pacto de Ulises) acuñado por Thomas Schelling.",
       "tema_clave": "pacto_ulises",
       "requiere_verificacion": false
+    },
+    {
+      "id": "su-48",
+      "sub_nicho": "tecnicas",
+      "titulo": "Dale una hora fija a cada tarea",
+      "gancho": "Una lista no te dice cuándo. Un horario sí.",
+      "dato_central": "El time blocking o bloqueo de tiempo consiste en reservar en el calendario un bloque concreto para cada tarea, en vez de solo apuntarla en una lista. Así el día tiene un plan y no compites por la atención entre veinte pendientes.",
+      "enfoque": "Explicar la diferencia entre lista y calendario con un ejemplo. Cerrar con bloquear la tarea más importante de mañana.",
+      "verificar": "Confirmar el concepto de time blocking como técnica de gestión del tiempo (bloques en calendario).",
+      "tema_clave": "bloque_tiempo",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-49",
+      "sub_nicho": "tecnicas",
+      "titulo": "Regla 1-3-5: un día que sí cabe",
+      "gancho": "No planees veinte cosas. Planea nueve y termínalas.",
+      "dato_central": "La regla 1-3-5 propone elegir cada día una tarea grande, tres medianas y cinco pequeñas. Es una forma de limitar el plan a lo que de verdad cabe en un día, en vez de llenar la lista y terminar frustrado.",
+      "enfoque": "Armar el 1-3-5 de hoy en voz alta. Cerrar con quitar todo lo que no entra.",
+      "verificar": "Confirmar la regla 1-3-5 como método de priorización diaria.",
+      "tema_clave": "regla_135",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-50",
+      "sub_nicho": "tecnicas",
+      "titulo": "Todo tarda más de lo que crees",
+      "gancho": "La ley de Hofstadter tiene humor, pero explica por qué tu plan siempre se cae.",
+      "dato_central": "La ley de Hofstadter dice: una tarea siempre lleva más tiempo del que esperas, incluso cuando tienes en cuenta la ley de Hofstadter. Su utilidad práctica es dejar margen en el plan y no llenar cada hora al límite.",
+      "enfoque": "Contar el enunciado y aplicarlo a un pendiente real. Cerrar con añadir margen a una tarea de hoy.",
+      "verificar": "Confirmar el enunciado y el origen de la ley de Hofstadter.",
+      "tema_clave": "hofstadter",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-51",
+      "sub_nicho": "errores",
+      "titulo": "La primera cifra te condiciona",
+      "gancho": "Si te dicen un precio antes de negociar, ya te movieron el cerebro.",
+      "dato_central": "El sesgo de anclaje es la tendencia a apoyarse en la primera cifra o dato que aparece al decidir. Aunque el ancla sea arbitraria, las estimaciones siguientes giran alrededor de ella.",
+      "enfoque": "Mostrar un ejemplo de precio o de plazo. Cerrar con pedir una segunda cifra antes de decidir.",
+      "verificar": "Confirmar el sesgo de anclaje en la investigación de Tversky y Kahneman.",
+      "tema_clave": "anclaje",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-52",
+      "sub_nicho": "errores",
+      "titulo": "Preferimos lo de siempre aunque no funcione",
+      "gancho": "A veces no eliges lo mejor: eliges lo conocido.",
+      "dato_central": "El sesgo de status quo es la preferencia por mantener la situación actual, aunque exista una opción mejor. Cambiar implica esfuerzo e incertidumbre, y por eso muchas personas se quedan en un trabajo, un hábito o una rutina que ya no les sirve.",
+      "enfoque": "Dar un ejemplo cotidiano y una pregunta para detectarlo. Cerrar con revisar una costumbre que solo sigue ahí por inercia.",
+      "verificar": "Confirmar el sesgo de status quo como sesgo cognitivo documentado (Samuelson y Zeckhauser).",
+      "tema_clave": "sesgo_status_quo",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-53",
+      "sub_nicho": "errores",
+      "titulo": "Una virtud no lo cubre todo",
+      "gancho": "Alguien te cae bien y de pronto le crees todo.",
+      "dato_central": "El efecto halo es la tendencia a dejar que una impresión positiva en un rasgo (belleza, simpatía, éxito) contagie la evaluación de los demás rasgos. También ocurre al revés: un defecto opaca lo bueno.",
+      "enfoque": "Explicarlo con una figura pública o alguien conocido. Cerrar con separar lo que sabes de lo que supones.",
+      "verificar": "Confirmar el efecto halo (Edward Thorndike) y su definición.",
+      "tema_clave": "efecto_halo",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-54",
+      "sub_nicho": "mentalidad",
+      "titulo": "Distingue lo que sí depende de ti",
+      "gancho": "Hay quien culpa al mundo y hay quien revisa qué puede cambiar. No es lo mismo.",
+      "dato_central": "El locus de control es la creencia sobre quién dirige lo que te pasa: tu esfuerzo y tus decisiones (locus interno) o factores externos como la suerte (locus externo). Julian Rotter lo estudió y lo relacionó con la forma de afrontar los problemas.",
+      "enfoque": "Separar en dos columnas lo que depende y lo que no. Cerrar con una acción sobre la primera columna.",
+      "verificar": "Confirmar el concepto de locus de control de Julian Rotter.",
+      "tema_clave": "locus_control",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-55",
+      "sub_nicho": "mentalidad",
+      "titulo": "Sentir que no mereces estar ahí",
+      "gancho": "No eres el único que piensa que alguien va a descubrir que no sabe tanto.",
+      "dato_central": "El síndrome del impostor es la sensación persistente de no merecer los logros y de que otros van a descubrir un supuesto engaño. Se describió en personas con logros reales; no es falta de capacidad, es una forma de interpretarla.",
+      "enfoque": "Nombrar la sensación y distinguirla de la incompetencia real. Cerrar con anotar una prueba concreta de tu trabajo.",
+      "verificar": "Confirmar la descripción original de Clance e Imes (1978).",
+      "tema_clave": "impostor",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-56",
+      "sub_nicho": "habitos",
+      "titulo": "Hazlo tan pequeño que no puedas fallar",
+      "gancho": "Si tu hábito necesita una hora, lo vas a dejar. Bájalo a dos minutos.",
+      "dato_central": "La regla de los dos minutos para hábitos propone empezar con una versión mínima: leer una página, hacer una flexión, escribir una frase. El objetivo al inicio no es el resultado, sino instalar la constancia.",
+      "enfoque": "Reducir un hábito propio a su versión mínima. Cerrar con hacer solo eso hoy.",
+      "verificar": "Confirmar la regla de los dos minutos aplicada a hábitos (James Clear).",
+      "tema_clave": "habito_minimo",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-57",
+      "sub_nicho": "habitos",
+      "titulo": "Lo que no registras se olvida",
+      "gancho": "Tu memoria te dice que sí lo hiciste. El calendario dice la verdad.",
+      "dato_central": "Registrar un hábito de forma visible (una marca en el calendario, una casilla, una lista) ayuda a no perder el hilo y a ver el progreso real. El registro no hace el hábito por ti, pero vuelve la constancia algo que se puede mirar.",
+      "enfoque": "Mostrar un registro simple en papel. Cerrar con elegir dónde vas a marcar el hábito de hoy.",
+      "verificar": "Confirmar que el autorregistro visible es una estrategia habitual de seguimiento de hábitos.",
+      "tema_clave": "registro_habito",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-58",
+      "sub_nicho": "reto",
+      "titulo": "Haz una cosa incómoda al día",
+      "gancho": "La valentía no es no tener miedo: es hacer algo pequeño a pesar de él.",
+      "dato_central": "El reto es elegir cada día una acción pequeña que evitas por incomodidad: preguntar, llamar, pedir, corregir. No se trata de exponerse al peligro, sino de entrenar la respuesta ante la incomodidad cotidiana.",
+      "enfoque": "Proponer una lista de acciones pequeñas. Cerrar con elegir una para hoy y hacerla antes de que acabe el día.",
+      "verificar": "No requiere dato externo; es un reto de acción.",
+      "tema_clave": "valentia_diaria",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-59",
+      "sub_nicho": "reto",
+      "titulo": "24 horas sin quejarte",
+      "gancho": "Un día sin quejarte te muestra cuánto de tu diálogo interno es lamento.",
+      "dato_central": "El reto consiste en pasar un día sin quejarte en voz alta ni para tus adentros, y cuando lo notes, volver a empezar. No busca fingir que todo está bien: busca distinguir la queja automática de la acción posible.",
+      "enfoque": "Explicar la diferencia entre queja y pedido. Cerrar con el reto de hoy y un reinicio sin castigo.",
+      "verificar": "Confirmar el origen popular del reto de 21 días sin quejarse (Will Bowen); no presentarlo como estudio.",
+      "tema_clave": "sin_quejarse",
+      "requiere_verificacion": false
+    },
+    {
+      "id": "su-60",
+      "sub_nicho": "reto",
+      "titulo": "Escribe un gracias que no esperabas",
+      "gancho": "Un mensaje de agradecimiento puede cambiar el día de otra persona y el tuyo.",
+      "dato_central": "El reto es escribir a alguien un agradecimiento concreto por algo que hizo, sin pedirle nada a cambio. Nombrar el hecho exacto vale más que un \"gracias\" genérico.",
+      "enfoque": "Dar la estructura: qué hizo, por qué te importó, gracias. Cerrar con enviarlo hoy.",
+      "verificar": "No requiere dato externo; es un reto de acción.",
+      "tema_clave": "gracias_alguien",
+      "requiere_verificacion": false
     }
   ]
 }

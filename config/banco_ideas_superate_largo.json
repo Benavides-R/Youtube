@@ -510,6 +510,118 @@
       ],
       "enfoque": "La pregunta que rompe el miedo, aceptar que empezarás mal, el sesgo de ver solo a los que lo lograron y ver el obstáculo como parte del camino. Sin exagerar ni prometer éxito; cerrar con un paso pequeño a pesar del miedo.",
       "tema_clave": "miedo_fracaso"
+    },
+    {
+      "id": "sl-37",
+      "sub_nicho": "productividad",
+      "titulo": "Dale una hora fija a cada cosa",
+      "gancho": "Tener una lista no es tener un plan. El calendario sí lo es.",
+      "bundle": [
+        "su-48",
+        "su-07",
+        "su-11",
+        "su-29"
+      ],
+      "enfoque": "Explicar el bloqueo de tiempo, por qué el trabajo se estira hasta el tiempo que le das, cómo elegir lo que más pesa y quedarse con una sola prioridad. Cerrar armando el bloque de mañana; sin fórmulas exactas.",
+      "tema_clave": "bloque_tiempo"
+    },
+    {
+      "id": "sl-38",
+      "sub_nicho": "productividad",
+      "titulo": "El plan que sí cabe en tu día",
+      "gancho": "Si tu plan no cabe, el problema no es tu fuerza de voluntad: es el plan.",
+      "bundle": [
+        "su-49",
+        "su-50",
+        "su-05",
+        "su-08"
+      ],
+      "enfoque": "Un día realista: una tarea grande, tres medianas y cinco pequeñas; margen para lo que tarda más; un plan de si pasa esto hago aquello; y pensar antes qué puede salir mal. Cerrar recortando el plan de hoy.",
+      "tema_clave": "plan_cabe"
+    },
+    {
+      "id": "sl-39",
+      "sub_nicho": "mente",
+      "titulo": "Tu cerebro decide antes de que decidas",
+      "gancho": "Tres atajos mentales que te hacen elegir mal sin darte cuenta.",
+      "bundle": [
+        "su-51",
+        "su-52",
+        "su-53",
+        "su-19"
+      ],
+      "enfoque": "El ancla de la primera cifra, la preferencia por lo conocido, el halo de una buena impresión y la búsqueda de lo que confirma lo que ya crees. Cerrar con una decisión pendiente revisada a la luz de los cuatro.",
+      "tema_clave": "sesgos_decision"
+    },
+    {
+      "id": "sl-40",
+      "sub_nicho": "mente",
+      "titulo": "Cuando sientes que no mereces estar ahí",
+      "gancho": "El síndrome del impostor no te dice la verdad sobre tu capacidad.",
+      "bundle": [
+        "su-55",
+        "su-32",
+        "su-23",
+        "su-35"
+      ],
+      "enfoque": "Nombrar la sensación, hablarte como a un amigo, dejar de compararte y cambiar la pregunta \"¿por qué a mí?\" por una útil. Aclarar que no es lo mismo que falta de preparación real; cerrar con una prueba concreta de tu trabajo.",
+      "tema_clave": "impostor"
+    },
+    {
+      "id": "sl-41",
+      "sub_nicho": "habitos",
+      "titulo": "El hábito más pequeño que sí aguanta",
+      "gancho": "No empieces por la meta grande. Empieza por la versión que no puedes fallar.",
+      "bundle": [
+        "su-56",
+        "su-24",
+        "su-40",
+        "su-13"
+      ],
+      "enfoque": "Empezar por dos minutos, anclar el hábito nuevo a uno que ya existe, no fallar dos veces seguidas y mejorar un poco cada día. Cerrar eligiendo la versión mínima de un hábito propio.",
+      "tema_clave": "habito_minimo"
+    },
+    {
+      "id": "sl-42",
+      "sub_nicho": "habitos",
+      "titulo": "Deja de confiar en la memoria: registra",
+      "gancho": "El hábito que no se ve, se pierde. Una marca en el calendario cambia el juego.",
+      "bundle": [
+        "su-57",
+        "su-26",
+        "su-45",
+        "su-42"
+      ],
+      "enfoque": "Registro visible, calendario con días marcados, revisión breve al cerrar el día y menos pasos entre tú y la acción. Cerrar eligiendo dónde y cómo vas a registrar el hábito.",
+      "tema_clave": "registro_habito"
+    },
+    {
+      "id": "sl-43",
+      "sub_nicho": "accion",
+      "titulo": "Una cosa incómoda al día",
+      "gancho": "La valentía se entrena en pequeño, no se espera sentada.",
+      "bundle": [
+        "su-58",
+        "su-30",
+        "su-36",
+        "su-15"
+      ],
+      "enfoque": "Elegir una acción incómoda, hacerte la pregunta que desarma el miedo, aceptar que empezarás mal y ver el obstáculo como parte del camino. Cerrar con una acción para hoy; sin prometer que sale perfecto.",
+      "tema_clave": "valentia_diaria"
+    },
+    {
+      "id": "sl-44",
+      "sub_nicho": "accion",
+      "titulo": "24 horas sin quejarte",
+      "gancho": "Un día sin lamento automático te muestra cuánto puedes cambiar con lo que ya tienes.",
+      "bundle": [
+        "su-59",
+        "su-44",
+        "su-60",
+        "su-14"
+      ],
+      "enfoque": "El reto de un día sin queja, cerrar el día con tres cosas buenas, escribir un agradecimiento concreto y volver a lo que sí controlas. Cerrar con reinicio sin castigo si falla.",
+      "tema_clave": "sin_quejarse"
     }
   ]
 }
