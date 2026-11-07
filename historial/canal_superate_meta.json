@@ -288,5 +288,15 @@
     "fecha": "2026-11-07",
     "idea_id": "sl-35",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-07",
+    "titulo": "El miedo al fracaso (y cómo lo esquivas)",
+    "tema_clave": "miedo_fracaso",
+    "sub_nicho": "mente",
+    "formula": null,
+    "idea_id": "sl-36",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
