@@ -523,5 +523,15 @@
     "fecha": "2026-11-09",
     "idea_id": "su-49",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-09",
+    "titulo": "Todo tarda más de lo que crees #Shorts",
+    "tema_clave": "hofstadter",
+    "sub_nicho": "tecnicas",
+    "formula": null,
+    "idea_id": "su-50",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
