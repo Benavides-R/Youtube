@@ -568,5 +568,15 @@
     "fecha": "2026-11-11",
     "idea_id": "su-01",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-11",
+    "titulo": "Actúa al instante: la regla de los 2 minutos #Shorts",
+    "tema_clave": "dos_minutos",
+    "sub_nicho": "tecnicas",
+    "formula": null,
+    "idea_id": "su-02",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
