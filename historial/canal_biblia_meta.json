@@ -343,5 +343,15 @@
     "fecha": "2026-11-12",
     "idea_id": "bl-28",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-12",
+    "titulo": "Dios como amparo, escudo y sombra",
+    "tema_clave": "amparo_escudo",
+    "sub_nicho": "salmos_sabiduria",
+    "formula": null,
+    "idea_id": "bl-29",
+    "pasaje": "Salmo 91:11; Salmo 34:7; Salmo 46:1; Salmo 84:11; Salmo 36:7",
+    "fuente": "conocimiento_estable"
   }
 ]
