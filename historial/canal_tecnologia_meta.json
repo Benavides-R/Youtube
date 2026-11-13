@@ -471,5 +471,15 @@
     "fecha": "2026-11-13",
     "idea_id": "hi-04",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-13",
+    "titulo": "De dónde salió el nombre y el robot verde de Android #Shorts",
+    "tema_clave": "android_historia",
+    "sub_nicho": "historia",
+    "formula": "La historia detrás de algo que usas todos los días",
+    "idea_id": "hi-05",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
