@@ -461,5 +461,15 @@
     "idea_id": "ap-03",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-11-13",
+    "idea_id": "hi-03",
+    "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-13",
+    "idea_id": "hi-04",
+    "estado": "descartada"
   }
 ]
