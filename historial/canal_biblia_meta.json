@@ -363,5 +363,15 @@
     "fecha": "2026-11-13",
     "idea_id": "bl-51",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-13",
+    "titulo": "Buscad primero el reino de Dios",
+    "tema_clave": "buscar_primero",
+    "sub_nicho": "jesus",
+    "formula": null,
+    "idea_id": "bl-55",
+    "pasaje": "Mateo 6:33; Mateo 7:7",
+    "fuente": "conocimiento_estable"
   }
 ]
