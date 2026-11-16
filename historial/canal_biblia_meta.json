@@ -398,5 +398,15 @@
     "fecha": "2026-11-16",
     "idea_id": "bl-39",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-16",
+    "titulo": "Fe, esperanza y amor: la mayor es el amor",
+    "tema_clave": "amor_permanece",
+    "sub_nicho": "cartas",
+    "formula": null,
+    "idea_id": "bl-40",
+    "pasaje": "1 Corintios 13:13; 1 Corintios 16:14; 1 Pedro 4:8; 1 Juan 4:8",
+    "fuente": "conocimiento_estable"
   }
 ]
