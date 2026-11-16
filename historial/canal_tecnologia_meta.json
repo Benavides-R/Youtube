@@ -501,5 +501,10 @@
     "idea_id": "ga-03",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-11-16",
+    "idea_id": "fn-05",
+    "estado": "descartada"
   }
 ]
