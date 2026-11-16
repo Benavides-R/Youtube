@@ -506,5 +506,15 @@
     "fecha": "2026-11-16",
     "idea_id": "fn-05",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-16",
+    "titulo": "Subtítulos automáticos para cualquier video #Shorts",
+    "tema_clave": "subtitulos_vivo",
+    "sub_nicho": "funciones",
+    "formula": "La función que tu Android ya trae y no usas",
+    "idea_id": "fn-06",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
