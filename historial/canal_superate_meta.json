@@ -388,5 +388,15 @@
     "fecha": "2026-11-18",
     "idea_id": "sl-21",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-18",
+    "titulo": "Atadura de Ulises: asegura tu decisión hoy",
+    "tema_clave": "dejar_habitos_malos",
+    "sub_nicho": "habitos",
+    "formula": null,
+    "idea_id": "sl-22",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
