@@ -718,5 +718,15 @@
     "fecha": "2026-11-18",
     "idea_id": "su-22",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-18",
+    "titulo": "Compárate solo con tu ayer y avanza #Shorts",
+    "tema_clave": "comparacion",
+    "sub_nicho": "errores",
+    "formula": null,
+    "idea_id": "su-23",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
