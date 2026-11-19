@@ -433,5 +433,15 @@
     "fecha": "2026-11-19",
     "idea_id": "bl-50",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-19",
+    "titulo": "Cercano está el Señor a los quebrantados",
+    "tema_clave": "quebrantados",
+    "sub_nicho": "salmos_sabiduria",
+    "formula": null,
+    "idea_id": "bl-52",
+    "pasaje": "Salmo 34:18; Salmo 55:22",
+    "fuente": "conocimiento_estable"
   }
 ]
