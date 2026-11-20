@@ -413,5 +413,15 @@
     "fecha": "2026-11-20",
     "idea_id": "sl-02",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-20",
+    "titulo": "Lo único que realmente puedes controlar",
+    "tema_clave": "mentalidad",
+    "sub_nicho": "mente",
+    "formula": null,
+    "idea_id": "sl-04",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
