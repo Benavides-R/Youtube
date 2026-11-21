@@ -458,5 +458,15 @@
     "fecha": "2026-11-21",
     "idea_id": "bl-53",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-21",
+    "titulo": "Mejores son dos que uno",
+    "tema_clave": "dos_mejores_uno",
+    "sub_nicho": "salmos_sabiduria",
+    "formula": null,
+    "idea_id": "bl-58",
+    "pasaje": "Eclesiastés 4:9; Eclesiastés 4:10",
+    "fuente": "conocimiento_estable"
   }
 ]
