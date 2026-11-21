@@ -556,5 +556,15 @@
     "idea_id": null,
     "pasaje": null,
     "fuente": "androidpolice.com"
+  },
+  {
+    "fecha": "2026-11-21",
+    "titulo": "El modo oscuro no siempre ahorra batería #Shorts",
+    "tema_clave": "bateria",
+    "sub_nicho": "mitos_bateria",
+    "formula": "Mito vs realidad",
+    "idea_id": "mb-03",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
