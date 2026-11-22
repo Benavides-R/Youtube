@@ -448,5 +448,15 @@
     "fecha": "2026-11-21",
     "idea_id": "sl-24",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-21",
+    "titulo": "Prepara tu acción de mañana y elimina la fricción",
+    "tema_clave": "habito_sueno",
+    "sub_nicho": "habitos",
+    "formula": null,
+    "idea_id": "sl-25",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
