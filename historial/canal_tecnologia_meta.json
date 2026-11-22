@@ -566,5 +566,10 @@
     "idea_id": "mb-03",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-11-22",
+    "idea_id": "ap-04",
+    "estado": "descartada"
   }
 ]
