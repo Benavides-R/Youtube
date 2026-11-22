@@ -571,5 +571,15 @@
     "fecha": "2026-11-22",
     "idea_id": "ap-04",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-22",
+    "titulo": "Digitaliza documentos con la cámara de tu celular #Shorts",
+    "tema_clave": "escanear_documentos",
+    "sub_nicho": "apps",
+    "formula": "La app que te resuelve esto (y es gratis)",
+    "idea_id": "ap-05",
+    "pasaje": null,
+    "fuente": "conocimiento_estable"
   }
 ]
