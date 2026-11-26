@@ -611,5 +611,15 @@
     "idea_id": "pr-07",
     "pasaje": null,
     "fuente": "conocimiento_estable"
+  },
+  {
+    "fecha": "2026-11-26",
+    "titulo": "Qué pasó con Android Auto y el bug de Gemini Live #Shorts",
+    "tema_clave": "android_auto",
+    "sub_nicho": "historia",
+    "formula": "Qué pasó con X (historia documentada)",
+    "idea_id": null,
+    "pasaje": null,
+    "fuente": "androidpolice.com"
   }
 ]
