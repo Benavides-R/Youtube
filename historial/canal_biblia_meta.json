@@ -518,5 +518,15 @@
     "fecha": "2026-11-26",
     "idea_id": "bl-04",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-26",
+    "titulo": "Salmo 139:1-14: cómo conocer tu valor ante Dios",
+    "tema_clave": "salmo_139",
+    "sub_nicho": "salmos_sabiduria",
+    "formula": null,
+    "idea_id": "bl-05",
+    "pasaje": "Salmo 139:1-14",
+    "fuente": "conocimiento_estable"
   }
 ]
