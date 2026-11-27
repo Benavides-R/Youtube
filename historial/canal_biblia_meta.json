@@ -533,5 +533,15 @@
     "fecha": "2026-11-27",
     "idea_id": "bl-13",
     "estado": "descartada"
+  },
+  {
+    "fecha": "2026-11-27",
+    "titulo": "Lo que dice Efesios 4:29 sobre palabras que edifican",
+    "tema_clave": "efesios_4",
+    "sub_nicho": "cartas",
+    "formula": null,
+    "idea_id": "bl-15",
+    "pasaje": "Efesios 4:25-32",
+    "fuente": "conocimiento_estable"
   }
 ]
